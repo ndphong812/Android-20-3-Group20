@@ -10,7 +10,7 @@
 ### Bước 3: Add vào local, và push (push vào branch dev)
 - git add .
 - git commit -m "message"
-- git push origin dev 
+- git push origin <tên branch đang code>, không phải branch dev hay main nhé. 
 - Nếu nó không cho push, tức đã xảy ra xung đột file, thì git pull origin dev, xử lý conflict, rồi thực hiện push lại.
 ### Bước 4: Pull request
 - Sau khi xong chức năng, thì thực hiện pull request, merge vào Branch dev.
