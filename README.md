@@ -16,3 +16,4 @@
 - Sau khi xong chức năng, thì thực hiện pull request, merge vào Branch dev.
 - T6 hoặc T7 hàng tuần review code, Code ok thì approve pull request vào branch dev (không tự ý approve)
 ### Lưu ý: trước khi code thì nên Pull từ trên branch dev về, không pull thì lúc push xảy ra xung đột thì phải pull lại (Branch dev có review code trước rồi, nên không lo pull về bị xung đột)
+# Code Rule
