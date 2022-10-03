@@ -32,3 +32,10 @@
 - SQLite with Android: https://viblo.asia/p/su-dung-sqlite-database-trong-ung-dung-android-wjAM7alevmWe
 - Recommend library: https://auth0.com/blog/android-development-15-libraries-you-should-be-using
 - Dark / Light theme: https://developer.android.com/develop/ui/views/theming/darktheme
+
+
+# Chức năng
+## Login:
+- Tài khoản: username (min 6 kí tự, max 20 kí tự)
+- Mật khẩu: password (min 6 kí tự, max 20 kí tự)
+- Nhập lại mật khẩu: reTypePassword
