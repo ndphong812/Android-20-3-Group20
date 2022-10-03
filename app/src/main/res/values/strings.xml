@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">Messenger</string>
+    <string name="appName">Messenger</string>
+    <string name="loginTitle">Login</string>
+    <string name="settingTitle">Setting</string>
+    <string name="friendListTitle">Đoạn chat</string>
+
 </resources>
