@@ -21,10 +21,10 @@
 ## Quy tắc đặt tên: đặt kiểu Camel
 ## Cấu trúc thư mục:
 ### Manifests: chứa file xml chính
-### Java: chứa file .java, khi code chia thêm các folder con trong Thư mục com.example.messenger.
+### Java: chứa file .java
 ### Res: chứa tài nguyên cần dùng
 - Drawable: chứa các hình ảnh dùng trong ứng dụng
-- Layout: Chứa các file .xml, khi code chia thêm các folder con tùy theo chức năng
+- Layout: Các file code .xml đặt trong này. 
 - Mipmap: chứa icon
 - Value: Định nghĩa color, chuỗi trong này
 #Tham khảo:
