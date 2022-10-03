@@ -18,3 +18,17 @@
 - T6 hoặc T7 hàng tuần review code, Code ok thì approve pull request vào branch dev (không tự ý approve)
 ### Lưu ý: trước khi code thì nên Pull từ trên branch dev về, không pull thì lúc push xảy ra xung đột thì phải pull lại (Branch dev có review code trước rồi, nên không lo pull về bị xung đột)
 # Code Rule
+## Quy tắc đặt tên: đặt kiểu Camel
+## Cấu trúc thư mục:
+### Manifests: chứa file xml chính
+### Java: chứa file .java, khi code chia thêm các folder con trong Thư mục com.example.messenger.
+### Res: chứa tài nguyên cần dùng
+- Drawable: chứa các hình ảnh dùng trong ứng dụng
+- Layout: Chứa các file .xml, khi code chia thêm các folder con tùy theo chức năng
+- Mipmap: chứa icon
+- Value: Định nghĩa color, chuỗi trong này
+#Tham khảo:
+- P2P connections with Wi-Fi Direct: https://developer.android.com/training/connect-devices-wirelessly/wifi-direct
+- SQLite with Android: https://viblo.asia/p/su-dung-sqlite-database-trong-ung-dung-android-wjAM7alevmWe
+- Recommend library: https://auth0.com/blog/android-development-15-libraries-you-should-be-using
+- Dark / Light theme: https://developer.android.com/develop/ui/views/theming/darktheme
