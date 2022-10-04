@@ -3,6 +3,7 @@
 ### Bước 1: Clone dự án
 - Git init
 - Git clone https://github.com/ndphong812/Android-20-3-Group20.git
+- Git checkout dev
 ### Bước 2: Tạo branch mới theo chức năng. 
 - Git checkout -b <featute / tên branch>, ví dụ: git checkout -b feature/login-ui
 - Tiếp theo, kéo code trên dev về: git pull origin dev.
