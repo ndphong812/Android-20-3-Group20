@@ -18,7 +18,8 @@
 - T6 hoặc T7 hàng tuần review code, Code ok thì approve pull request vào branch dev (không tự ý approve)
 ### Lưu ý: trước khi code thì nên Pull từ trên branch dev về, không pull thì lúc push xảy ra xung đột thì phải pull lại (Branch dev có review code trước rồi, nên không lo pull về bị xung đột)
 # Code Rule
-## Quy tắc đặt tên: đặt kiểu Camel
+## Quy tắc đặt tên trong jave: đặt kiểu Camel
+## Quy tắc đặt tên hằng số, string, variable: variable_name
 ## Cấu trúc thư mục:
 ### Manifests: chứa file xml chính
 ### Java: chứa file .java
