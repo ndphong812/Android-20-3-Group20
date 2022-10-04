@@ -6,7 +6,6 @@
 - Git checkout dev
 ### Bước 2: Tạo branch mới theo chức năng. 
 - Git checkout -b <featute / tên branch>, ví dụ: git checkout -b feature/login-ui
-- Tiếp theo, kéo code trên dev về: git pull origin dev.
 - Kiểm tra các branch: git branch
 - Nhảy sang branch khác: git checkout <tên branch>
 ### Bước 3: Add vào local, và push (push vào branch dev)
@@ -17,7 +16,7 @@
 ### Bước 4: Pull request
 - Sau khi xong chức năng, thì thực hiện pull request, merge vào Branch dev.
 - T6 hoặc T7 hàng tuần review code, Code ok thì approve pull request vào branch dev (không tự ý approve)
-### Lưu ý: trước khi code thì nên Pull từ trên branch dev về, không pull thì lúc push xảy ra xung đột thì phải pull lại (Branch dev có review code trước rồi, nên không lo pull về bị xung đột)
+### Lưu ý: trước khi code thì nên Pull từ trên branch dev về (git pull origin dev), không pull thì lúc push xảy ra xung đột thì phải pull lại (Branch dev có review code trước rồi, nên không lo pull về bị xung đột)
 # Code Rule
 ## Quy tắc đặt tên trong jave: đặt kiểu Camel
 ## Quy tắc đặt tên hằng số, string, variable: variable_name
