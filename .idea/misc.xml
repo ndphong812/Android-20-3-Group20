@@ -3,8 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/HCMUS/HK5/Mobile Application/Seminar/Messenger/app/src/main/res/drawable/back_ground.xml" value="0.2265" />
+        <entry key="..\:/HCMUS/HK5/Mobile Application/Seminar/Messenger/app/src/main/res/drawable/ic_baseline_info_24.xml" value="0.2265" />
+        <entry key="..\:/HCMUS/HK5/Mobile Application/Seminar/Messenger/app/src/main/res/drawable/ic_baseline_person_outline_24.xml" value="0.2265" />
         <entry key="..\:/HCMUS/HK5/Mobile Application/Seminar/Messenger/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2265" />
         <entry key="..\:/HCMUS/HK5/Mobile Application/Seminar/Messenger/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/HCMUS/HK5/Mobile Application/Seminar/Messenger/app/src/main/res/layout/ic_baseline_info_24.xml" value="0.25" />
         <entry key="..\:/HCMUS/HK5/Mobile Application/Seminar/Messenger/app/src/main/res/layout/login.xml" value="0.24895833333333334" />
       </map>
     </option>
