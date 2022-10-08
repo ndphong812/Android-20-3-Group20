@@ -119,11 +119,7 @@
             android:layout_height="wrap_content"
             android:text="A product of Meta"
             android:textColor="@color/white" />
-        <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="10dp"
-            android:src="@drawable/fb"/>
+
 
     </LinearLayout>
 </RelativeLayout>
