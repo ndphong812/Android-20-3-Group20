@@ -9,7 +9,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="450dp"
         android:gravity="center"
         android:id="@+id/logo"
         android:orientation="horizontal">
@@ -26,9 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/logo"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
         android:drawablePadding="20dp"
         android:hint="Số điện thoại hoặc email"
         android:paddingTop="20dp"
@@ -42,9 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/username"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
         android:drawablePadding="20dp"
         android:hint="Mật khẩu"
         android:inputType="textPassword"
