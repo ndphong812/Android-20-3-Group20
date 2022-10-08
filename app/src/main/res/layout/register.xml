@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/login"
-        android:text="Login"
+        android:text="Register"
         android:textColor="@color/white"
         android:textSize="35dp"
         android:textStyle="bold"
@@ -53,12 +53,31 @@
         android:textColor="@color/white"
         android:textColorHint="@color/white" />
 
+    <EditText
+        android:id="@+id/re_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/password"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#30ffffff"
+        android:drawableLeft="@drawable/ic_baseline_info_24"
+        android:drawablePadding="20dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="20dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white" />
+
+
     <com.google.android.material.button.MaterialButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/login_btn"
-        android:layout_below="@id/password"
-        android:text="LOGIN"
+        android:id="@+id/register_btn"
+        android:layout_below="@id/re_password"
+        android:text="REGISTER"
         android:backgroundTint="@color/primary"
         android:layout_centerHorizontal="true"
         android:layout_margin="20dp"
@@ -69,7 +88,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:gravity="center"
-        android:layout_below="@id/login_btn"
+        android:layout_below="@id/register_btn"
         android:id="@+id/account_option"
         android:orientation="horizontal">
 
@@ -77,15 +96,9 @@
             android:id="@+id/forgetpass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/register_btn"
             android:layout_marginRight="20dp"
-            android:text="Forget password?"
-            android:textColor="@color/white" />
-
-        <TextView
-            android:id="@+id/direct_to_register"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Register account"
+            android:text="You had account?"
             android:textColor="@color/white" />
 
         <Space
