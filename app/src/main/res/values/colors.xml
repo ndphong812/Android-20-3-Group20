@@ -10,10 +10,10 @@
     <color name="start_bg_color">#ffff8fb2</color>
     <color name="end_bg_color">#ff00e5ff</color>
     <color name="center_bg_color">#ffa797ff</color>
-    <color name="primary">#42a5f5</color>
-    <color name="secondary">#ba68c8</color>
-    <color name="error">#ef5350</color>
-    <color name="warning">#ff9800</color>
-    <color name="success">#03a9f4</color>
-    <color name="info">#4caf50</color>
+    <color name="primary">#1976d2</color>
+    <color name="secondary">#9c27b0</color>
+    <color name="error">#d32f2f</color>
+    <color name="warning">#ed6c02</color>
+    <color name="info">#0288d1</color>
+    <color name="success">#2e7d32</color>
 </resources>
