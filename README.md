@@ -10,7 +10,7 @@
 - Nhảy sang branch khác: git checkout <tên branch>
 ### Bước 3: Add vào local, và push (push vào branch dev)
 - git add .
-- git commit -m "message"
+- git commit -m "message - https://ndphong.atlassian.net/jira/software/projects/A2G/boards/1"
 - git push origin <tên branch đang code>, không phải branch dev hay main nhé. 
 - Nếu nó không cho push, tức đã xảy ra xung đột file, thì git pull origin dev, xử lý conflict, rồi thực hiện push lại.
 ### Bước 4: Pull request
