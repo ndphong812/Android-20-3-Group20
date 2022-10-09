@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="Chats" android:icon="@drawable/ic_baseline_chat_bubble_24" android:id="@+id/chats" />
+    <item android:title="Calls" android:icon="@drawable/ic_baseline_video_call_24" android:id="@+id/calls"
+        android:enabled="true"
+        />
+    <item android:title="People" android:icon="@drawable/ic_baseline_people_alt_24" android:id="@+id/people"
+        />
+    <item android:title="Stories" android:icon="@drawable/ic_baseline_amp_stories_24" android:id="@+id/stories" />
+    <item android:title="Settings" android:icon="@drawable/ic_baseline_settings_24" android:id="@+id/settings" />
+</menu>
