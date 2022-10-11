@@ -4,11 +4,141 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ChatsFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
+        <!--Header-->
+        <RelativeLayout
+            android:id="@+id/chatHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/pad_16dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:gravity="center"
+                >
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/marg_16dp"
+                    android:background="@drawable/circle_corner"
+                    android:padding="@dimen/pad_8dp"
+                    android:src="@drawable/ic_baseline_menu_24" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chats"
+                    android:textColor="@color/black"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/circle_corner"
+                    android:padding="@dimen/pad_8dp"
+                    android:src="@drawable/ic_baseline_camera_alt_24" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/circle_corner"
+                    android:padding="@dimen/pad_8dp"
+                    android:src="@drawable/ic_baseline_edit_24"
+                    android:layout_marginLeft="@dimen/marg_16dp"
+                    />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <ScrollView
+            android:layout_below="@+id/chatHeader"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
+                <!-- Search bar-->
+                <LinearLayout
+                    android:id="@+id/searchGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/chatHeader"
+                    android:layout_marginLeft="@dimen/pad_16dp"
+                    android:layout_marginRight="@dimen/pad_16dp"
+                    android:background="@drawable/circle_corner"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/pad_12dp"
+                    android:paddingTop="@dimen/pad_8dp"
+                    android:paddingRight="@dimen/pad_12dp"
+                    android:paddingBottom="@dimen/pad_8dp"
+                    android:layout_marginTop="@dimen/marg_8dp"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_baseline_search_24"
+                        />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/marg_8dp"
+                        android:background="@null"
+                        android:hint="Search" />
+                </LinearLayout>
+
+                <!--Show online users-->
+                <HorizontalScrollView
+                    android:id="@+id/scrollViewOnlineUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/searchGroup"
+                    android:layout_marginTop="@dimen/pad_16dp"
+                    android:layout_marginBottom="@dimen/pad_16dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/viewGroup"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingLeft="@dimen/pad_12dp"
+                        android:paddingRight="@dimen/pad_12dp" />
+                </HorizontalScrollView>
+
+                <!--Show contacts-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:minHeight="@dimen/minHeightListContact"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/scrollViewOnlineUser"
+                    >
+
+                    <ListView
+                        android:id="@+id/listViewContacts"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
 
 </FrameLayout>
