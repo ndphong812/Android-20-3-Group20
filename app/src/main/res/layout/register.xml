@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
     >
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".MainActivity">
+    tools:context=".Register">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -90,40 +90,42 @@
                 android:layout_height="wrap_content">
 
                 <EditText
+                    android:id="@+id/pass"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
+                    android:backgroundTint="@color/gray"
                     android:drawablePadding="20dp"
                     android:hint="Mật khẩu"
                     android:inputType="textPassword"
                     android:paddingBottom="20dp"
                     android:textColor="@color/gray"
-                    android:backgroundTint="@color/gray"
-                    android:textColorHint="@color/gray" />
+                    android:textColorHint="@color/gray"/>
             </com.google.android.material.textfield.TextInputLayout>
 
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:id="@+id/re_password"
-                android:layout_below="@id/password"
+                android:layout_below="@id/pass"
                 app:passwordToggleEnabled="true"
                 app:hintTextColor="@color/gray"
                 android:textColorHint="@color/gray"
                 android:layout_height="wrap_content">
 
                 <EditText
+                    android:id="@+id/rt_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
+                    android:backgroundTint="@color/gray"
                     android:drawablePadding="20dp"
                     android:hint="Nhập lại mật khẩu"
                     android:inputType="textPassword"
                     android:paddingBottom="20dp"
                     android:textColor="@color/gray"
-                    android:backgroundTint="@color/gray"
                     android:textColorHint="@color/gray" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -150,8 +152,8 @@
                     android:gravity="center"
                     android:layout_marginTop="20dp"
                     android:textColor="@color/primary"
-                    android:text="Đã có tài khoản?"
-                    />
+                    android:onClick="onClick"
+                    android:text="Đã có tài khoản?"/>
 
             </LinearLayout>
         </LinearLayout>
