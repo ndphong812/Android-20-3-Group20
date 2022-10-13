@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="61dp"
+    android:layout_width="67dp"
     android:layout_height="wrap_content"
-    android:padding="3dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    android:paddingLeft="@dimen/pad_6dp"
+    android:paddingRight="@dimen/pad_6dp"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/avatar"
@@ -16,11 +21,13 @@
 
     <TextView
         android:id="@+id/caption"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Trinh Tran Tran"
-        android:textSize="10sp"
+        android:textSize="12sp"
         android:gravity="center"
         android:textColor="@color/black"
+        android:ellipsize="end"
+        android:lines="2"
         />
 </LinearLayout>

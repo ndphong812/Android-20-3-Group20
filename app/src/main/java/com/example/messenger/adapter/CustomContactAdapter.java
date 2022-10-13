@@ -2,56 +2,153 @@ package com.example.messenger.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.messenger.ChatActivity;
 import com.example.messenger.R;
 import com.example.messenger.model.Contact;
 import com.google.android.material.imageview.ShapeableImageView;
 
-public class CustomContactAdapter extends ArrayAdapter<Contact> {
-    final private Context context;
-    final private Contact [] contacts;
-    public CustomContactAdapter(@NonNull Context context, int resource, @NonNull Contact[] objects) {
-        super(context, resource, objects);
+import java.util.List;
+
+public class CustomContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int TYPE_ITEM = 1;
+    private static final int TYPE_LOADING = 2;
+    private List<Contact> contacts;
+    private boolean isLoadingAdd;
+    private Context context;
+
+    public CustomContactAdapter(Context context) {
         this.context = context;
-        this.contacts = objects;
+    }
+
+    public void setData(List<Contact> list) {
+        this.contacts = list;
+        notifyDataSetChanged();
     }
 
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        ViewHolder viewHolder;
-
-        if(convertView == null) {
-            LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-            convertView = inflater.inflate(R.layout.frame_contact, null);
-
-            viewHolder = new ViewHolder();
-            viewHolder.avatar = convertView.findViewById(R.id.avatar);
-            viewHolder.chatName = convertView.findViewById(R.id.chatName);
-            viewHolder.latestChat = convertView.findViewById(R.id.latestChat);
-            convertView.setTag(viewHolder);
-        }else{
-            viewHolder = (ViewHolder) convertView.getTag();
+    public int getItemViewType(int position) {
+        if(contacts != null && position == contacts.size() - 1 && isLoadingAdd == true) {
+            return TYPE_LOADING;
         }
-
-        viewHolder.avatar.setImageResource(contacts[position].getAvatarPath());
-        viewHolder.chatName.setText(contacts[position].getUsername());
-        viewHolder.latestChat.setText(contacts[position].getLatestMessageWithUser());
-
-        return convertView;
+        return TYPE_ITEM;
     }
 
-    public class ViewHolder {
-        ShapeableImageView avatar;
-        TextView chatName;
-        TextView latestChat;
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if(viewType == TYPE_ITEM) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.frame_contact, parent, false);
+            return new ContactViewHolder(view);
+        }else if(viewType == TYPE_LOADING) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.frame_loading_item, parent, false);
+            return new ContactViewHolder(view);
+        }else {
+            // do nothing
+        }
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if(holder.getItemViewType() == TYPE_ITEM) {
+            Contact contact = contacts.get(position);
+            ContactViewHolder contactViewHolder = (ContactViewHolder) holder;
+            contactViewHolder.avatar.setImageResource(contact.getAvatarPath());
+            contactViewHolder.chatName.setText(contact.getUsername());
+            contactViewHolder.latestChat.setText(contact.getLatestMessageWithUser());
+
+            contactViewHolder.layoutItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    chatWithOther(contact);
+                }
+            });
+
+        }
+    }
+
+    public void chatWithOther(Contact contact) {
+        Intent intent = new Intent(context, ChatActivity.class);
+
+        //Pass data here
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("contact", contact);
+        intent.putExtras(bundle);
+
+        //Change screen
+        context.startActivity(intent);
+
+
+    }
+    @Override
+    public int getItemCount() {
+        if(contacts != null) {
+            return contacts.size();
+        }
+        return 0;
+    }
+
+    public void addFooterLoading() {
+        this.isLoadingAdd = true;
+        contacts.add(new Contact());
+    }
+    public void removeFooterLoading() {
+        this.isLoadingAdd = false;
+
+        int pos = contacts.size() - 1;
+        Contact contact = contacts.get(pos);
+        if(contact != null) {
+            contacts.remove(pos);
+            notifyItemRemoved(pos);
+        }
+    }
+    public class ContactViewHolder extends RecyclerView.ViewHolder {
+        private ShapeableImageView avatar;
+        private TextView chatName;
+        private TextView latestChat;
+        private LinearLayout layoutItem;
+
+        public ContactViewHolder(@NonNull View itemView) {
+            super(itemView);
+            this.avatar = itemView.findViewById(R.id.avatar);
+            this.chatName = itemView.findViewById(R.id.chatName);
+            this.latestChat = itemView.findViewById(R.id.latestChat);
+
+            this.layoutItem = itemView.findViewById(R.id.layout_item);
+        }
+
+        public ShapeableImageView getShapeableImageView() {
+            return avatar;
+        }
+
+        public TextView getChatName() {
+            return chatName;
+        }
+
+        public TextView getLatestChat() {
+            return latestChat;
+        }
+    }
+
+    public class LoadingViewHolder extends RecyclerView.ViewHolder {
+        ProgressBar progressBar;
+        public LoadingViewHolder(@NonNull View itemView) {
+            super(itemView);
+            progressBar = itemView.findViewById(R.id.progressBar);
+        }
     }
 }
