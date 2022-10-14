@@ -24,13 +24,13 @@ public class MainActivity extends Activity {
 
         String[] firstSectionLabels = {"Chế độ tối", "Tin nhắn đang chờ", "Đoạn chat đã lưu trữ"};
         String[] secondSectionLabels = {"Trạng thái hoạt động", "Tên người dùng"};
-        String[] thirdSectionLabels = {"Quyền riêng tư", "Avatar", "Thông báo và âm thanh", "Tin", "SMS", "Danh bạ điện thoại", "Ảnh và file phương tiện", "Bong bóng"};
+        String[] thirdSectionLabels = {"Quyền riêng tư", "Avatar", "Thông báo và âm thanh", "SMS", "Danh bạ điện thoại", "Ảnh và file phương tiện", "Bong bóng"};
         String[] fourthSectionLabels = {"Chuyển tài khoản", "Cài đặt tài khoản", "Trợ giúp", "Chính sách và quyền lợi"};
 
-        Integer[] firstSectionIcons = {};
-        Integer[] secondSectionIcons = {};
-        Integer[] thirdSectionIcons = {};
-        Integer[] fourthSectionIcons = {};
+        Integer[] firstSectionIcons = {R.drawable.ic_dark_mode, R.drawable.ic_request_message, R.drawable.ic_archived_chat};
+        Integer[] secondSectionIcons = {R.drawable.ic_active_status, R.drawable.ic_username};
+        Integer[] thirdSectionIcons = {R.drawable.ic_privacy, R.drawable.ic_avatar, R.drawable.ic_notification, R.drawable.ic_sms, R.drawable.ic_contacts, R.drawable.ic_image_media, R.drawable.ic_bubbles};
+        Integer[] fourthSectionIcons = {R.drawable.ic_switch_account, R.drawable.ic_account_settings, R.drawable.ic_help, R.drawable.ic_policies};
 
         AdapterSettings firstAdapter, secondAdapter, thirdAdapter, fourthAdapter;
 
@@ -39,10 +39,10 @@ public class MainActivity extends Activity {
         thirdListView.getLayoutParams().height = thirdSectionLabels.length * itemHeight;
         fourthListView.getLayoutParams().height = fourthSectionLabels.length * itemHeight;
 
-        firstAdapter = new AdapterSettings(MainActivity.this, R.layout.layout_settings_item, firstSectionLabels);
-        secondAdapter = new AdapterSettings(MainActivity.this, R.layout.layout_settings_item, secondSectionLabels);
-        thirdAdapter = new AdapterSettings(MainActivity.this, R.layout.layout_settings_item, thirdSectionLabels);
-        fourthAdapter = new AdapterSettings(MainActivity.this, R.layout.layout_settings_item, fourthSectionLabels);
+        firstAdapter = new AdapterSettings(MainActivity.this, R.layout.layout_settings_item, firstSectionLabels, firstSectionIcons);
+        secondAdapter = new AdapterSettings(MainActivity.this, R.layout.layout_settings_item, secondSectionLabels, secondSectionIcons);
+        thirdAdapter = new AdapterSettings(MainActivity.this, R.layout.layout_settings_item, thirdSectionLabels, thirdSectionIcons);
+        fourthAdapter = new AdapterSettings(MainActivity.this, R.layout.layout_settings_item, fourthSectionLabels, fourthSectionIcons);
 
         firstListView.setAdapter(firstAdapter);
         firstListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
