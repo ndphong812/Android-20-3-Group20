@@ -2,13 +2,14 @@ package com.example.messenger;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
 import com.example.messenger.model.Contact;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends Activity {
 
     Intent intent;
     Bundle bundle;

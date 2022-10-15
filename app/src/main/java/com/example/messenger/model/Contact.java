@@ -33,7 +33,4 @@ public class Contact implements Serializable {
     public String getLatestUserChat() {
         return latestUserChat;
     }
-    public String getLatestMessageWithUser() {
-        return  latestUserChat+ ":" + latestMessage;
-    }
 }

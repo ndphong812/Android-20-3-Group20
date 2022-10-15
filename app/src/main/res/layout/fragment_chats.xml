@@ -3,10 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ChatsFragment">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        >
         <!--Header-->
         <RelativeLayout
             android:id="@+id/chatHeader"
@@ -20,18 +23,17 @@
                 android:layout_alignParentLeft="true"
                 android:gravity="center">
 
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_marginRight="@dimen/marg_16dp"
-                    android:background="@drawable/circle_corner"
-                    android:padding="@dimen/pad_6dp"
-                    android:src="@drawable/ic_baseline_menu_24" />
+                    app:shapeAppearanceOverlay="@style/cornerImageView"
+                    android:src="@drawable/ic_launcher_background" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Chats"
+                    android:text="Đoạn chat"
                     android:textColor="@color/black"
                     android:textSize="26sp"
                     android:textStyle="bold" />
@@ -45,7 +47,7 @@
                 <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/circle_corner"
+                    android:background="@drawable/circle_corner_grey_100"
                     android:padding="@dimen/pad_6dp"
                     android:src="@drawable/ic_baseline_camera_alt_24" />
 
@@ -53,7 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/marg_16dp"
-                    android:background="@drawable/circle_corner"
+                    android:background="@drawable/circle_corner_grey_100"
                     android:padding="@dimen/pad_6dp"
                     android:src="@drawable/ic_baseline_edit_24" />
             </LinearLayout>
@@ -63,7 +65,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/chatHeader"
-            android:scrollbars="none">
+            android:scrollbars="none"
+            android:overScrollMode="never"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -78,7 +82,7 @@
                     android:layout_marginLeft="@dimen/pad_16dp"
                     android:layout_marginTop="@dimen/marg_8dp"
                     android:layout_marginRight="@dimen/pad_16dp"
-                    android:background="@drawable/circle_corner"
+                    android:background="@drawable/circle_corner_grey_100"
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:paddingLeft="@dimen/pad_12dp"
@@ -92,11 +96,12 @@
                         android:src="@drawable/ic_baseline_search_24" />
 
                     <EditText
+                        android:id="@+id/searchInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/marg_8dp"
                         android:background="@null"
-                        android:hint="Search" />
+                        android:hint="Tìm kiếm" />
                 </LinearLayout>
 
                 <!--Show online users-->
@@ -107,7 +112,9 @@
                     android:layout_below="@id/searchGroup"
                     android:layout_marginTop="@dimen/pad_16dp"
                     android:layout_marginBottom="@dimen/pad_16dp"
-                    android:scrollbars="none">
+                    android:scrollbars="none"
+                    android:overScrollMode="never"
+                    >
 
                     <LinearLayout
                         android:id="@+id/viewGroup"
@@ -128,7 +135,7 @@
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:background="@drawable/circle_corner"
+                                android:background="@drawable/circle_corner_grey_100"
                                 android:padding="15dp"
                                 android:src="@drawable/ic_baseline_video_call_24" />
 
@@ -139,7 +146,7 @@
                                 android:ellipsize="end"
                                 android:gravity="center"
                                 android:lines="2"
-                                android:text="Start call"
+                                android:text="Bắt đầu gọi"
                                 android:textColor="@color/black"
                                 android:textSize="11sp" />
                         </LinearLayout>
@@ -148,7 +155,6 @@
 
                 <!--Show contacts-->
                 <androidx.recyclerview.widget.RecyclerView
-
                     android:id="@+id/rcvContacts"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />

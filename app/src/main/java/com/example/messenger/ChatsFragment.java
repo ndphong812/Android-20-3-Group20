@@ -3,15 +3,21 @@ package com.example.messenger;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.messenger.adapter.CustomContactAdapter;
 import com.example.messenger.model.Contact;
@@ -30,11 +36,14 @@ public class ChatsFragment extends Fragment {
     private String mParam2;
 
     //Attributes
+    private EditText editTextSearch;
     private ViewGroup scrollViewOnlineUsers;
 
-    //Data here
-    private List<Contact> onlineContacts;
+    private List<Contact> onlineContacts; //Group of online users
 
+    /**
+     * Attribute for contacts
+     */
     private RecyclerView recyclerViewContacts;
     private CustomContactAdapter customContactAdapter;
     private List<Contact> contacts;
@@ -72,8 +81,18 @@ public class ChatsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
 
-
         onlineContacts = getListOnlineContact();
+
+        //Handle search box
+        editTextSearch = (EditText) view.findViewById(R.id.searchInput);
+        editTextSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean isFocus) {
+                Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
+                editTextSearch.clearFocus();
+                startActivity(searchIntent);
+            }
+        });
 
         //Render online users
         scrollViewOnlineUsers = (ViewGroup) view.findViewById(R.id.viewGroup);
@@ -111,7 +130,6 @@ public class ChatsFragment extends Fragment {
 
         recyclerViewContacts.setAdapter(customContactAdapter);
         setFirstData();
-
         recyclerViewContacts.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
             @Override
             public void loadMoreItems() {
@@ -133,8 +151,9 @@ public class ChatsFragment extends Fragment {
         return view;
     }
 
+
     /**
-     * Load data page 1
+     * Function for change paginations
      */
     private void setFirstData() {
         contacts = getListContact();
@@ -146,7 +165,6 @@ public class ChatsFragment extends Fragment {
             isLastPage = true;
         }
     }
-
     private List<Contact> getListContact() {
         List<Contact> list = new ArrayList<Contact>();
         for(int i = 1; i<= 10; i++) {
@@ -154,7 +172,6 @@ public class ChatsFragment extends Fragment {
         }
         return list;
     }
-
     private void loadNextPage() {
         new Handler().postDelayed(new Runnable() {
             @Override

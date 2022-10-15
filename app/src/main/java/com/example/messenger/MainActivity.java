@@ -34,13 +34,11 @@ public class MainActivity extends FragmentActivity {
                 case R.id.people:
                     replaceFragment(new PeopleFragment());
                     break;
-                case R.id.stories:
-                    replaceFragment(new StoriesFragment());
-                    break;
-                case R.id.settings:
-                    replaceFragment(new SettingsFragment());
+                case R.id.notification:
+                    replaceFragment(new NotificationFragment());
                     break;
             }
+
             return true;
         });
     }

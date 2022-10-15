@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.ChatActivity;
@@ -56,8 +58,6 @@ public class CustomContactAdapter extends RecyclerView.Adapter<RecyclerView.View
         }else if(viewType == TYPE_LOADING) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.frame_loading_item, parent, false);
             return new ContactViewHolder(view);
-        }else {
-            // do nothing
         }
         return null;
     }
@@ -69,7 +69,7 @@ public class CustomContactAdapter extends RecyclerView.Adapter<RecyclerView.View
             ContactViewHolder contactViewHolder = (ContactViewHolder) holder;
             contactViewHolder.avatar.setImageResource(contact.getAvatarPath());
             contactViewHolder.chatName.setText(contact.getUsername());
-            contactViewHolder.latestChat.setText(contact.getLatestMessageWithUser());
+            contactViewHolder.latestChat.setText(contact.getLatestMessage());
 
             contactViewHolder.layoutItem.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -77,7 +77,6 @@ public class CustomContactAdapter extends RecyclerView.Adapter<RecyclerView.View
                     chatWithOther(contact);
                 }
             });
-
         }
     }
 
@@ -91,7 +90,6 @@ public class CustomContactAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         //Change screen
         context.startActivity(intent);
-
 
     }
     @Override
@@ -116,7 +114,7 @@ public class CustomContactAdapter extends RecyclerView.Adapter<RecyclerView.View
             notifyItemRemoved(pos);
         }
     }
-    public class ContactViewHolder extends RecyclerView.ViewHolder {
+    public class ContactViewHolder extends RecyclerView.ViewHolder   {
         private ShapeableImageView avatar;
         private TextView chatName;
         private TextView latestChat;
@@ -127,8 +125,8 @@ public class CustomContactAdapter extends RecyclerView.Adapter<RecyclerView.View
             this.avatar = itemView.findViewById(R.id.avatar);
             this.chatName = itemView.findViewById(R.id.chatName);
             this.latestChat = itemView.findViewById(R.id.latestChat);
-
             this.layoutItem = itemView.findViewById(R.id.layout_item);
+
         }
 
         public ShapeableImageView getShapeableImageView() {
@@ -142,6 +140,8 @@ public class CustomContactAdapter extends RecyclerView.Adapter<RecyclerView.View
         public TextView getLatestChat() {
             return latestChat;
         }
+
+
     }
 
     public class LoadingViewHolder extends RecyclerView.ViewHolder {
