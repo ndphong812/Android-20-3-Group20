@@ -4,31 +4,35 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/screen"
+    android:theme="@style/Theme.Messenger"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
+        android:orientation="horizontal"
         android:paddingTop="8dp"
-        android:orientation="horizontal">
+        android:paddingBottom="8dp">
 
         <ImageButton
             android:id="@+id/btnBack"
             android:layout_width="57dp"
             android:layout_height="wrap_content"
             android:background="@color/transparent"
-            android:src="@drawable/ic_baseline_arrow_back_24"
             android:paddingTop="5dp"
+            android:src="@drawable/ic_baseline_arrow_back_24"
             android:textColor="@color/black"
             android:textSize="20sp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:text="Me"
             android:textSize="25sp"
-            android:textStyle="bold"
-            android:text="Me"/>
+            android:textStyle="bold" />
     </LinearLayout>
 
 
@@ -63,6 +67,8 @@
                     android:id="@+id/usernameTxt"
                     android:layout_gravity="center_horizontal"
                     android:text="This is a username"/>
+
+
             </LinearLayout>
 
             <LinearLayout
@@ -124,6 +130,10 @@
                     android:scrollbars="none"
                     android:divider="@color/transparent"/>
             </LinearLayout>
+
         </LinearLayout>
+
     </ScrollView>
+
+
 </LinearLayout>
