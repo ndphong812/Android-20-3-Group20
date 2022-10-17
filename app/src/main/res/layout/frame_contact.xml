@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:padding="@dimen/pad_12dp"
+        android:id="@+id/layout_item"
+        >
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/avatar"
+            android:src="@mipmap/ic_launcher"
+            app:shapeAppearanceOverlay="@style/cornerImageView"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="16dp"
+            >
+            <TextView
+                android:id="@+id/chat_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="My darling"
+                android:textSize="16sp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/grey_900"
+                />
+            <TextView
+                android:id="@+id/latest_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hello anh, em dung day tu chieu de doi anh"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/grey_900"
+                />
+        </LinearLayout>
+</LinearLayout>
