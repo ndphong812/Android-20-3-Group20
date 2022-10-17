@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".ChatActivity">
     <TextView
-        android:id="@+id/chatName"
+        android:id="@+id/chat_name"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +23,7 @@
             android:layout_marginLeft="16dp"
             >
             <TextView
-                android:id="@+id/chatName"
+                android:id="@+id/chat_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="My darling"
@@ -34,7 +33,7 @@
                 android:textColor="@color/grey_900"
                 />
             <TextView
-                android:id="@+id/latestChat"
+                android:id="@+id/latest_chat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Hello anh, em dung day tu chieu de doi anh"
@@ -45,4 +44,4 @@
                 android:textColor="@color/grey_900"
                 />
         </LinearLayout>
-    </LinearLayout>
+</LinearLayout>

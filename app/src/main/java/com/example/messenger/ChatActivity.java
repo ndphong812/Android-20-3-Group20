@@ -24,7 +24,7 @@ public class ChatActivity extends Activity {
         bundle = intent.getExtras();
         Contact currentContact = (Contact)bundle.getSerializable("contact");
 
-        tvChatName = (TextView) findViewById(R.id.chatName);
+        tvChatName = (TextView) findViewById(R.id.chat_name);
         tvChatName.setText(currentContact.getUsername());
 
     }

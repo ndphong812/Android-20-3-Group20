@@ -3,23 +3,18 @@ package com.example.messenger;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.messenger.adapter.CustomContactAdapter;
+import com.example.messenger.adapter.ContactAdapter;
 import com.example.messenger.model.Contact;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -28,29 +23,15 @@ import java.util.List;
 
 
 public class ChatsFragment extends Fragment {
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
-
     //Attributes
     private EditText editTextSearch;
-    private ViewGroup scrollViewOnlineUsers;
 
-    private List<Contact> onlineContacts; //Group of online users
-
-    /**
-     * Attribute for contacts
-     */
-    private RecyclerView recyclerViewContacts;
-    private CustomContactAdapter customContactAdapter;
+    private ContactAdapter customContactAdapter;
     private List<Contact> contacts;
 
     private boolean isLoading;
     private boolean isLastPage;
-    private int totalPage = 5;
+    private final int totalPage = 5;
     private int currentPage = 1;
 
 
@@ -61,8 +42,6 @@ public class ChatsFragment extends Fragment {
     public static ChatsFragment newInstance(String param1, String param2) {
         ChatsFragment fragment = new ChatsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,10 +49,6 @@ public class ChatsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -81,10 +56,11 @@ public class ChatsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
 
-        onlineContacts = getListOnlineContact();
+        //Group of online users
+        List<Contact> onlineContacts = getListOnlineContact();
 
         //Handle search box
-        editTextSearch = (EditText) view.findViewById(R.id.searchInput);
+        editTextSearch =  view.findViewById(R.id.search_input);
         editTextSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean isFocus) {
@@ -95,14 +71,14 @@ public class ChatsFragment extends Fragment {
         });
 
         //Render online users
-        scrollViewOnlineUsers = (ViewGroup) view.findViewById(R.id.viewGroup);
+        ViewGroup scrollViewOnlineUsers = view.findViewById(R.id.view_group);
         for (int i = 0; i < onlineContacts.size(); i++) {
             final View singleFrame = getLayoutInflater().inflate(R.layout.frame_online_contact, null);
             final Contact currentContact = onlineContacts.get(i);
             singleFrame.setId(i);
 
-            ShapeableImageView iVAvatarOnlineUsers = (ShapeableImageView) singleFrame.findViewById(R.id.avatar);
-            TextView tVCaptionOnlineUser = (TextView) singleFrame.findViewById(R.id.caption);
+            ShapeableImageView iVAvatarOnlineUsers = singleFrame.findViewById(R.id.avatar);
+            TextView tVCaptionOnlineUser = singleFrame.findViewById(R.id.caption);
 
             //Set data
             iVAvatarOnlineUsers.setImageResource(currentContact.getAvatarPath());
@@ -123,10 +99,11 @@ public class ChatsFragment extends Fragment {
         }
 
         //Render contacts
-        recyclerViewContacts = view.findViewById(R.id.rcvContacts);
+         //Attribute for contacts
+        RecyclerView recyclerViewContacts = view.findViewById(R.id.rcv_contacts);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerViewContacts.setLayoutManager(linearLayoutManager);
-        customContactAdapter = new CustomContactAdapter(getActivity());
+        customContactAdapter = new ContactAdapter(getActivity());
 
         recyclerViewContacts.setAdapter(customContactAdapter);
         setFirstData();
@@ -153,8 +130,9 @@ public class ChatsFragment extends Fragment {
 
 
     /**
-     * Function for change paginations
+     * Function for change pagination
      */
+
     private void setFirstData() {
         contacts = getListContact();
         customContactAdapter.setData(contacts);
@@ -166,7 +144,7 @@ public class ChatsFragment extends Fragment {
         }
     }
     private List<Contact> getListContact() {
-        List<Contact> list = new ArrayList<Contact>();
+        List<Contact> list = new ArrayList<>();
         for(int i = 1; i<= 10; i++) {
             list.add(new Contact("Quan Nguyen " + i, R.drawable.ic_launcher_background, "Quan Nguyen", "Hello world"));
         }
@@ -194,7 +172,7 @@ public class ChatsFragment extends Fragment {
     }
 
     private List<Contact> getListOnlineContact() {
-        List<Contact> list = new ArrayList<Contact>();
+        List<Contact> list = new ArrayList<>();
         for(int i = 1; i<= 10; i++) {
             list.add(new Contact("Quan Nguyen " + i, R.drawable.ic_launcher_background, "Quan Nguyen", "Hello world"));
         }

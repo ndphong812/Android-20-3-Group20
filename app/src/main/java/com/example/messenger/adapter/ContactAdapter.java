@@ -25,14 +25,14 @@ import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
 
-public class CustomContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_ITEM = 1;
     private static final int TYPE_LOADING = 2;
     private List<Contact> contacts;
     private boolean isLoadingAdd;
     private Context context;
 
-    public CustomContactAdapter(Context context) {
+    public ContactAdapter(Context context) {
         this.context = context;
     }
 
@@ -123,8 +123,8 @@ public class CustomContactAdapter extends RecyclerView.Adapter<RecyclerView.View
         public ContactViewHolder(@NonNull View itemView) {
             super(itemView);
             this.avatar = itemView.findViewById(R.id.avatar);
-            this.chatName = itemView.findViewById(R.id.chatName);
-            this.latestChat = itemView.findViewById(R.id.latestChat);
+            this.chatName = itemView.findViewById(R.id.chat_name);
+            this.latestChat = itemView.findViewById(R.id.latest_chat);
             this.layoutItem = itemView.findViewById(R.id.layout_item);
 
         }
@@ -148,7 +148,7 @@ public class CustomContactAdapter extends RecyclerView.Adapter<RecyclerView.View
         ProgressBar progressBar;
         public LoadingViewHolder(@NonNull View itemView) {
             super(itemView);
-            progressBar = itemView.findViewById(R.id.progressBar);
+            progressBar = itemView.findViewById(R.id.progress_bar);
         }
     }
 }

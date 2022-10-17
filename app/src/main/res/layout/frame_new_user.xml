@@ -20,21 +20,20 @@
         />
     <TextView
         android:id="@+id/username"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="My darling"
         android:textSize="16sp"
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/black"
-        android:layout_marginLeft="@dimen/marg_12dp"
+        android:layout_marginStart="@dimen/marg_12dp"
         android:layout_weight="1"
         />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Kết bạn"
+        android:text="@string/add_friend"
         android:textSize="12sp"
         android:textColor="@color/white"
         android:backgroundTint="@color/primary_color"

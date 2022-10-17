@@ -2,6 +2,9 @@
     <string name="app_name">Messenger</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
-    <string name="pad_16">16dp</string>
+    <string name="heading_chat">Đoạn chat</string>
+    <string name="start_calling">Bắt đầu gọi</string>
+    <string name="content_des">Ảnh</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="add_friend">Kết bạn</string>
 </resources>

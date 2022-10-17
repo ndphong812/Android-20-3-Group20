@@ -20,12 +20,12 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomNewUserAdapter extends ArrayAdapter<Contact> {
+public class NewUserAdapter extends ArrayAdapter<Contact> {
 
     private Context context;
     private ArrayList<Contact> listUsers;
 
-    public CustomNewUserAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Contact> objects) {
+    public NewUserAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Contact> objects) {
         super(context, resource, objects);
         this.context = context;
         this.listUsers = objects;

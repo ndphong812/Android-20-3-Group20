@@ -16,6 +16,7 @@
     <dimen name="marg_14dp">14dp</dimen>
 
     <dimen name="marg_16dp">16dp</dimen>
+    <dimen name="marg_64dp">64dp</dimen>
 
     <dimen name="minHeightListContact">574dp</dimen>
 </resources>
