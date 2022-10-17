@@ -1,20 +1,28 @@
 package com.example.messenger;
 
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
+
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SettingsActivity extends Activity {
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
+public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_settings);
-
+        setContentView(R.layout.activity_main);
         int itemHeight = 165;
 
         ListView firstListView = findViewById(R.id.firstListView);
@@ -48,8 +56,28 @@ public class SettingsActivity extends Activity {
         firstListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(SettingsActivity.this, "This part is not available for now!", Toast.LENGTH_LONG).show();
-            }
+                if (i==0){
+                    if(AppCompatDelegate.getDefaultNightMode()==MODE_NIGHT_UNSPECIFIED)
+                    {
+                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
+                        Toast.makeText(SettingsActivity.this, "Chế độ tối đang bật", Toast.LENGTH_LONG).show();
+                    }
+                    else if (AppCompatDelegate.getDefaultNightMode()==MODE_NIGHT_NO)
+                    {
+                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
+                        Toast.makeText(SettingsActivity.this, "Chế độ tối đang bật", Toast.LENGTH_LONG).show();
+
+                    }
+                    else
+                    {
+                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
+                        Toast.makeText(SettingsActivity.this, "Chế độ tối đang tắt", Toast.LENGTH_LONG).show();
+
+                    };
+                }else{
+                    Toast.makeText(SettingsActivity.this, "This part is not available for now!", Toast.LENGTH_LONG).show();
+                }}
+
         });
 
         secondListView.setAdapter(secondAdapter);
@@ -57,6 +85,7 @@ public class SettingsActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Toast.makeText(SettingsActivity.this, "This part is not available for now!", Toast.LENGTH_LONG).show();
+
             }
         });
 
@@ -75,6 +104,6 @@ public class SettingsActivity extends Activity {
                 Toast.makeText(SettingsActivity.this, "This part is not available for now!", Toast.LENGTH_LONG).show();
             }
         });
+
     }
 }
-
