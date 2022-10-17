@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ChatsFragment">
+
+    <!--Header-->
+    <RelativeLayout
+        android:id="@+id/chat_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/pad_12dp">
+
+        <LinearLayout
+            android:id="@+id/chat_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:gravity="center">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="@dimen/marg_16dp"
+                app:shapeAppearanceOverlay="@style/cornerImageView"
+                android:src="@drawable/ic_launcher_background" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/heading_chat"
+                android:textColor="@color/black"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            >
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circle_corner_grey_100"
+                android:padding="@dimen/pad_6dp"
+                android:src="@drawable/ic_baseline_camera_alt_24"
+                android:contentDescription="@string/content_des"
+                />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/marg_16dp"
+                android:background="@drawable/circle_corner_grey_100"
+                android:padding="@dimen/pad_6dp"
+                android:src="@drawable/ic_baseline_edit_24"
+                android:contentDescription="@string/content_des"
+                />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        android:overScrollMode="never"
+        android:layout_marginTop="@dimen/marg_64dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <!-- Search bar-->
+            <LinearLayout
+                android:id="@+id/search_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/pad_16dp"
+                android:layout_marginTop="@dimen/marg_8dp"
+                android:layout_marginRight="@dimen/pad_16dp"
+                android:background="@drawable/circle_corner_grey_100"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/pad_12dp"
+                android:paddingTop="@dimen/pad_8dp"
+                android:paddingRight="@dimen/pad_12dp"
+                android:paddingBottom="@dimen/pad_8dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_search_24"
+                    android:contentDescription="@string/content_des"
+                    />
+
+                <EditText
+                    android:id="@+id/search_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/marg_8dp"
+                    android:background="@null"
+                    android:hint="@string/search"
+                    android:inputType="text"
+                    />
+            </LinearLayout>
+
+            <!--Show online users-->
+            <HorizontalScrollView
+                android:id="@+id/scrollViewOnlineUser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/pad_16dp"
+                android:layout_marginBottom="@dimen/pad_16dp"
+                android:scrollbars="none"
+                android:overScrollMode="never"
+                >
+
+                <LinearLayout
+                    android:id="@+id/view_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/pad_12dp"
+                    android:paddingRight="@dimen/pad_12dp">
+
+                    <LinearLayout
+                        android:layout_width="61dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/marg_9dp"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="3dp">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/circle_corner_grey_100"
+                            android:padding="15dp"
+                            android:src="@drawable/ic_baseline_video_call_24"
+                            android:contentDescription="@string/content_des"
+                            />
+
+                        <TextView
+                            android:id="@+id/caption"
+                            android:layout_width="40dp"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:lines="2"
+                            android:text="@string/start_calling"
+                            android:textColor="@color/black"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!--Show contacts-->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcv_contacts"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</FrameLayout>

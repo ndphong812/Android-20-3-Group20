@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SearchActivity"
+    android:orientation="vertical"
+    >
+    <LinearLayout
+        android:id="@+id/chat_search_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/pad_12dp"
+        android:paddingRight="@dimen/pad_12dp"
+        android:paddingBottom="@dimen/pad_6dp"
+        android:paddingTop="@dimen/pad_6dp"
+        >
+        <ImageButton
+            android:id="@+id/back_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_baseline_arrow_back_24"
+            android:padding="@dimen/pad_8dp"
+            android:background="@drawable/circle_corner_white"
+            android:contentDescription="@string/content_des"
+            />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:hint="@string/search"
+            android:layout_marginStart="@dimen/marg_16dp"
+            android:focusable="true"
+            android:inputType="text"
+            />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/result_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        />
+</LinearLayout>
