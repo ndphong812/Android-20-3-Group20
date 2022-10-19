@@ -12,10 +12,10 @@ import android.widget.Toast;
 
 import com.example.messenger.databinding.ActivityMainBinding;
 
-
 public class MainActivity extends FragmentActivity {
 
     ActivityMainBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
