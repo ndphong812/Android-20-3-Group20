@@ -1,16 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChatActivity">
-    <TextView
-        android:id="@+id/chat_name"
+    tools:context=".ChatActivity"
+    >
+    <ImageView
+        android:contentDescription="@string/content_des"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <RelativeLayout
+        android:id="@+id/chat_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@drawable/layout_with_bottom_border"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/pad_12dp">
+
+            <ImageButton
+                android:id="@+id/back_btn"
+                android:contentDescription="@string/content_des"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="@dimen/marg_8dp"
+                android:background="@drawable/button_pressed"
+                android:src="@drawable/ic_baseline_arrow_back_24" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="@dimen/marg_16dp"
+                android:src="@drawable/ic_launcher_background"
+                app:shapeAppearanceOverlay="@style/cornerImageView" />
+
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="@string/hello_blank_fragment"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal"
+            android:layout_marginStart="@dimen/marg_12dp"
+            >
+            <ImageButton
+                android:contentDescription="@string/content_des"
+
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_baseline_phone_24"
+                android:background="@drawable/button_pressed"
+                android:layout_marginEnd="@dimen/marg_8dp"
+                />
+            <ImageButton
+                android:contentDescription="@string/content_des"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_baseline_camera_alt_24"
+                android:background="@drawable/button_pressed"
+                android:layout_marginEnd="@dimen/marg_8dp"
+                />
+            <ImageButton
+                android:contentDescription="@string/content_des"
+
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_baseline_info_24"
+                android:background="@drawable/button_pressed"
+                android:layout_marginEnd="@dimen/marg_8dp"
+                />
+        </LinearLayout>
+    </RelativeLayout>
+
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:textSize="40sp"
-        />
-</LinearLayout>
+        android:layout_marginTop="@dimen/marg_64dp"
+        android:layout_marginBottom="@dimen/marg_64dp"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <!--Show contacts-->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcv_contacts"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/chat_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/layout_with_top_border"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/pad_12dp"
+        android:paddingEnd="@dimen/pad_12dp"
+        android:paddingTop="@dimen/pad_6dp"
+        android:paddingBottom="@dimen/pad_6dp"
+        >
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/button_pressed"
+            android:contentDescription="@string/content_des"
+            android:src="@drawable/ic_baseline_grid_view_24" />
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/button_pressed"
+            android:contentDescription="@string/content_des"
+            android:src="@drawable/ic_baseline_camera_alt_primary_24" />
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/button_pressed"
+            android:contentDescription="@string/content_des"
+            android:src="@drawable/ic_baseline_image_24" />
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="@dimen/marg_8dp"
+            android:background="@drawable/button_pressed"
+            android:contentDescription="@string/content_des"
+            android:src="@drawable/ic_baseline_mic_24"
+
+            />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/circle_corner_grey_100"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/pad_12dp"
+            android:paddingRight="@dimen/pad_8dp">
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@color/transparent"
+                android:hint="@string/chat"
+                android:textSize="14dp" />
+
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/ic_baseline_add_circle_24" />
+        </LinearLayout>
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="@dimen/marg_8dp"
+            android:background="@drawable/button_pressed"
+            android:contentDescription="@string/content_des"
+            android:src="@drawable/ic_baseline_back_hand_24" />
+    </LinearLayout>
+</RelativeLayout>
