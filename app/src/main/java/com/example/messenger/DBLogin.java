@@ -18,9 +18,20 @@ import javax.crypto.spec.PBEKeySpec;
 
 public class DBLogin extends SQLiteOpenHelper {
     public static final String DBNAME = "Login.db";
+    private static final String COLUMN_PASSWORD = "password";
+    private static final String COLUMN_EMAIL = "email";
+    String DBPATH;
+    Context ctx;
+    private static final int DB_VERSION = 3;
 
     public DBLogin(Context context) {
+
         super(context, DBNAME, null, 1);
+        // DB_VERSION is an int,update it every new build
+
+        this.ctx = context;
+        this.DBPATH = this.ctx.getDatabasePath(DBNAME).getAbsolutePath();
+        Log.e("Path 1", DBPATH);
     }
 
     @Override
@@ -30,8 +41,24 @@ public class DBLogin extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase MyDB, int i, int i1) {
-        MyDB.execSQL("drop Table if exists users");
+            MyDB.execSQL("drop Table if exists users");
     }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.setVersion(oldVersion);
+    }
+
+
+    public void updatePassword(String email, String newPassword) {
+        SQLiteDatabase MyDB = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PASSWORD, newPassword);
+        Log.d(newPassword, "abc");
+        MyDB.update(DBNAME, values,"email = ?", new String[] { email });
+        MyDB.close();
+    }
+
 
     public Boolean insertData(String email, String password) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
@@ -58,6 +85,12 @@ public class DBLogin extends SQLiteOpenHelper {
         return isValidEmail(email) && cursor.getCount() > 0;
     }
 
+    public Boolean checkEmailFormatForgot(String email) {
+        SQLiteDatabase MyDB = this.getWritableDatabase();
+        @SuppressLint("Recycle") Cursor cursor = MyDB.rawQuery("Select * from users where email=?", new String[]{email});
+        return isValidEmail(email) && cursor.getCount() > 0 && !email.isEmpty();
+    }
+
     public Boolean checkusernamepassword(String email, String password) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
         @SuppressLint("Recycle") Cursor cursor = MyDB.rawQuery("Select * from users where email = ? and password = ?", new String[]{email, password});
@@ -67,59 +100,4 @@ public class DBLogin extends SQLiteOpenHelper {
 
 
 
-
-//    public Boolean forgotPassword(String email) {
-//        SQLiteDatabase MyDB = this.getWritableDatabase();
-//        Cursor cursor = MyDB.query("users",null, email + "=?",new String[]{email},null,null,null);
-//        int rowCount = cursor.getCount();
-//        cursor.close();
-//        if (rowCount != 1) return false;
-//        SaltandHash sah = new SaltandHash("123");
-//        ContentValues cv = new ContentValues();
-//        cv.put("salt",sah.getSalt());
-//        cv.put("hash",sah.getHash());
-//        int result = MyDB.update("users",cv, "email" +"=?",new String[]{email});
-//        if (result != 1) return false;
-//        Log.d("NEWPASSWORD","A new password has been sent to " + email + " the password is " + "123");
-//        // SEND THE EMAIL FROM HERE
-//        return true;
-//    }
-//
-//    private class SaltandHash {
-//        private byte[] salt;
-//        private byte[] hash;
-//        private boolean worked = true;
-//
-//        SaltandHash(String password) {
-//            this.salt = new SecureRandom().generateSeed(32);
-//            KeySpec ks = new PBEKeySpec(
-//                    password.toCharArray(),
-//                    salt,
-//                    65536,
-//                    128
-//            );
-//            try {
-//                SecretKeyFactory skf =
-//                        SecretKeyFactory.getInstance(
-//                                "PBKDF2WithHmacSHA1"
-//                        );
-//                hash = skf.generateSecret(ks).getEncoded();
-//            } catch (Exception e) {
-//                worked = false;
-//            }
-//        }
-//
-//        private String getHash(){
-//            return android.util.Base64.encodeToString(this.hash, android.util.Base64.DEFAULT);
-//        }
-//
-//        private String getSalt() {
-//            return android.util.Base64.encodeToString(this.salt, android.util.Base64.DEFAULT);
-//        }
-//
-//        private boolean ifSaltandHashOK() {
-//            return worked;
-//        }
-//    }
-//}
 

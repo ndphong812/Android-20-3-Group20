@@ -1,6 +1,7 @@
 package com.example.messenger;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -40,16 +41,12 @@ public class forgotPass extends Activity {
         Require_email.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                String email_text = email.getText().toString();
-//                sendRequireEmail(email_text);
-
-//                final String username="tsnemailsndr@gmail.com";
-//                final String password="Vx~4]4P6s#>z-~UT";
 
                 try {
-                    String username="ngphut47@gmail.com";
-                    String password="0399158711";
-                    String messageToSend = "Hello you";
+                    String username="pt071102@gmail.com";
+                    String password="arzweuxbcfebpdgc";
+                    String newPassword = String.valueOf(Random_Code());
+                    String messageToSend = newPassword;
 
                     String stringHost = "smtp.gmail.com";
 
@@ -69,23 +66,33 @@ public class forgotPass extends Activity {
 
                     MimeMessage mimeMessage = new MimeMessage(session);
 
-                    mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(email.getText().toString()));
+                    String emailReceiver = email.getText().toString();
+                    if(DB.checkEmailFormatForgot(emailReceiver)) {
+                        mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(emailReceiver));
 
-                    mimeMessage.setSubject("Subject: Android App email");
-                    mimeMessage.setText(messageToSend);
+                        mimeMessage.setSubject("Subject: Android App email");
+                        mimeMessage.setText(messageToSend);
 
-                    Thread thread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Transport.send(mimeMessage);
-                            } catch (MessagingException e) {
-                                e.printStackTrace();
+                        Thread thread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Transport.send(mimeMessage);
+                                } catch (MessagingException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        }
-                    });
+                        });
 
-                    thread.start();
+                        DB.updatePassword(emailReceiver, newPassword);
+
+                        thread.start();
+                        Toast.makeText(forgotPass.this, "Please check email", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), login.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(forgotPass.this, "User doesn't exists or email format wrong", Toast.LENGTH_SHORT).show();
+                    }
 
                 } catch (AddressException e) {
                     e.printStackTrace();
@@ -96,15 +103,18 @@ public class forgotPass extends Activity {
             }
         });
     }
+
+
+    
+    public int Random_Code()
+    {
+        int min = 100000;
+        int max = 999999;
+        int random_int = (int)Math.floor(Math.random()*(max-min+1)+min);
+        return random_int;
+    }
 }
 
 
-//    protected void sendRequireEmail(String email) {
-//        String TAG = "RESETPWRSLT";
-//        if (DB.forgotPassword(email)) {
-//            Log.d(TAG,"Password was reset and an email sent to " + email);
-//        } else {
-//            Log.d(TAG,"WARNING an attempt to reset a password failed for the email " + email);
-//        }
-//    }
+
 
