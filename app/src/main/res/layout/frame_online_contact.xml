@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="67dp"
+    android:layout_height="wrap_content"
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    android:paddingLeft="@dimen/pad_6dp"
+    android:paddingRight="@dimen/pad_6dp"
+    >
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/avatar"
+        android:src="@mipmap/ic_launcher"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        app:shapeAppearanceOverlay="@style/cornerImageView"
+        />
+
+    <TextView
+        android:id="@+id/caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Trinh Tran Tran"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:ellipsize="end"
+        android:lines="2"
+        />
+</LinearLayout>

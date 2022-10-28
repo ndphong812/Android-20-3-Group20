@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="Đoạn chat" android:icon="@drawable/ic_baseline_chat_bubble_24" android:id="@+id/chats"
+        />
+    <item android:title="Cuộc gọi" android:icon="@drawable/ic_baseline_video_call_24" android:id="@+id/calls"
+        />
+    <item android:title="Danh bạ" android:icon="@drawable/ic_baseline_people_alt_24" android:id="@+id/people"
+        />
+    <item android:title="Thông báo" android:icon="@drawable/ic_baseline_notifications_24" android:id="@+id/notification" />
+</menu>
