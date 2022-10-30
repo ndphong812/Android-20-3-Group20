@@ -25,7 +25,7 @@ import java.util.List;
 public class ChatsFragment extends Fragment {
     //Attributes
     private EditText editTextSearch;
-
+    private ShapeableImageView shapeableImageViewAvatar;
     private ContactAdapter customContactAdapter;
     private List<Contact> contacts;
 
@@ -56,17 +56,37 @@ public class ChatsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
 
+
+        shapeableImageViewAvatar = view.findViewById(R.id.avatar);
+
+        shapeableImageViewAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent settingIntent = new Intent(getActivity(), SettingsActivity.class);
+
+                startActivity(settingIntent);
+            }
+        });
+
         //Group of online users
         List<Contact> onlineContacts = getListOnlineContact();
 
         //Handle search box
         editTextSearch =  view.findViewById(R.id.search_input);
+        editTextSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
+                startActivity(searchIntent);
+                getActivity().finish();
+            }
+        });
         editTextSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onFocusChange(View view, boolean isFocus) {
+            public void onFocusChange(View view, boolean b) {
                 Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
-                editTextSearch.clearFocus();
                 startActivity(searchIntent);
+                getActivity().finish();
             }
         });
 
@@ -93,13 +113,13 @@ public class ChatsFragment extends Fragment {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("contact", currentContact);
                     intent.putExtras(bundle);
-
                     startActivity(intent);
+                    getActivity().finish();
                 }});
         }
 
         //Render contacts
-         //Attribute for contacts
+        //Attribute for contacts
         RecyclerView recyclerViewContacts = view.findViewById(R.id.rcv_contacts);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerViewContacts.setLayoutManager(linearLayoutManager);
@@ -107,6 +127,7 @@ public class ChatsFragment extends Fragment {
 
         recyclerViewContacts.setAdapter(customContactAdapter);
         setFirstData();
+
         recyclerViewContacts.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
             @Override
             public void loadMoreItems() {

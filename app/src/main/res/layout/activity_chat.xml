@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+
+<androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/activity_main_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ChatActivity"
-    >
-    <ImageView
-        android:contentDescription="@string/content_des"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    xmlns:emojicon="http://schemas.android.com/tools">
+
     <RelativeLayout
         android:id="@+id/chat_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:background="@drawable/layout_with_bottom_border"
-        >
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="@dimen/pad_12dp">
+            android:padding="@dimen/_12dp">
 
             <ImageButton
                 android:id="@+id/back_btn"
-                android:contentDescription="@string/content_des"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginEnd="@dimen/marg_8dp"
+                android:layout_marginEnd="@dimen/_8dp"
                 android:background="@drawable/button_pressed"
+                android:contentDescription="@string/content_des"
                 android:src="@drawable/ic_baseline_arrow_back_24" />
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginEnd="@dimen/marg_16dp"
+                android:layout_marginEnd="@dimen/_16dp"
                 android:src="@drawable/ic_launcher_background"
                 app:shapeAppearanceOverlay="@style/cornerImageView" />
 
@@ -58,133 +58,148 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:orientation="horizontal"
-            android:layout_marginStart="@dimen/marg_12dp"
-            >
-            <ImageButton
-                android:contentDescription="@string/content_des"
+            android:layout_marginStart="@dimen/_12dp"
+            android:orientation="horizontal">
 
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_baseline_phone_24"
-                android:background="@drawable/button_pressed"
-                android:layout_marginEnd="@dimen/marg_8dp"
-                />
             <ImageButton
-                android:contentDescription="@string/content_des"
                 android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_baseline_camera_alt_24"
-                android:background="@drawable/button_pressed"
-                android:layout_marginEnd="@dimen/marg_8dp"
-                />
-            <ImageButton
-                android:contentDescription="@string/content_des"
 
+                android:layout_height="40dp"
+                android:layout_marginEnd="@dimen/_8dp"
+                android:background="@drawable/button_pressed"
+                android:contentDescription="@string/content_des"
+                android:src="@drawable/ic_baseline_phone_24" />
+
+            <ImageButton
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/ic_baseline_info_24"
+                android:layout_marginEnd="@dimen/_8dp"
                 android:background="@drawable/button_pressed"
-                android:layout_marginEnd="@dimen/marg_8dp"
-                />
+                android:contentDescription="@string/content_des"
+                android:src="@drawable/ic_baseline_camera_alt_24_secondary" />
+
+            <ImageButton
+                android:layout_width="40dp"
+
+                android:layout_height="40dp"
+                android:layout_marginEnd="@dimen/_8dp"
+                android:background="@drawable/button_pressed"
+                android:contentDescription="@string/content_des"
+                android:src="@drawable/ic_baseline_info_24" />
         </LinearLayout>
     </RelativeLayout>
 
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/marg_64dp"
-        android:layout_marginBottom="@dimen/marg_64dp"
-        android:overScrollMode="never"
-        android:scrollbars="none">
-
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcv_messages"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-            <!--Show contacts-->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcv_contacts"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+            android:layout_marginTop="@dimen/height_of_bar"
+            android:layout_marginBottom="@dimen/height_of_bar" />
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/chat_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:background="@drawable/layout_with_top_border"
         android:orientation="horizontal"
-        android:paddingStart="@dimen/pad_12dp"
-        android:paddingEnd="@dimen/pad_12dp"
-        android:paddingTop="@dimen/pad_6dp"
-        android:paddingBottom="@dimen/pad_6dp"
-        >
-
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/button_pressed"
-            android:contentDescription="@string/content_des"
-            android:src="@drawable/ic_baseline_grid_view_24" />
-
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/button_pressed"
-            android:contentDescription="@string/content_des"
-            android:src="@drawable/ic_baseline_camera_alt_primary_24" />
-
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/button_pressed"
-            android:contentDescription="@string/content_des"
-            android:src="@drawable/ic_baseline_image_24" />
-
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="@dimen/marg_8dp"
-            android:background="@drawable/button_pressed"
-            android:contentDescription="@string/content_des"
-            android:src="@drawable/ic_baseline_mic_24"
-
-            />
-
+        android:paddingStart="@dimen/_12dp"
+        android:paddingTop="@dimen/_6dp"
+        android:paddingEnd="@dimen/_12dp"
+        android:paddingBottom="@dimen/_6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
         <LinearLayout
-            android:layout_width="0dp"
+            android:id="@+id/chat_actions"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/circle_corner_grey_100"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingLeft="@dimen/pad_12dp"
-            android:paddingRight="@dimen/pad_8dp">
+            android:layout_alignParentTop="true"
+            >
 
-            <EditText
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:background="@color/transparent"
-                android:hint="@string/chat"
-                android:textSize="14dp" />
+            <LinearLayout
+                android:id="@+id/layout_actions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="visible">
+                <ImageButton
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_pressed"
+                    android:contentDescription="@string/content_des"
+                    android:src="@drawable/ic_baseline_grid_view_24" />
+                <ImageButton
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_pressed"
+                    android:contentDescription="@string/content_des"
+                    android:src="@drawable/ic_baseline_camera_alt_primary_24" />
+
+                <ImageButton
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button_pressed"
+                    android:contentDescription="@string/content_des"
+                    android:src="@drawable/ic_baseline_image_24" />
+
+                <ImageButton
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="@dimen/_8dp"
+                    android:background="@drawable/button_pressed"
+                    android:contentDescription="@string/content_des"
+                    android:src="@drawable/ic_baseline_mic_24" />
+            </LinearLayout>
 
             <ImageButton
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:background="@drawable/ic_baseline_add_circle_24" />
-        </LinearLayout>
+                android:id="@+id/show_more_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/button_pressed"
+                android:contentDescription="@string/content_des"
+                android:src="@drawable/ic_baseline_arrow_forward_ios_24"
+                android:visibility="gone" />
 
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="@dimen/marg_8dp"
-            android:background="@drawable/button_pressed"
-            android:contentDescription="@string/content_des"
-            android:src="@drawable/ic_baseline_back_hand_24" />
-    </LinearLayout>
-</RelativeLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/circle_corner_grey_100"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/_12dp"
+                android:paddingEnd="@dimen/_8dp">
+
+                <hani.momanii.supernova_emoji_library.Helper.EmojiconEditText
+                    android:id="@+id/chat_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:hint="@string/chat"
+                    android:inputType="text"
+                    android:textSize="16sp"
+                    emojicon:emojiconSize="30sp"
+                    tools:ignore="NestedWeights"
+                    android:padding="@dimen/_6dp"
+                    />
+                <ImageView
+                    android:id="@+id/emoji_btn"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/smiley"
+                    android:contentDescription="@string/content_des" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/send_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="@dimen/_8dp"
+                android:background="@drawable/button_pressed"
+                android:contentDescription="@string/content_des"
+                android:src="@drawable/ic_baseline_send_24" />
+        </LinearLayout>
+    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+

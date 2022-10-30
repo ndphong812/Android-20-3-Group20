@@ -1,6 +1,5 @@
 package com.example.messenger;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -15,7 +14,6 @@ import com.example.messenger.databinding.ActivityMainBinding;
 public class MainActivity extends FragmentActivity {
 
     ActivityMainBinding binding;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

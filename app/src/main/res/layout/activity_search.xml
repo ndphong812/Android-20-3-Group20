@@ -11,17 +11,17 @@
         android:id="@+id/chat_search_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/pad_12dp"
-        android:paddingRight="@dimen/pad_12dp"
-        android:paddingBottom="@dimen/pad_6dp"
-        android:paddingTop="@dimen/pad_6dp"
+        android:paddingLeft="@dimen/_12dp"
+        android:paddingRight="@dimen/_12dp"
+        android:paddingBottom="@dimen/_6dp"
+        android:paddingTop="@dimen/_6dp"
         >
         <ImageButton
             android:id="@+id/back_btn"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_baseline_arrow_back_24"
-            android:padding="@dimen/pad_8dp"
+            android:padding="@dimen/_8dp"
             android:background="@drawable/circle_corner_white"
             android:contentDescription="@string/content_des"
             />
@@ -30,7 +30,7 @@
             android:layout_height="match_parent"
             android:background="@null"
             android:hint="@string/search"
-            android:layout_marginStart="@dimen/marg_16dp"
+            android:layout_marginStart="@dimen/_16dp"
             android:focusable="true"
             android:inputType="text"
             />

@@ -1,21 +1,16 @@
 package com.example.messenger.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.ChatActivity;
@@ -30,7 +25,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_LOADING = 2;
     private List<Contact> contacts;
     private boolean isLoadingAdd;
-    private Context context;
+    private final Context context;
 
     public ContactAdapter(Context context) {
         this.context = context;
@@ -43,7 +38,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        if(contacts != null && position == contacts.size() - 1 && isLoadingAdd == true) {
+        if(contacts != null && position == contacts.size() - 1 && isLoadingAdd) {
             return TYPE_LOADING;
         }
         return TYPE_ITEM;

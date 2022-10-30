@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:emojicon="http://schemas.android.com/tools"
+    android:layout_marginEnd="@dimen/_16dp"
+    android:layout_marginStart="100dp"
+    android:layout_marginTop="@dimen/_6dp"
+    android:gravity="end"
+    android:id="@+id/frame_item_chat">
+    <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+        android:id="@+id/message"
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        emojicon:emojiiconSize="30sp"
+        android:background="@drawable/circle_corner_primary"
+        android:textColor="@color/white"
+        android:paddingStart="@dimen/_12dp"
+        android:paddingEnd="@dimen/_12dp"
+        android:paddingTop="@dimen/_6dp"
+        android:paddingBottom="@dimen/_6dp"
+        />
+</LinearLayout>
