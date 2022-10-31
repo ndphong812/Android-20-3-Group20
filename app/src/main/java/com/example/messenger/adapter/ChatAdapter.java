@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,7 +18,7 @@ import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private Context context;
+    private  Context context;
     private List<ChatItem> listChat;
     private final int MSG_TYPE_RIGHT = 1;
     private final int MSG_TYPE_LEFT = 0;
@@ -30,12 +29,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    public void setData(List<ChatItem> list) {
-        this.listChat = list;
-    }
     public void addChatItem(ChatItem item) {
         this.listChat.add(item);
-
         notifyDataSetChanged();
     }
 
@@ -78,7 +73,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public class ChatViewHolder extends RecyclerView.ViewHolder {
-
         private TextView message ;
         private ShapeableImageView avatar;
 

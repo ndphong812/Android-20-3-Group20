@@ -40,3 +40,23 @@
 - Tài khoản: username (min 6 kí tự, max 20 kí tự)
 - Mật khẩu: password (min 6 kí tự, max 20 kí tự)
 - Nhập lại mật khẩu: reTypePassword
+
+## Document for Chat screen UI
+Link introductions: https://youtu.be/KTf4JAMfEBg
+### XML
+**activity_chat.xml**: sử dụng ConstraintLayout để binding data
+- Trong đó chia layout thành 3 phần: chat_header, chat_footer, chat_message(rev_messages)
+- Ta sẽ sử dụng recycleView (rev_messages) để render danh sách message
+
+### JAVA
+**ChatAdapter**: Hỗ trợ render messages thành giao diện
+- addChatItem(): Khi 1 item chat vào danh sách để render lại giao diện
+
+**ChatActivity**:
+- renderMessages(): Hàm render Message chính
+- getListMessage(): hàm này sẽ gọi API để render ra toàn bộ message đã có
+- getChatContact(): Nhận user đang chat từ màn hình chính truyển qua (Sử dụng Intent)
+
+- imageButtonSendMessage: Đây là hàm xử lý khi người dùng send message
+
+- Dark / Light theme: https://developer.android.com/develop/ui/views/theming/darktheme

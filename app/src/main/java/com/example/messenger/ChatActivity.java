@@ -67,7 +67,7 @@ public class ChatActivity extends Activity {
         emojIconActions = new EmojIconActions(this, binding.getRoot(), imageButtonEmoji, editTextInputChat);
 
         //Handle events
-        setUpMessages(recyclerViewMessages);
+        renderMessages(recyclerViewMessages);
         emojIconActions.ShowEmojicon();
 
         imageButtonBack.setOnClickListener(new View.OnClickListener() {
@@ -102,19 +102,16 @@ public class ChatActivity extends Activity {
         editTextInputChat.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 linearLayoutActions.setVisibility(View.GONE);
                 imageButtonShowMore.setVisibility(View.VISIBLE);
-
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-
             }
         });
 
@@ -132,6 +129,8 @@ public class ChatActivity extends Activity {
                 if(!msg.equals("")) {
                     //Store in database and send real-time to the other
                     customChatAdapter.addChatItem(new ChatItem("Quan Nguyen ", "XXX", msg, true));
+
+                    //smooth to bottom
                     recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
                     editTextInputChat.setText("");
                     editTextInputChat.requestFocus();
@@ -141,34 +140,16 @@ public class ChatActivity extends Activity {
             }
         });
         emojIconActions.setUseSystemEmoji(true);
-//        editTextInputChat.setUseSystemEmoji(true);
-
-//        emojIconActions.setKeyboardListener(new EmojIconActions.KeyboardListener() {
-//            @Override
-//            public void onKeyboardOpen() {
-//                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-//                imm.hideSoftInputFromWindow(activityChatLayout.getWindowToken(), 0);
-//            }
-//
-//            @Override
-//            public void onKeyboardClose() {
-//
-//            }
-//        });
     }
-    private void setUpMessages(RecyclerView recyclerView) {
+
+    private void renderMessages(RecyclerView recyclerView) {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        customChatAdapter = new ChatAdapter(this, listChat);
 
-        recyclerView.setAdapter(customChatAdapter);
-        setFirstData();
-        recyclerView.smoothScrollToPosition(listChat.size() - 1);
-    }
-
-    private void setFirstData() {
         listChat = getListMessage();
-        customChatAdapter.setData(listChat);
+        customChatAdapter = new ChatAdapter(this, listChat);
+        recyclerView.setAdapter(customChatAdapter);
+        recyclerView.smoothScrollToPosition(listChat.size() - 1);
     }
 
     private void getChatContact() {
