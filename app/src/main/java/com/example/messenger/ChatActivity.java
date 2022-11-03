@@ -2,11 +2,14 @@ package com.example.messenger;
 
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,7 +33,6 @@ import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 public class ChatActivity extends Activity {
 
     private ActivityChatBinding binding;
-
     private Intent intent;
     private Bundle bundle;
     private ImageButton imageButtonBack;
@@ -46,12 +48,14 @@ public class ChatActivity extends Activity {
     private EmojIconActions emojIconActions;
     private ConstraintLayout activityChatLayout;
 
+    private ChatActivity _this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityChatBinding.inflate(getLayoutInflater());
 
         setContentView(binding.getRoot());
+        _this = this;
         getChatContact();
 
         // Init attributes
@@ -70,31 +74,21 @@ public class ChatActivity extends Activity {
         renderMessages(recyclerViewMessages);
         emojIconActions.ShowEmojicon();
 
-        imageButtonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent backMainScreenIntent = new Intent(getApplication(), MainActivity.class);
-                startActivity(backMainScreenIntent);
-
-            }
+        imageButtonBack.setOnClickListener(view -> {
+            Intent backMainScreenIntent = new Intent(getApplication(), MainActivity.class);
+            startActivity(backMainScreenIntent, ActivityOptions.makeSceneTransitionAnimation(_this).toBundle());
         });
 
-        editTextInputChat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        editTextInputChat.setOnClickListener(view -> {
+            linearLayoutActions.setVisibility(View.GONE);
+            imageButtonShowMore.setVisibility(View.VISIBLE);
+        });
+
+        editTextInputChat.setOnFocusChangeListener((view, isFocus) -> {
+            if(isFocus) {
                 linearLayoutActions.setVisibility(View.GONE);
                 imageButtonShowMore.setVisibility(View.VISIBLE);
-            }
-        });
-
-        editTextInputChat.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean isFocus) {
-                if(isFocus) {
-                    linearLayoutActions.setVisibility(View.GONE);
-                    imageButtonShowMore.setVisibility(View.VISIBLE);
-                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
-                }
+                recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
             }
         });
 
@@ -115,31 +109,29 @@ public class ChatActivity extends Activity {
             }
         });
 
-        imageButtonShowMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                linearLayoutActions.setVisibility(View.VISIBLE);
-                imageButtonShowMore.setVisibility(View.GONE);
-            }
+        imageButtonShowMore.setOnClickListener(view -> {
+            linearLayoutActions.setVisibility(View.VISIBLE);
+            imageButtonShowMore.setVisibility(View.GONE);
         });
-        imageButtonSendMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String msg = editTextInputChat.getText().toString();
-                if(!msg.equals("")) {
-                    //Store in database and send real-time to the other
-                    customChatAdapter.addChatItem(new ChatItem("Quan Nguyen ", "XXX", msg, true));
+        final MediaPlayer mediaPlayerSendMsg = MediaPlayer.create(this, R.raw.click);
 
-                    //smooth to bottom
-                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
-                    editTextInputChat.setText("");
-                    editTextInputChat.requestFocus();
-                }else{
-                    Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
-                }
+        imageButtonSendMessage.setOnClickListener(view -> {
+            String msg = editTextInputChat.getText().toString();
+            mediaPlayerSendMsg.setVolume(0, 0.2F);
+            mediaPlayerSendMsg.start();
+
+            if(!msg.equals("")) {
+                //Store in database and send real-time to the other
+                customChatAdapter.addChatItem(new ChatItem("Quan Nguyen ", "XXX", msg, true));
+
+                //smooth to bottom
+                recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
+                editTextInputChat.setText("");
+                editTextInputChat.requestFocus();
+            }else{
+                Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
             }
         });
-        emojIconActions.setUseSystemEmoji(true);
     }
 
     private void renderMessages(RecyclerView recyclerView) {

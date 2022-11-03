@@ -1,5 +1,7 @@
 package com.example.messenger.adapter;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -84,7 +86,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         intent.putExtras(bundle);
 
         //Change screen
-        context.startActivity(intent);
+        context.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation((Activity)context).toBundle());
 
     }
     @Override

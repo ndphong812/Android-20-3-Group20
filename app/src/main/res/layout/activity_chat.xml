@@ -23,7 +23,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="@dimen/_12dp">
+            android:paddingStart="@dimen/_12dp"
+            android:paddingEnd="@dimen/_12dp"
+            android:paddingTop="@dimen/_8dp"
+            android:paddingBottom="@dimen/_8dp"
+            >
 
             <ImageButton
                 android:id="@+id/back_btn"
@@ -93,8 +97,8 @@
             android:id="@+id/rcv_messages"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/height_of_bar"
-            android:layout_marginBottom="@dimen/height_of_bar" />
+            android:layout_marginTop="@dimen/height_of_bar_chat"
+            android:layout_marginBottom="@dimen/height_of_bar_chat" />
 
     <RelativeLayout
         android:id="@+id/chat_footer"

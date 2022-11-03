@@ -11,5 +11,6 @@
     <dimen name="_64dp">64dp</dimen>
 
     <dimen name="height_of_bar">64dp</dimen>
+    <dimen name="height_of_bar_chat">56dp</dimen>
     <dimen name="minHeightListContact">574dp</dimen>
 </resources>

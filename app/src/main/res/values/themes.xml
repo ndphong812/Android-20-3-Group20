@@ -12,5 +12,15 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+
+        <!-- This is to enable transitions-->
+        <item name="android:windowActivityTransitions">true</item>
+        <!-- Set up transition for entering and exiting-->
+        <item name="android:windowEnterTransition">@transition/trans_fade</item>
+        <item name="android:windowExitAnimation">@transition/trans_fade</item>
+
+        <!-- -->
+
+
     </style>
 </resources>

@@ -1,5 +1,6 @@
 package com.example.messenger;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -63,8 +64,7 @@ public class ChatsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent settingIntent = new Intent(getActivity(), SettingsActivity.class);
-
-                startActivity(settingIntent);
+                startActivity(settingIntent, ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
             }
         });
 
@@ -77,7 +77,7 @@ public class ChatsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
-                startActivity(searchIntent);
+                startActivity(searchIntent, ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
                 getActivity().finish();
             }
         });
@@ -85,7 +85,7 @@ public class ChatsFragment extends Fragment {
             @Override
             public void onFocusChange(View view, boolean b) {
                 Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
-                startActivity(searchIntent);
+                startActivity(searchIntent, ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
                 getActivity().finish();
             }
         });
@@ -108,13 +108,12 @@ public class ChatsFragment extends Fragment {
             singleFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), ChatActivity.class);
+                    Intent chatIntent = new Intent(getActivity(), ChatActivity.class);
                     //Pass data from ChatsFragment to Chat Activity
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("contact", currentContact);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                    getActivity().finish();
+                    chatIntent.putExtras(bundle);
+                    startActivity(chatIntent, ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
                 }});
         }
 
