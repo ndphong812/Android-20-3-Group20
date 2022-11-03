@@ -32,8 +32,6 @@
 - P2P connections with Wi-Fi Direct: https://developer.android.com/training/connect-devices-wirelessly/wifi-direct
 - SQLite with Android: https://viblo.asia/p/su-dung-sqlite-database-trong-ung-dung-android-wjAM7alevmWe
 - Recommend library: https://auth0.com/blog/android-development-15-libraries-you-should-be-using
-- Dark / Light theme: https://developer.android.com/develop/ui/views/theming/darktheme
-
 
 # Chức năng
 ## Login:
@@ -58,5 +56,3 @@ Link introductions: https://youtu.be/KTf4JAMfEBg
 - getChatContact(): Nhận user đang chat từ màn hình chính truyển qua (Sử dụng Intent)
 
 - imageButtonSendMessage: Đây là hàm xử lý khi người dùng send message
-
-- Dark / Light theme: https://developer.android.com/develop/ui/views/theming/darktheme
