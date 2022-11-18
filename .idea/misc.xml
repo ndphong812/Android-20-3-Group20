@@ -3,39 +3,63 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/button_pressed.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/circle_corner_grey_100.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/circle_corner_grey_100_round_20.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/circle_corner_primary.xml" value="0.1235" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable-v24/circle_corner.xml" value="0.1235" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable-v24/rounded_corner.xml" value="0.1" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/circle_corner.xml" value="0.1235" />
         <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/circle_corner_white.xml" value="0.1235" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_amp_stories_24.xml" value="0.1235" />
         <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_camera_alt_24.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_camera_alt_24_secondary.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_grid_view_24.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_info_24.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_mic_24.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_mic_none_24.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_phone_24.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_smile_24.xml" value="0.1235" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_chat_bubble_24.xml" value="0.245" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.1235" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.1235" />
         <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_video_call_24.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/layout_with_top_border.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/linearlayout_with_bottom_boder.xml" value="0.1235" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/activity_chat.xml" value="0.14666666666666667" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/activity_main.xml" value="0.16770833333333332" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable/rounded_corner.xml" value="0.1235" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/activity_chat.xml" value="0.16770833333333332" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/activity_main.xml" value="0.14666666666666667" />
         <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/activity_search.xml" value="0.16770833333333332" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/fragment_calls.xml" value="0.1" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/fragment_chats.xml" value="0.16770833333333332" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/fragment_blank.xml" value="0.16770833333333332" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/fragment_calls.xml" value="0.13675213675213677" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/fragment_chats.xml" value="0.16666666666666666" />
         <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/fragment_notification.xml" value="0.16770833333333332" />
         <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/fragment_people.xml" value="0.16770833333333332" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/frame_contact.xml" value="0.16770833333333332" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/frame_item_chat_received.xml" value="0.22" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/frame_item_chat_sent.xml" value="0.16770833333333332" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/frame_loading_item.xml" value="0.1" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/frame_new_user.xml" value="0.1" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/frame_online_contact.xml" value="0.1" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/layout_settings.xml" value="0.16770833333333332" />
-        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/layout_settings_item.xml" value="0.16770833333333332" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/fragment_settings.xml" value="0.16770833333333332" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/fragment_stories.xml" value="0.13760683760683762" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/frame_contact.xml" value="0.1" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/frame_icon_caption.xml" value="0.3333333333333333" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/frame_loading_item.xml" value="0.16770833333333332" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/frame_new_user.xml" value="0.16770833333333332" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/frame_online_contact.xml" value="0.16770833333333332" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/layout/rounded_corner.xml" value="0.16770833333333332" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/menu/bottom_nav_menu.xml" value="0.1" />
+        <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/menu/context_menu.xml" value="0.16770833333333332" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/background_chat_input.xml" value="0.1105" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/background_content_top.xml" value="0.1855" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/background_received_message.xml" value="0.1855" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/background_sent_message.xml" value="0.1855" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/circle_corner_grey_100.xml" value="0.1105" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.1495" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_person_outline_24.xml" value="0.1855" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/activity_chat.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/activity_search.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/forgot_password.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/fragment_calls.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/fragment_chats.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/fragment_notification.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/fragment_people.xml" value="0.13958333333333334" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/frame_contact.xml" value="0.264" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/frame_item_chat_received.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/frame_item_chat_sent.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/frame_loading_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/frame_new_user.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/frame_online_contact.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/item_container_received_message.xml" value="0.253125" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/item_container_sent_message.xml" value="0.253125" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/layout_settings.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/layout_settings_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/login.xml" value="0.253125" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/register.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1105" />
       </map>
     </option>
   </component>

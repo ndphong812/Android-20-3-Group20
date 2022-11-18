@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.R;
 import com.example.messenger.model.ChatItem;
+import com.example.messenger.model.Message;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
@@ -20,22 +21,21 @@ import java.util.List;
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
-    private List<ChatItem> listChat;
+    private List<Message> listChat;
     private final int MSG_TYPE_RIGHT = 1;
     private final int MSG_TYPE_LEFT = 0;
 
-    public ChatAdapter(Context context, List<ChatItem> listChat) {
+    public ChatAdapter(Context context, List<Message> listChat) {
         this.context = context;
         this.listChat = listChat;
         notifyDataSetChanged();
     }
 
-    public void setData(List<ChatItem> list) {
+    public void setData(List<Message> list) {
         this.listChat = list;
     }
-    public void addChatItem(ChatItem item) {
+    public void addChatItem(Message item) {
         this.listChat.add(item);
-
         notifyDataSetChanged();
     }
 
@@ -54,13 +54,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ChatItem currentChatItem = listChat.get(position);
+        Message currentChatItem = listChat.get(position);
         ChatViewHolder chatViewHolder = (ChatViewHolder) holder;
         if(chatViewHolder.avatar != null) {
             chatViewHolder.avatar.setImageResource(R.drawable.ic_launcher_background);
         }
 
-        chatViewHolder.message.setText(currentChatItem.getMsg());
+        chatViewHolder.message.setText(currentChatItem.getMessage());
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if(listChat.get(position).isFromSelf()) {
+        if(listChat.get(position).getFromSelf()) {
             return MSG_TYPE_RIGHT;
         }else{
             return MSG_TYPE_LEFT;

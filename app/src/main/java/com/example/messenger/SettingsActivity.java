@@ -15,7 +15,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.example.messenger.Services.PreferenceManager;
+
 public class SettingsActivity extends AppCompatActivity{
+
+    PreferenceManager shp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +32,9 @@ public class SettingsActivity extends AppCompatActivity{
         ListView secondListView = findViewById(R.id.secondListView);
         ListView thirdListView = findViewById(R.id.thirdListView);
         ListView fourthListView = findViewById(R.id.fourthListView);
+        shp = new PreferenceManager(getApplicationContext());
+        TextView UserName = findViewById(R.id.usernameTxt);
+        UserName.setText(shp.getString("userName"));
 
         String[] firstSectionLabels = {"Chế độ tối", "Tin nhắn đang chờ", "Đoạn chat đã lưu trữ"};
         String[] secondSectionLabels = {"Trạng thái hoạt động", "Tên người dùng"};

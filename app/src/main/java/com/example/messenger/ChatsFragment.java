@@ -8,16 +8,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.messenger.Database.DataContext;
 import com.example.messenger.adapter.ContactAdapter;
 import com.example.messenger.model.Contact;
+import com.example.messenger.model.User;
 import com.google.android.material.imageview.ShapeableImageView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +32,7 @@ public class ChatsFragment extends Fragment {
     private ShapeableImageView shapeableImageViewAvatar;
     private ContactAdapter customContactAdapter;
     private List<Contact> contacts;
+    private ArrayList<User> listUsers = new ArrayList<User>();
 
     private boolean isLoading;
     private boolean isLastPage;
@@ -39,11 +44,15 @@ public class ChatsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static ChatsFragment newInstance(String param1, String param2) {
+    public static ChatsFragment newInstance(String param1, String param2, String k) {
         ChatsFragment fragment = new ChatsFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void UsersData(ArrayList<User> Users) {
+        this.listUsers = Users;
     }
 
     @Override
@@ -77,6 +86,9 @@ public class ChatsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("ListFriend", (Serializable) listUsers);
+                searchIntent.putExtras(bundle);
                 startActivity(searchIntent);
                 getActivity().finish();
             }
@@ -95,6 +107,7 @@ public class ChatsFragment extends Fragment {
         for (int i = 0; i < onlineContacts.size(); i++) {
             final View singleFrame = getLayoutInflater().inflate(R.layout.frame_online_contact, null);
             final Contact currentContact = onlineContacts.get(i);
+            final User UserSelected = listUsers.get(i);
             singleFrame.setId(i);
 
             ShapeableImageView iVAvatarOnlineUsers = singleFrame.findViewById(R.id.avatar);
@@ -112,6 +125,7 @@ public class ChatsFragment extends Fragment {
                     //Pass data from ChatsFragment to Chat Activity
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("contact", currentContact);
+                    bundle.putSerializable("DBReceiver", (Serializable) UserSelected);
                     intent.putExtras(bundle);
                     startActivity(intent);
                     getActivity().finish();
@@ -131,9 +145,9 @@ public class ChatsFragment extends Fragment {
         recyclerViewContacts.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
             @Override
             public void loadMoreItems() {
-                isLoading = true;
-                currentPage += 1;
-                loadNextPage();
+//                isLoading = true;
+//                currentPage += 1;
+//                loadNextPage();
             }
 
             @Override
@@ -158,16 +172,16 @@ public class ChatsFragment extends Fragment {
         contacts = getListContact();
         customContactAdapter.setData(contacts);
 
-        if(currentPage < totalPage) {
-            customContactAdapter.addFooterLoading();
-        }else {
-            isLastPage = true;
-        }
+//        if(currentPage < totalPage) {
+//            customContactAdapter.addFooterLoading();
+//        }else {
+//            isLastPage = true;
+//        }
     }
     private List<Contact> getListContact() {
         List<Contact> list = new ArrayList<>();
-        for(int i = 1; i<= 10; i++) {
-            list.add(new Contact("Quan Nguyen " + i, R.drawable.ic_launcher_background, "Quan Nguyen", "Hello world"));
+        for(int i = 0; i< listUsers.size(); i++) {
+            list.add(new Contact(listUsers.get(i).getName(), R.drawable.ic_launcher_background, "Quan Nguyen", "Hello world"));
         }
         return list;
     }
@@ -194,8 +208,8 @@ public class ChatsFragment extends Fragment {
 
     private List<Contact> getListOnlineContact() {
         List<Contact> list = new ArrayList<>();
-        for(int i = 1; i<= 10; i++) {
-            list.add(new Contact("Quan Nguyen " + i, R.drawable.ic_launcher_background, "Quan Nguyen", "Hello world"));
+        for(int i = 0; i< listUsers.size(); i++) {
+            list.add(new Contact(listUsers.get(i).getName(), R.drawable.ic_launcher_background, "Quan Nguyen", "Hello world"));
         }
         return list;
     }
