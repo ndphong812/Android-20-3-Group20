@@ -2,11 +2,17 @@ package com.example.messenger;
 
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -16,7 +22,11 @@ import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +39,10 @@ import com.example.messenger.model.Contact;
 import com.example.messenger.model.Message;
 import com.example.messenger.model.User;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -39,7 +53,7 @@ import java.util.List;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
-public class ChatActivity extends Activity {
+public class ChatActivity extends AppCompatActivity {
 
     private ActivityChatBinding binding;
 
@@ -50,7 +64,10 @@ public class ChatActivity extends Activity {
     private LinearLayout linearLayoutActions;
     private ImageButton imageButtonShowMore;
     private ImageButton imageButtonSendMessage;
+    private ImageButton imageButtonSendImage;
+    private ImageButton imageButtonSendCamera;
     private ImageView imageButtonEmoji;
+    private ImageView imgPreview;
 
     private Contact currentContact;
     private User receiverUser;
@@ -60,6 +77,9 @@ public class ChatActivity extends Activity {
     private EmojIconActions emojIconActions;
     private ConstraintLayout activityChatLayout;
     private PreferenceManager shp;
+    Uri fileUri;
+    public static final int MY_RESULT_LOAD_IMAGE = 7172;
+    public static final int MY_CAMERA_REQUEST_CODE = 7171;
     String senderEmail;
     DataContext DB;
 
@@ -74,10 +94,13 @@ public class ChatActivity extends Activity {
 
         // Init attributes
         imageButtonBack = (ImageButton) findViewById(R.id.back_btn);
+        imageButtonSendImage = (ImageButton) findViewById(R.id.imageButton2);
+        imageButtonSendCamera = (ImageButton) findViewById(R.id.imageButton);
         linearLayoutActions = (LinearLayout) findViewById(R.id.layout_actions);
         editTextInputChat = (EmojiconEditText) findViewById(R.id.chat_input);
         imageButtonShowMore = (ImageButton) findViewById(R.id.show_more_btn);
         imageButtonSendMessage = (ImageButton) findViewById(R.id.send_btn);
+        imgPreview = (ImageView) findViewById(R.id.imagePreview);
         chatName = (TextView) findViewById(R.id.chatName);
         senderEmail = shp.getString("userEmail");
 
@@ -158,49 +181,35 @@ public class ChatActivity extends Activity {
                     recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
                     editTextInputChat.setText("");
                     editTextInputChat.requestFocus();
-                }else{
+                }else {
                     Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        imageButtonSendImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/+");
+                startActivityForResult(intent, MY_RESULT_LOAD_IMAGE);
+            }
+        });
+        imageButtonSendCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.TITLE,"New Picture");
+                values.put(MediaStore.Images.Media.DESCRIPTION,"From your Camera");
+                fileUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+                startActivityForResult(intent,MY_CAMERA_REQUEST_CODE);
             }
         });
         emojIconActions.setUseSystemEmoji(true);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Toast.makeText(this, "Pause", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Toast.makeText(this, "Start", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Toast.makeText(this, "Resume", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Toast.makeText(this, "Destroy", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Toast.makeText(this, "Stop", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        Toast.makeText(this, "Restart", Toast.LENGTH_SHORT).show();
-    }
 
     private void setUpMessages(RecyclerView recyclerView) {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -247,4 +256,41 @@ public class ChatActivity extends Activity {
         }
         return list;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == MY_CAMERA_REQUEST_CODE) {
+            if(requestCode == RESULT_OK) {
+                try {
+                    Bitmap thumbnail = MediaStore.Images.Media.getBitmap(getContentResolver(), fileUri);
+                    imgPreview.setImageBitmap(thumbnail);
+                    imgPreview.setVisibility(View.VISIBLE);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else if(requestCode == MY_RESULT_LOAD_IMAGE) {
+                if(requestCode == RESULT_OK) {
+                    try {
+                        final Uri imageUri = data.getData();
+                        InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                        Bitmap selectImage = BitmapFactory.decodeStream(inputStream);
+                        imgPreview.setImageBitmap(selectImage);
+                        imgPreview.setVisibility(View.VISIBLE);
+                        fileUri = imageUri;
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            else {
+                Toast.makeText(this, "Please choose image", Toast.LENGTH_SHORT);
+            }
+        }
+    }
+
+
 }

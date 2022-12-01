@@ -1,6 +1,8 @@
 package com.example.messenger;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -8,14 +10,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
-import android.util.Log;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.messenger.Database.DataContext;
+import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.adapter.ContactAdapter;
 import com.example.messenger.model.Contact;
 import com.example.messenger.model.User;
@@ -32,6 +34,7 @@ public class ChatsFragment extends Fragment {
     private ShapeableImageView shapeableImageViewAvatar;
     private ContactAdapter customContactAdapter;
     private List<Contact> contacts;
+    private PreferenceManager shp;
     private ArrayList<User> listUsers = new ArrayList<User>();
 
     private boolean isLoading;
@@ -58,6 +61,7 @@ public class ChatsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        shp = new PreferenceManager(getContext());
     }
 
     @Override
@@ -93,14 +97,14 @@ public class ChatsFragment extends Fragment {
                 getActivity().finish();
             }
         });
-        editTextSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
-                startActivity(searchIntent);
-                getActivity().finish();
-            }
-        });
+//        editTextSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View view, boolean b) {
+//                Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
+//                startActivity(searchIntent);
+//                getActivity().finish();
+//            }
+//        });
 
         //Render online users
         ViewGroup scrollViewOnlineUsers = view.findViewById(R.id.view_group);
@@ -114,7 +118,11 @@ public class ChatsFragment extends Fragment {
             TextView tVCaptionOnlineUser = singleFrame.findViewById(R.id.caption);
 
             //Set data
-            iVAvatarOnlineUsers.setImageResource(currentContact.getAvatarPath());
+            if(loadUserDetails() == null) {
+                iVAvatarOnlineUsers.setImageResource(R.drawable.ic_launcher_background);
+            } else {
+                iVAvatarOnlineUsers.setImageBitmap(loadUserDetails());
+            }
             tVCaptionOnlineUser.setText(currentContact.getUsername());
             scrollViewOnlineUsers.addView(singleFrame);
 
@@ -181,7 +189,7 @@ public class ChatsFragment extends Fragment {
     private List<Contact> getListContact() {
         List<Contact> list = new ArrayList<>();
         for(int i = 0; i< listUsers.size(); i++) {
-            list.add(new Contact(listUsers.get(i).getName(), R.drawable.ic_launcher_background, "Quan Nguyen", "Hello world"));
+            list.add(new Contact(listUsers.get(i).getName(), listUsers.get(i).getImage(), "Quan Nguyen", "Hello world"));
         }
         return list;
     }
@@ -209,8 +217,17 @@ public class ChatsFragment extends Fragment {
     private List<Contact> getListOnlineContact() {
         List<Contact> list = new ArrayList<>();
         for(int i = 0; i< listUsers.size(); i++) {
-            list.add(new Contact(listUsers.get(i).getName(), R.drawable.ic_launcher_background, "Quan Nguyen", "Hello world"));
+            list.add(new Contact(listUsers.get(i).getName(), listUsers.get(i).getImage(), "Quan Nguyen", "Hello world"));
         }
         return list;
+    }
+
+    private Bitmap loadUserDetails() {
+        if(shp.getString("imageUser") != null) {
+            byte[] bytes = Base64.decode(shp.getString("imageUser"), Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            return bitmap;
+        }
+        return null;
     }
 }

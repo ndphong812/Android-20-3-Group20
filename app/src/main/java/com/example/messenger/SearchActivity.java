@@ -25,6 +25,7 @@ public class SearchActivity extends Activity {
     private ArrayList<User> listFriend;
     private Intent intent;
     private Bundle bundle;
+    DataContext DB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class SearchActivity extends Activity {
         listViewResultSearch = (ListView) findViewById(R.id.result_search);
         addFriend = (Button) findViewById(R.id.addFriend);
         listViewResultSearch.setDivider(null);
+        DB = new DataContext(getApplicationContext());
 
         //search
         searchResult();
@@ -53,12 +55,12 @@ public class SearchActivity extends Activity {
         });
 
 
-        addFriend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
+//        addFriend.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
 
     }
 
@@ -66,9 +68,9 @@ public class SearchActivity extends Activity {
         listResult = new ArrayList<>();
         intent = getIntent();
         bundle = intent.getExtras();
-        listFriend = (ArrayList<User>) bundle.getSerializable("ListFriend");
+        listFriend = DB.getListUsers();
         for(int i = 0 ; i< listFriend.size(); i++) {
-            listResult.add(new Contact(listFriend.get(i).getName(), R.drawable.ic_launcher_background, "Quan Nguyen", "Hello world"));
+            listResult.add(new Contact(listFriend.get(i).getName(), listFriend.get(i).getImage(), "Quan Nguyen", "Hello world"));
         }
     }
 }

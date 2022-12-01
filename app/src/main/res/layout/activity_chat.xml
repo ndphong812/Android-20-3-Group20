@@ -42,7 +42,7 @@
                 app:shapeAppearanceOverlay="@style/cornerImageView" />
 
             <TextView
-                android:id ="@+id/chatName"
+                android:id="@+id/chatName"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -97,6 +97,17 @@
             android:layout_marginTop="@dimen/height_of_bar"
             android:layout_marginBottom="@dimen/height_of_bar" />
 
+    <ImageView
+        android:id="@+id/imagePreview"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/chat_footer"
+        app:layout_constraintEnd_toEndOf="@+id/rcv_messages"
+        app:layout_constraintHorizontal_bias="0.048"
+        app:layout_constraintStart_toStartOf="@+id/rcv_messages" />
+
     <RelativeLayout
         android:id="@+id/chat_footer"
         android:layout_width="match_parent"
@@ -109,6 +120,7 @@
         android:paddingBottom="@dimen/_6dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
         <LinearLayout
             android:id="@+id/chat_actions"
             android:layout_width="match_parent"
@@ -122,6 +134,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:visibility="visible">
+
                 <ImageButton
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -129,6 +142,7 @@
                     android:contentDescription="@string/content_des"
                     android:src="@drawable/ic_baseline_grid_view_24" />
                 <ImageButton
+                    android:id="@+id/imageButton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="@drawable/button_pressed"
@@ -136,6 +150,7 @@
                     android:src="@drawable/ic_baseline_camera_alt_primary_24" />
 
                 <ImageButton
+                    android:id = "@+id/imageButton2"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="@drawable/button_pressed"

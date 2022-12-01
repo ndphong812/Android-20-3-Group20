@@ -23,9 +23,10 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 public class DataContext extends SQLiteOpenHelper {
-    public static final String DBNAME = "Messenger.db";
+    public static final String DBNAME = "Messengers.db";
     private static final String COLUMN_PASSWORD = "password";
     private static final String COLUMN_EMAIL = "email";
+    private static final String COLUMN_IMAGE = "image";
     PreferenceManager shp;
     String DBPATH;
     Context ctx;
@@ -39,14 +40,14 @@ public class DataContext extends SQLiteOpenHelper {
         this.ctx = context;
         this.DBPATH = this.ctx.getDatabasePath(DBNAME).getAbsolutePath();
 //        this.DBPATH = context.getDatabasePath(DataContext.DBNAME).toString();
-        Log.e("Path 1", DBPATH);
+//        Log.e("Path 1", DBPATH);
 
     }
 
     @Override
     public void onCreate(SQLiteDatabase MyDB) {
-        String users = "create Table users(email TEXT primary key, name TEXT, password TEXT)";
-        String messages = "create Table messages(FromMail text, ToMail text, Message text, SentDate text)";
+        String users = "create Table users(email TEXT primary key, name TEXT, password TEXT, image TEXT)";
+        String messages = "create Table messages(FromMail text, ToMail text, Message text, SentDate text, image TEXT)";
         shp = new PreferenceManager(ctx.getApplicationContext());
         MyDB.execSQL(users);
         MyDB.execSQL(messages);
@@ -66,12 +67,13 @@ public class DataContext extends SQLiteOpenHelper {
 //        db.setVersion(oldVersion);
 //    }
 
-    public Boolean insertDataLogin(String email, String name, String password) {
+    public Boolean insertDataLogin(String email, String name, String password, String image) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("email", email);
         contentValues.put("name", name);
         contentValues.put("password", password);
+        contentValues.put("image", image);
         long result = MyDB.insert("users", null, contentValues);
         return result != -1;
     }
@@ -90,6 +92,7 @@ public class DataContext extends SQLiteOpenHelper {
                 user.email = c.getString(c.getColumnIndex("email"));
                 user.name = c.getString(c.getColumnIndex("name"));
                 user.password = c.getString(c.getColumnIndex("password"));
+                user.image = c.getString(c.getColumnIndex("image"));
                 user.ID = Random_Code();
                 userList.add(user);
                 c.moveToNext();
@@ -144,7 +147,7 @@ public class DataContext extends SQLiteOpenHelper {
                 messageList.add(mess);
                 c2.moveToNext();
             }
-            Log.e("jjj", messageList.get(0).getMessage());
+//            Log.e("jjj", messageList.get(0).getMessage());
             c2.close();
             return messageList;
         } catch (Exception e) {
@@ -157,8 +160,18 @@ public class DataContext extends SQLiteOpenHelper {
         SQLiteDatabase MyDB = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_PASSWORD, newPassword);
-        Log.d(newPassword, "abc");
-        MyDB.update(DBNAME, values,"email = ?", new String[] { email });
+//        Log.d(newPassword, "abc");
+        MyDB.update("users", values,"email = ?", new String[] { email });
+        MyDB.close();
+    }
+
+    public void updateImageUser(String email, String image) {
+        SQLiteDatabase MyDB = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_IMAGE, image);
+//        Log.d(newPassword, "abc");
+        MyDB.update("users", values,"email = ?", new String[] { email });
+        MyDB.update("messages", values,"FromMail = ?", new String[] { email });
         MyDB.close();
     }
 
@@ -196,6 +209,17 @@ public class DataContext extends SQLiteOpenHelper {
         for(int i=0;i<Users.size();i++) {
             if(Users.get(i).getEmail().equals(email)) {
                 tmp = Users.get(i).getName();
+            }
+        }
+        return tmp;
+    }
+
+    public String getImage(String email) {
+        ArrayList<User> Users = getListUsers();
+        String tmp = " ";
+        for(int i=0;i<Users.size();i++) {
+            if(Users.get(i).getEmail().equals(email)) {
+                tmp = Users.get(i).getImage();
             }
         }
         return tmp;

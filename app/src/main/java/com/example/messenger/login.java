@@ -55,6 +55,7 @@ public class login extends Activity {
                         preferenceManager.putBoolean("isLogin", true);
                         preferenceManager.putString("userEmail", user);
                         preferenceManager.putString("userName", DB.getName(user));
+                        preferenceManager.putString("imageUser", DB.getImage(user));
                         Intent intent  = new Intent(getApplicationContext(), MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);

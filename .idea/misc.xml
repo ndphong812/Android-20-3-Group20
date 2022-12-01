@@ -37,8 +37,11 @@
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/background_received_message.xml" value="0.1855" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/background_sent_message.xml" value="0.1855" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/circle_corner_grey_100.xml" value="0.1105" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/circle_corner_white.xml" value="0.1855" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.1495" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_person_outline_24.xml" value="0.1855" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/layout_with_top_border.xml" value="0.1855" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/drawable/radius_button.xml" value="0.1855" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/activity_chat.xml" value="0.25416666666666665" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/activity_search.xml" value="0.25416666666666665" />
@@ -58,8 +61,12 @@
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/layout_settings.xml" value="0.25416666666666665" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/layout_settings_item.xml" value="0.25416666666666665" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/login.xml" value="0.253125" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/picture_friend.xml" value="0.18072916666666666" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/picture_receiver.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/picture_sender.xml" value="0.18177083333333333" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/register.xml" value="0.25416666666666665" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1105" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/xml/filepaths.xml" value="0.190625" />
       </map>
     </option>
   </component>

@@ -12,15 +12,17 @@ public class User implements Serializable {
     public String name;
     public String email;
     public String password;
+    public String image;
 
     public User() {
     }
 
-    public User(long ID, String name, String email, String password) {
+    public User(long ID, String name, String email, String password, String image) {
         this.ID = ID;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.image = image;
     }
 
     public long getID() {
@@ -55,4 +57,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
 }

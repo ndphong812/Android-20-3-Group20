@@ -2,7 +2,10 @@ package com.example.messenger.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +65,13 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if(holder.getItemViewType() == TYPE_ITEM) {
             Contact contact = contacts.get(position);
             ContactViewHolder contactViewHolder = (ContactViewHolder) holder;
-            contactViewHolder.avatar.setImageResource(contact.getAvatarPath());
+            if(contact.getAvatarPath() == null) {
+                contactViewHolder.avatar.setImageResource(R.drawable.ic_launcher_background);
+            } else {
+                byte[] bytes = Base64.decode(contact.getAvatarPath(), Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0, bytes.length);
+                contactViewHolder.avatar.setImageBitmap(bitmap);
+            }
             contactViewHolder.chatName.setText(contact.getUsername());
             contactViewHolder.latestChat.setText(contact.getLatestMessage());
 

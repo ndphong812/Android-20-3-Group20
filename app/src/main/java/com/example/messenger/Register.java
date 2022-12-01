@@ -49,7 +49,7 @@ public class Register extends Activity {
                     if (pass.equals(repass)) {
                         if (!DB.checkEmailFormat(em)) {
                             if (DB.isValidPassword(pass)) {
-                                Boolean insert = DB.insertDataLogin(em, name, pass);
+                                Boolean insert = DB.insertDataLogin(em, name, pass, null);
                                 if (insert) {
                                     Toast.makeText(Register.this, "Make account successfully", Toast.LENGTH_SHORT).show();
                                     preferenceManager.putBoolean("isLogin", false);
