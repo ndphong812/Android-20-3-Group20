@@ -32,7 +32,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
 
-public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class FriendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_ITEM = 1;
     private static final int TYPE_LOADING = 2;
     private List<Contact> contacts;
@@ -40,7 +40,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Context context;
     private ContactAdapter adapter;
 
-    public ContactAdapter(Context context) {
+    public FriendAdapter(Context context) {
         this.context = context;
     }
 
@@ -80,32 +80,6 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             contactViewHolder.latestChat.setText(contact.getLatestMessage());
             contactViewHolder.layoutItem.setOnClickListener(view -> {
                 chatWithOther(contact);
-            });
-            contactViewHolder.layoutItem.setOnLongClickListener(view -> {
-                AlertDialog.Builder builder1=new AlertDialog.Builder(context);
-                builder1.setMessage("Xóa cuộc trò chuyện này?");
-                builder1.setCancelable(true);
-                builder1.setPositiveButton(
-                        "Có",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                contacts.remove(position);
-                                notifyItemRemoved(position);
-                                setData(contacts);
-                                Toast.makeText(context,"Đã xóa cuộc trò chuyện",Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                builder1.setNegativeButton(
-                        "Không",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-                AlertDialog alert11 = builder1.create();
-                alert11.show();
-                return false;
             });
         }
     }
