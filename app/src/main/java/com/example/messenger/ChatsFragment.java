@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.adapter.ContactAdapter;
@@ -39,7 +40,7 @@ public class ChatsFragment extends Fragment {
 
     private boolean isLoading;
     private boolean isLastPage;
-    private final int totalPage = 5;
+    private final int totalPage = 2;
     private int currentPage = 1;
 
 
@@ -68,7 +69,6 @@ public class ChatsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
-
 
         shapeableImageViewAvatar = view.findViewById(R.id.avatar);
 
@@ -198,7 +198,6 @@ public class ChatsFragment extends Fragment {
             @Override
             public void run() {
                 List<Contact> list = getListContact();
-
                 customContactAdapter.removeFooterLoading();
                 contacts.addAll(list);
                 customContactAdapter.notifyDataSetChanged();
@@ -210,7 +209,7 @@ public class ChatsFragment extends Fragment {
                     isLastPage = true;
                 }
             }
-        }, 4000);
+        }, 3000);
 
     }
 
