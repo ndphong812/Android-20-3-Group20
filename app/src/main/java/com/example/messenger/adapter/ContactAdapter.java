@@ -1,16 +1,20 @@
 package com.example.messenger.adapter;
 
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.ContextMenu;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -19,8 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.ChatActivity;
@@ -37,8 +39,9 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_LOADING = 2;
     private List<Contact> contacts;
     private boolean isLoadingAdd;
-    private Context context;
+    private final Context context;
     private ContactAdapter adapter;
+
 
     public ContactAdapter(Context context) {
         this.context = context;
@@ -51,7 +54,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        if(contacts != null && position == contacts.size() - 1 && isLoadingAdd == true) {
+        if(contacts != null && position == contacts.size() - 1 && isLoadingAdd) {
             return TYPE_LOADING;
         }
         return TYPE_ITEM;
@@ -75,7 +78,13 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if(holder.getItemViewType() == TYPE_ITEM) {
             Contact contact = contacts.get(position);
             ContactViewHolder contactViewHolder = (ContactViewHolder) holder;
-            contactViewHolder.avatar.setImageResource(contact.getAvatarPath());
+            if(contact.getAvatarPath() == null) {
+                contactViewHolder.avatar.setImageResource(R.drawable.ic_launcher_background);
+            } else {
+                byte[] bytes = Base64.decode(contact.getAvatarPath(), Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0, bytes.length);
+                contactViewHolder.avatar.setImageBitmap(bitmap);
+            }
             contactViewHolder.chatName.setText(contact.getUsername());
             contactViewHolder.latestChat.setText(contact.getLatestMessage());
             contactViewHolder.layoutItem.setOnClickListener(view -> {

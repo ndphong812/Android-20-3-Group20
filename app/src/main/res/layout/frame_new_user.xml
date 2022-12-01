@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingLeft="@dimen/pad_12dp"
-    android:paddingRight="@dimen/pad_12dp"
-    android:paddingTop="@dimen/pad_8dp"
-    android:paddingBottom="@dimen/pad_8dp"
+    android:paddingLeft="@dimen/_12dp"
+    android:paddingRight="@dimen/_12dp"
+    android:paddingTop="@dimen/_8dp"
+    android:paddingBottom="@dimen/_8dp"
     android:id="@+id/layout_item"
     android:gravity="center"
     >
@@ -26,11 +26,12 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/black"
-        android:layout_marginStart="@dimen/marg_12dp"
+        android:layout_marginStart="@dimen/_12dp"
         android:layout_weight="1"
         />
 
     <Button
+        android:id = "@+id/addFriend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/add_friend"

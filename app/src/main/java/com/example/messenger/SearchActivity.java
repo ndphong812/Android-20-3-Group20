@@ -5,11 +5,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.example.messenger.Database.DataContext;
 import com.example.messenger.adapter.NewUserAdapter;
 import com.example.messenger.model.Contact;
+import com.example.messenger.model.User;
 
 import java.util.ArrayList;
 
@@ -17,7 +20,12 @@ public class SearchActivity extends Activity {
 
     private ImageButton imageButtonBack;
     private ListView listViewResultSearch;
+    private Button addFriend;
     private ArrayList<Contact> listResult;
+    private ArrayList<User> listFriend;
+    private Intent intent;
+    private Bundle bundle;
+    DataContext DB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +34,9 @@ public class SearchActivity extends Activity {
 
         imageButtonBack = (ImageButton) findViewById(R.id.back_btn);
         listViewResultSearch = (ListView) findViewById(R.id.result_search);
+        addFriend = (Button) findViewById(R.id.addFriend);
         listViewResultSearch.setDivider(null);
+        DB = new DataContext(getApplicationContext());
 
         //search
         searchResult();
@@ -44,13 +54,23 @@ public class SearchActivity extends Activity {
             }
         });
 
+
+//        addFriend.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
+
     }
 
     public void searchResult() {
         listResult = new ArrayList<>();
-
-        for(int i = 0 ; i< 10; i++) {
-            listResult.add(new Contact("Quan Nguyen " + i, R.drawable.ic_launcher_background, "Quan Nguyen", "Hello world"));
+        intent = getIntent();
+        bundle = intent.getExtras();
+        listFriend = DB.getListUsers();
+        for(int i = 0 ; i< listFriend.size(); i++) {
+            listResult.add(new Contact(listFriend.get(i).getName(), listFriend.get(i).getImage(), "Quan Nguyen", "Hello world"));
         }
     }
 }

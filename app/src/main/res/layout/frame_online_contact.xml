@@ -7,8 +7,8 @@
     android:layout_height="wrap_content"
     android:paddingTop="3dp"
     android:paddingBottom="3dp"
-    android:paddingLeft="@dimen/pad_6dp"
-    android:paddingRight="@dimen/pad_6dp"
+    android:paddingLeft="@dimen/_6dp"
+    android:paddingRight="@dimen/_6dp"
     >
 
     <com.google.android.material.imageview.ShapeableImageView
@@ -23,7 +23,7 @@
         android:id="@+id/caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Trinh Tran Tran"
+        android:text="@string/hello_blank_fragment"
         android:textSize="12sp"
         android:gravity="center"
         android:textColor="@color/black"

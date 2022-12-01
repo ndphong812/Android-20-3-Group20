@@ -2,6 +2,7 @@ package com.example.messenger.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,7 @@ public class NewUserAdapter extends ArrayAdapter<Contact> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.avatar.setImageResource(listUsers.get(position).getAvatarPath());
+        viewHolder.avatar.setImageBitmap(BitmapFactory.decodeFile(listUsers.get(position).getAvatarPath()));
         viewHolder.username.setText(listUsers.get(position).getUsername());
 
         return convertView;

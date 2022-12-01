@@ -12,7 +12,7 @@
         android:id="@+id/chat_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/pad_12dp">
+        android:padding="@dimen/_12dp">
 
         <LinearLayout
             android:id="@+id/chat_action"
@@ -22,9 +22,10 @@
             android:gravity="center">
 
             <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/avatar"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginEnd="@dimen/marg_16dp"
+                android:layout_marginEnd="@dimen/_16dp"
                 app:shapeAppearanceOverlay="@style/cornerImageView"
                 android:src="@drawable/ic_launcher_background" />
 
@@ -47,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/circle_corner_grey_100"
-                android:padding="@dimen/pad_6dp"
+                android:padding="@dimen/_6dp"
                 android:src="@drawable/ic_baseline_camera_alt_24"
                 android:contentDescription="@string/content_des"
                 />
@@ -55,9 +56,9 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marg_16dp"
+                android:layout_marginStart="@dimen/_16dp"
                 android:background="@drawable/circle_corner_grey_100"
-                android:padding="@dimen/pad_6dp"
+                android:padding="@dimen/_6dp"
                 android:src="@drawable/ic_baseline_edit_24"
                 android:contentDescription="@string/content_des"
                 />
@@ -69,7 +70,7 @@
         android:layout_height="match_parent"
         android:scrollbars="none"
         android:overScrollMode="never"
-        android:layout_marginTop="@dimen/marg_64dp"
+        android:layout_marginTop="@dimen/height_of_bar"
         >
 
         <LinearLayout
@@ -81,16 +82,16 @@
                 android:id="@+id/search_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/pad_16dp"
-                android:layout_marginTop="@dimen/marg_8dp"
-                android:layout_marginRight="@dimen/pad_16dp"
+                android:layout_marginLeft="@dimen/_16dp"
+                android:layout_marginTop="@dimen/_8dp"
+                android:layout_marginRight="@dimen/_16dp"
                 android:background="@drawable/circle_corner_grey_100"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:paddingLeft="@dimen/pad_12dp"
-                android:paddingTop="@dimen/pad_8dp"
-                android:paddingRight="@dimen/pad_12dp"
-                android:paddingBottom="@dimen/pad_8dp">
+                android:paddingLeft="@dimen/_12dp"
+                android:paddingTop="@dimen/_8dp"
+                android:paddingRight="@dimen/_12dp"
+                android:paddingBottom="@dimen/_8dp">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -103,7 +104,7 @@
                     android:id="@+id/search_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marg_8dp"
+                    android:layout_marginStart="@dimen/_8dp"
                     android:background="@null"
                     android:hint="@string/search"
                     android:inputType="text"
@@ -115,8 +116,8 @@
                 android:id="@+id/scrollViewOnlineUser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/pad_16dp"
-                android:layout_marginBottom="@dimen/pad_16dp"
+                android:layout_marginTop="@dimen/_16dp"
+                android:layout_marginBottom="@dimen/_16dp"
                 android:scrollbars="none"
                 android:overScrollMode="never"
                 >
@@ -126,13 +127,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingLeft="@dimen/pad_12dp"
-                    android:paddingRight="@dimen/pad_12dp">
+                    android:paddingLeft="@dimen/_12dp"
+                    android:paddingRight="@dimen/_12dp">
 
                     <LinearLayout
                         android:layout_width="61dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/marg_9dp"
+                        android:layout_marginEnd="@dimen/_9dp"
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="3dp">
