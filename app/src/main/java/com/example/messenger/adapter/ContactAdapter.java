@@ -1,24 +1,33 @@
 package com.example.messenger.adapter;
 
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.ContextMenu;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.ChatActivity;
+import com.example.messenger.ChatsFragment;
+import com.example.messenger.MainActivity;
 import com.example.messenger.R;
 import com.example.messenger.model.Contact;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -30,7 +39,9 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_LOADING = 2;
     private List<Contact> contacts;
     private boolean isLoadingAdd;
-    private Context context;
+    private final Context context;
+    private ContactAdapter adapter;
+
 
     public ContactAdapter(Context context) {
         this.context = context;
@@ -43,7 +54,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        if(contacts != null && position == contacts.size() - 1 && isLoadingAdd == true) {
+        if(contacts != null && position == contacts.size() - 1 && isLoadingAdd) {
             return TYPE_LOADING;
         }
         return TYPE_ITEM;
@@ -63,19 +74,47 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         if(holder.getItemViewType() == TYPE_ITEM) {
             Contact contact = contacts.get(position);
             ContactViewHolder contactViewHolder = (ContactViewHolder) holder;
-            contactViewHolder.avatar.setImageResource(contact.getAvatarPath());
+            if(contact.getAvatarPath() == null) {
+                contactViewHolder.avatar.setImageResource(R.drawable.ic_launcher_background);
+            } else {
+                byte[] bytes = Base64.decode(contact.getAvatarPath(), Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0, bytes.length);
+                contactViewHolder.avatar.setImageBitmap(bitmap);
+            }
             contactViewHolder.chatName.setText(contact.getUsername());
             contactViewHolder.latestChat.setText(contact.getLatestMessage());
+            contactViewHolder.layoutItem.setOnClickListener(view -> {
+                chatWithOther(contact);
+            });
+            contactViewHolder.layoutItem.setOnLongClickListener(view -> {
+                AlertDialog.Builder builder1=new AlertDialog.Builder(context);
+                builder1.setMessage("Xóa cuộc trò chuyện này?");
+                builder1.setCancelable(true);
+                builder1.setPositiveButton(
+                        "Có",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                contacts.remove(position);
+                                notifyItemRemoved(position);
+                                setData(contacts);
+                                Toast.makeText(context,"Đã xóa cuộc trò chuyện",Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                builder1.setNegativeButton(
+                        "Không",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
 
-            contactViewHolder.layoutItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    chatWithOther(contact);
-                }
+                AlertDialog alert11 = builder1.create();
+                alert11.show();
+                return false;
             });
         }
     }
@@ -99,7 +138,6 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
         return 0;
     }
-
     public void addFooterLoading() {
         this.isLoadingAdd = true;
         contacts.add(new Contact());
@@ -114,6 +152,12 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             notifyItemRemoved(pos);
         }
     }
+    public void removeItem(int pos) {
+        Contact contact = contacts.get(pos);
+        if(contact != null) {
+            contacts.remove(pos);
+            notifyItemRemoved(pos);
+        }}
     public class ContactViewHolder extends RecyclerView.ViewHolder   {
         private ShapeableImageView avatar;
         private TextView chatName;
@@ -152,3 +196,4 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 }
+

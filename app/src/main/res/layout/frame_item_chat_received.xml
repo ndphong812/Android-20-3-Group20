@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:emojicon="http://schemas.android.com/tools"
+    android:layout_marginTop="@dimen/_6dp"
+    android:layout_marginBottom="@dimen/_6dp"
+    android:layout_marginStart="@dimen/_12dp"
+    android:layout_marginEnd="100dp"
+    android:gravity="center_vertical"
+    android:id="@+id/frame_item_chat">
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/avatar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_launcher_background"
+        android:layout_marginEnd="@dimen/_12dp"
+        app:shapeAppearanceOverlay="@style/cornerImageView"
+        />
+    <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        emojicon:emojiconSize="30sp"
+        android:background="@drawable/circle_corner_grey_100_round_20"
+        android:textColor="@color/black"
+        android:paddingStart="@dimen/_12dp"
+        android:paddingEnd="@dimen/_12dp"
+        android:paddingTop="@dimen/_6dp"
+        android:paddingBottom="@dimen/_6dp"
+        />
+
+</LinearLayout>

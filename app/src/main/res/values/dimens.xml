@@ -1,22 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="pad_4dp">4dp</dimen>
-    <dimen name="pad_8dp">8dp</dimen>
-    <dimen name="pad_6dp">6dp</dimen>
+    <dimen name="_4dp">4dp</dimen>
+    <dimen name="_6dp">6dp</dimen>
+    <dimen name="_8dp">8dp</dimen>
+    <dimen name="_9dp">9dp</dimen>
+    
+    <dimen name="_12dp">12dp</dimen>
+    <dimen name="_14dp">14dp</dimen>
+    <dimen name="_16dp">16dp</dimen>
+    <dimen name="_64dp">64dp</dimen>
 
-    <dimen name="pad_12dp">12dp</dimen>
-    <dimen name="pad_14">14dp</dimen>
-    <dimen name="pad_16dp">16dp</dimen>
-
-    <dimen name="marg_4dp">4dp</dimen>
-    <dimen name="marg_8dp">8dp</dimen>
-    <dimen name="marg_9dp">8dp</dimen>
-
-    <dimen name="marg_12dp">12dp</dimen>
-    <dimen name="marg_14dp">14dp</dimen>
-
-    <dimen name="marg_16dp">16dp</dimen>
-    <dimen name="marg_64dp">64dp</dimen>
-
+    <dimen name="height_of_bar">64dp</dimen>
     <dimen name="minHeightListContact">574dp</dimen>
 </resources>
