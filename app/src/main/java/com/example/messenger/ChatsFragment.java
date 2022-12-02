@@ -70,8 +70,12 @@ public class ChatsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
 
-        shapeableImageViewAvatar = view.findViewById(R.id.avatar);
-
+        shapeableImageViewAvatar = view.findViewById(R.id.Mainavatar);
+        if(shp.getString("imageUser") != null) {
+            byte[] bytes = Base64.decode(shp.getString("imageUser"), Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            shapeableImageViewAvatar.setImageBitmap(bitmap);
+        }
         shapeableImageViewAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,10 +122,12 @@ public class ChatsFragment extends Fragment {
             TextView tVCaptionOnlineUser = singleFrame.findViewById(R.id.caption);
 
             //Set data
-            if(loadUserDetails() == null) {
+            if(listUsers.get(i).getImage() == null) {
                 iVAvatarOnlineUsers.setImageResource(R.drawable.ic_launcher_background);
             } else {
-                iVAvatarOnlineUsers.setImageBitmap(loadUserDetails());
+                byte[] bytes = Base64.decode(listUsers.get(i).getImage(), Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                iVAvatarOnlineUsers.setImageBitmap(bitmap);
             }
             tVCaptionOnlineUser.setText(currentContact.getUsername());
             scrollViewOnlineUsers.addView(singleFrame);
@@ -221,12 +227,4 @@ public class ChatsFragment extends Fragment {
         return list;
     }
 
-    private Bitmap loadUserDetails() {
-        if(shp.getString("imageUser") != null) {
-            byte[] bytes = Base64.decode(shp.getString("imageUser"), Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            return bitmap;
-        }
-        return null;
-    }
 }

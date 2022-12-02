@@ -32,6 +32,7 @@ import com.example.messenger.R;
 import com.example.messenger.model.Contact;
 import com.google.android.material.imageview.ShapeableImageView;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -90,6 +91,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             contactViewHolder.layoutItem.setOnClickListener(view -> {
                 chatWithOther(contact);
             });
+
             contactViewHolder.layoutItem.setOnLongClickListener(view -> {
                 AlertDialog.Builder builder1=new AlertDialog.Builder(context);
                 builder1.setMessage("Xóa cuộc trò chuyện này?");

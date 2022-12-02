@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.messenger.Database.DataContext;
+import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.adapter.ContactAdapter;
 import com.example.messenger.adapter.FriendAdapter;
 import com.example.messenger.model.Contact;
@@ -24,6 +26,7 @@ public class PeopleFragment extends Fragment {
     private boolean isLastPage;
     private final int totalPage = 2;
     private int currentPage = 1;
+    private PreferenceManager shp;
     private List<Contact> contacts;
 
     public PeopleFragment() {
@@ -40,6 +43,7 @@ public class PeopleFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        shp = new PreferenceManager(getContext());
     }
 
     @Override
@@ -87,7 +91,7 @@ public class PeopleFragment extends Fragment {
     private List<Contact> getListContact() {
         List<Contact> list = new ArrayList<>();
         for(int i = 1; i<= 10; i++) {
-            list.add(new Contact("Friend " + i, R.drawable.ic_launcher_background, "Friend",""));
+            list.add(new Contact("Friend " + i, shp.getString("imageUser"), "Friend",""));
         }
         return list;
     }
