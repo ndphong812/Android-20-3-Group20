@@ -45,6 +45,7 @@
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/activity_chat.xml" value="0.25416666666666665" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/activity_search.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/connect_wifi_direct.xml" value="0.264" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/forgot_password.xml" value="0.25416666666666665" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/fragment_calls.xml" value="0.25416666666666665" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/fragment_chats.xml" value="0.25416666666666665" />
@@ -65,12 +66,14 @@
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/picture_receiver.xml" value="0.25416666666666665" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/picture_sender.xml" value="0.18177083333333333" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/layout/register.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25416666666666665" />
+        <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/menu/context_menu.xml" value="0.25416666666666665" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1105" />
         <entry key="..\:/abc/Android-20-3-Group20/app/src/main/res/xml/filepaths.xml" value="0.190625" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

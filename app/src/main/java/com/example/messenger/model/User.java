@@ -8,21 +8,30 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     public long ID;
+    public int port;
 
     public String name;
     public String email;
     public String password;
     public String image;
+    public String ipAddress;
 
     public User() {
     }
 
-    public User(long ID, String name, String email, String password, String image) {
+    public User(long ID, int port, String name, String email, String password, String image, String ipAddress) {
         this.ID = ID;
+        this.port = port;
         this.name = name;
         this.email = email;
         this.password = password;
         this.image = image;
+        this.ipAddress = ipAddress;
+    }
+
+    public User(String ipAddress, int port) {
+        this.ipAddress = ipAddress;
+        this.port = port;
     }
 
     public long getID() {
@@ -31,6 +40,14 @@ public class User implements Serializable {
 
     public void setID(long ID) {
         this.ID = ID;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     public String getName() {
