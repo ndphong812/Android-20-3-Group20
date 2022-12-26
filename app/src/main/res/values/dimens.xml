@@ -30,4 +30,7 @@
 
     <dimen name="height_of_bar">64dp</dimen>
     <dimen name="minHeightListContact">574dp</dimen>
+
+    <dimen name="tablet_list_width">300dp</dimen>
+    <dimen name="phone_list_height">200dp</dimen>
 </resources>

@@ -23,5 +23,8 @@
     <color name="grey_700">#b4b4b4</color>
     <color name="grey_900">#808080</color>
     <color name="gray">#808080</color>
+    <color name="status_bar_color">#FF000000</color>
+    <color name="layout_border_color">#FF111111</color>
+
 
 </resources>

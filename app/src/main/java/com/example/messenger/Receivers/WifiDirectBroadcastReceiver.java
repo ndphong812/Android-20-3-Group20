@@ -14,90 +14,99 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.messenger.DeviceDetailFragment;
+import com.example.messenger.DeviceListFragment;
+import com.example.messenger.R;
 import com.example.messenger.Register;
 
 import java.net.InetAddress;
 
 public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
-    public static final int IS_OWNER = 1;
-    public static final int IS_CLIENT = 2;
-    public static final String TAG = "Check wifi-direct";
-
-
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
-    private Register mActivity;
-    private InetAddress ownerAddr;
-    private int isGroupeOwner;
+    private Register activity;
 
-    public WifiDirectBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, Register activity) {
+    /**
+     * @param manager WifiP2pManager system service
+     * @param channel Wifi p2p channel
+     * @param activity activity associated with the receiver
+     */
+    public WifiDirectBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel,
+                                       Register activity) {
+        super();
         this.manager = manager;
         this.channel = channel;
-        this.mActivity = activity;
+        this.activity = activity;
     }
 
-    public int isGroupeOwner() { return isGroupeOwner; }
-    public InetAddress getOwnerAddr() { return ownerAddr; }
-    public void setmManager(WifiP2pManager mManager) { this.manager = mManager; }
-    public void setmChannel(WifiP2pManager.Channel mChannel) { this.channel = mChannel; }
-    public void setmActivity(Activity mActivity) { this.mActivity = (Register) mActivity; }
-
-
+    /*
+     * (non-Javadoc)
+     * @see android.content.BroadcastReceiver#onReceive(android.content.Context,
+     * android.content.Intent)
+     */
     @SuppressLint("MissingPermission")
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-
         if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
-            Log.v(TAG, "WIFI_P2P_STATE_CHANGED_ACTION");
 
-            //check if Wifi P2P is supported
+            // UI update to indicate wifi p2p status.
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
-            if(state == WifiP2pManager.WIFI_P2P_STATE_ENABLED){
-                Toast.makeText(mActivity, "Wifi P2P is supported by this device", Toast.LENGTH_SHORT).show();
-            } else{
-                Toast.makeText(mActivity, "Wifi P2P is not supported by this device", Toast.LENGTH_SHORT).show();
+            if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
+                // Wifi Direct mode is enabled
+                activity.setIsWifiP2pEnabled(true);
+            } else {
+                activity.setIsWifiP2pEnabled(false);
+                activity.resetData();
+
             }
+            Log.d(Register.TAG, "P2P state changed - " + state);
         } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
 
-            if(manager!=null) {
-                manager.requestPeers(channel,mActivity.peerListListener);
+            // request available peers from the wifi p2p manager. This is an
+            // asynchronous call and the calling activity is notified with a
+            // callback on PeerListListener.onPeersAvailable()
+            if (manager != null) {
+                manager.requestPeers(channel, (WifiP2pManager.PeerListListener) activity.getFragmentManager()
+                        .findFragmentById(R.id.frag_list));
             }
+            Log.d(Register.TAG, "P2P peers changed");
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
-            Log.e(TAG, "connected");
-            if(manager == null) {
+
+            if (manager == null) {
                 return;
             }
-            NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
-            if(networkInfo.isConnected()){
-                manager.requestConnectionInfo(channel, new WifiP2pManager.ConnectionInfoListener() {
 
-                    @Override
-                    public void onConnectionInfoAvailable(WifiP2pInfo info) {
-                        ownerAddr= info.groupOwnerAddress;
+            NetworkInfo networkInfo = (NetworkInfo) intent
+                    .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
-                        if (info.groupFormed && info.isGroupOwner) {
-                            isGroupeOwner = IS_OWNER;
-                            connectToRegister();
-                        }
+            if (networkInfo.isConnected()) {
+                // we are connected with the other device, request connection
+                // info to find group owner IP
 
-                        else if (info.groupFormed) {
-                            isGroupeOwner = IS_CLIENT;
-                            connectToRegister();
-                        }
-                    }
-                });
+                DeviceDetailFragment fragment = (DeviceDetailFragment) activity
+                        .getFragmentManager().findFragmentById(R.id.frag_detail);
+                manager.requestConnectionInfo(channel, fragment);
+                connectToRegister();
+
+            } else {
+                // It's a disconnect
+                activity.resetData();
             }
-
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
-            // do something
+            DeviceListFragment fragment = (DeviceListFragment) activity.getFragmentManager()
+                    .findFragmentById(R.id.frag_list);
+            fragment.updateThisDevice((WifiP2pDevice) intent.getParcelableExtra(
+                    WifiP2pManager.EXTRA_WIFI_P2P_DEVICE));
+
         }
     }
 
     private void connectToRegister() {
-        if(mActivity.getClass() == Register.class) {
-            ((Register)mActivity).getRegisterView().setVisibility(View.VISIBLE);
-            ((Register)mActivity).getConnectView().setVisibility(View.GONE);
+        Log.e("Class name", activity.getClass().toString());
+        if(activity.getClass() == Register.class) {
+            (activity).getRegisterView().setVisibility(View.VISIBLE);
+            (activity).getConnectView().setVisibility(View.GONE);
         }
     }
 }

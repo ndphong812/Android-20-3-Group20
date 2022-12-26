@@ -17,36 +17,29 @@
 
         <LinearLayout
             android:id="@+id/connectMain"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/goToSettings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="Go to wifi setting"
-                android:src="@drawable/wifi_icon"
-                android:layout_marginBottom="15dp"
-                android:layout_gravity="center" />
-
-            <TextView
-                android:id="@+id/textGoToSettings"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:text="Click the image above to go to Settings and connect your device to others by Wifi-Direct"
-                android:textSize="16sp"
-                android:textColor="#7980DB"
-                android:gravity="center"
-                android:layout_gravity="center_vertical"/>
-
-            <Button
-                android:id="@+id/button"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Discover" />
-
+                android:id="@+id/linearLayout1"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <fragment
+                    class ="com.example.messenger.DeviceListFragment"
+                    android:id="@+id/frag_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/phone_list_height"
+                    tools:layout="@layout/device_list"/>
+                <!-- Preview: layout=@layout/row_devices -->
+                <fragment
+                    class ="com.example.messenger.DeviceDetailFragment"
+                    android:id="@+id/frag_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:layout="@layout/device_detail"/>
+                <!-- Preview: layout=@layout/device_detail -->
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -73,7 +66,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="bottom"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                tools:ignore="ExtraText">
 
                 <EditText
                     android:id="@+id/fullname"
@@ -93,7 +87,6 @@
                     android:id="@+id/email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/username"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:drawablePadding="20dp"
