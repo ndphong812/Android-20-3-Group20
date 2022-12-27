@@ -81,7 +81,6 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         return connectView;
     }
 
-
     Button button;
 
 
@@ -201,7 +200,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 userModel.setImage("abc");
                 userModel.setName(name);
                 userModel.setPassword(pass);
-                userModel.setID("123456");
+                userModel.setID(Integer.toString(Random_Code()));
 
                 userRef.child(userModel.getID())
                         .setValue(userModel)
