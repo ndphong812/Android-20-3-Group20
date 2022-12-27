@@ -81,6 +81,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         return connectView;
     }
 
+
     Button button;
 
 
@@ -148,7 +149,6 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
 
         button = findViewById(R.id.button);
 
-
         preferenceManager = new PreferenceManager(getApplicationContext());
 
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -184,7 +184,6 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
             }
         });
 
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -200,12 +199,12 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 userModel.setImage("abc");
                 userModel.setName(name);
                 userModel.setPassword(pass);
-                userModel.setID(Integer.toString(Random_Code()));
+                userModel.setID(userModel.getEmail().split("@", 2)[0]);
 
                 userRef.child(userModel.getID())
                         .setValue(userModel)
                         .addOnFailureListener(e -> {
-                           Toast.makeText(Register.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Register.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         })
                         .addOnSuccessListener(aVoid -> {
                             Toast.makeText(Register.this, "Register success!", Toast.LENGTH_SHORT).show();
