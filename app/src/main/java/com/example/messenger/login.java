@@ -20,14 +20,19 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
 public class login extends Activity {
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://messenger-50d65-default-rtdb.firebaseio.com/");
     private PreferenceManager preferenceManager;
     EditText username, password;
     Button signin;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +43,11 @@ public class login extends Activity {
         signin = (Button) findViewById(R.id.login_btn);
         preferenceManager = new PreferenceManager(getApplicationContext());
 
-        if(preferenceManager.getBoolean("isLogin")) {
-            Intent intent  = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
+//        if(preferenceManager.getBoolean("isLogin")) {
+//            Intent intent  = new Intent(getApplicationContext(), MainActivity.class);
+//            startActivity(intent);
+//            finish();
+//        }
 
 
         signin.setOnClickListener(new View.OnClickListener() {
@@ -55,23 +60,44 @@ public class login extends Activity {
                     Toast.makeText(login.this, "Please enter all the fields", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    FirebaseAuth.getInstance().signInWithEmailAndPassword(user, pass).addOnCompleteListener(
-                            new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        Intent intent  = new Intent(getApplicationContext(), MainActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        startActivity(intent);
-                                        preferenceManager.putBoolean("isLogin", true);
-                                        preferenceManager.putString("userEmail", user);
-                                        Toast.makeText(login.this, "Sign in successfully", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(login.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
-                                    }
+                    databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String temp = user.split("@", 2)[0];
+                            if(snapshot.hasChild(temp)){
+                                final String password = snapshot.child(temp).child("password").getValue(String.class);
+                                if(password.equals(pass)) {
+                                    Toast.makeText(login.this, "OK", Toast.LENGTH_SHORT).show();
+                                }else{
+                                    Toast.makeText(login.this, "Failed", Toast.LENGTH_SHORT).show();
                                 }
+                            }else{
+                                Toast.makeText(login.this, "Wrong email", Toast.LENGTH_SHORT).show();
                             }
-                    );
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+//
+//                    FirebaseAuth.getInstance().signInWithEmailAndPassword(user, pass).addOnCompleteListener(
+//                            new OnCompleteListener<AuthResult>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<AuthResult> task) {
+//                                    if (task.isSuccessful()) {
+//                                        Intent intent  = new Intent(getApplicationContext(), MainActivity.class);
+//                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                        startActivity(intent);
+//                                        preferenceManager.putBoolean("isLogin", true);
+//                                        preferenceManager.putString("userEmail", user);
+//                                        Toast.makeText(login.this, "Sign in successfully", Toast.LENGTH_SHORT).show();
+//                                    } else {
+//                                        Toast.makeText(login.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
+//                                    }
+//                                }
+//                            }
+//                    );
                 }
             }
         });
