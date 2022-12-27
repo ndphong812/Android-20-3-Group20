@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.example.messenger.Database.DataContext;
+import com.google.firebase.auth.FirebaseAuth;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -67,6 +68,8 @@ public class forgotPass extends Activity {
                     MimeMessage mimeMessage = new MimeMessage(session);
 
                     String emailReceiver = email.getText().toString();
+
+
                     if(DB.checkEmailFormatForgot(emailReceiver)) {
                         mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(emailReceiver));
 
@@ -103,7 +106,6 @@ public class forgotPass extends Activity {
             }
         });
     }
-
 
 
     public int Random_Code()

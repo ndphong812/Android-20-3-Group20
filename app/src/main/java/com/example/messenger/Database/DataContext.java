@@ -93,7 +93,7 @@ public class DataContext extends SQLiteOpenHelper {
                 user.name = c.getString(c.getColumnIndex("name"));
                 user.password = c.getString(c.getColumnIndex("password"));
                 user.image = c.getString(c.getColumnIndex("image"));
-                user.ID = Random_Code();
+//                user.ID = Random_Code();
                 userList.add(user);
                 c.moveToNext();
             } catch (Exception e) {

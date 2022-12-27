@@ -38,6 +38,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     tools:layout="@layout/device_detail"/>
+
+                <Button
+                    android:id="@+id/button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Button" />
                 <!-- Preview: layout=@layout/device_detail -->
             </LinearLayout>
         </LinearLayout>

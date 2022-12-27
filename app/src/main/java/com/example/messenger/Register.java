@@ -31,33 +31,44 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.messenger.Database.DataContext;
 import com.example.messenger.Receivers.WifiDirectBroadcastReceiver;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.model.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Register extends AppCompatActivity implements WifiP2pManager.ChannelListener, DeviceListFragment.DeviceActionListener {
     private PreferenceManager preferenceManager;
     EditText fullName, email, password, rt_password;
     Button register;
-    DataContext DB;
-    public static final String TAG = "wifidirectdemo";
+
+    FirebaseDatabase database;
+    DatabaseReference userRef;
+
+    public static final String TAG = "Register";
     private static final int PERMISSIONS_REQUEST_CODE_ACCESS_FINE_LOCATION = 1001;
+
     private WifiP2pManager manager;
     private boolean isWifiP2pEnabled = false;
     private boolean retryChannel = false;
     private final IntentFilter intentFilter = new IntentFilter();
     private WifiP2pManager.Channel channel;
     private BroadcastReceiver receiver = null;
-
-//    public static final String TAG = "MainActivity";
-//    public static final String DEFAULT_CHAT_NAME = "";
-//    private static final int PERMISSIONS_REQUEST_CODE_ACCESS_FINE_LOCATION = 1001;
 
 
     private LinearLayout registerView;
@@ -69,6 +80,9 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
     public LinearLayout getConnectView() {
         return connectView;
     }
+
+
+    Button button;
 
 
     public void setIsWifiP2pEnabled(boolean isWifiP2pEnabled) {
@@ -133,8 +147,10 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         register = (Button) findViewById(R.id.require_btn);
 
 
+        button = findViewById(R.id.button);
+
+
         preferenceManager = new PreferenceManager(getApplicationContext());
-        DB = new DataContext(this);
 
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -157,6 +173,20 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         connectView = findViewById(R.id.connectMain);
 
 
+        database = FirebaseDatabase.getInstance();
+        userRef = database.getReference("User");
+
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                registerView.setVisibility(View.VISIBLE);
+                connectView.setVisibility(View.GONE);
+            }
+        });
+
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -165,37 +195,56 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 String pass = password.getText().toString();
                 String repass = rt_password.getText().toString();
 
-                if (name.equals("") || em.equals("") || pass.equals("") || repass.equals("")) {
-                    Toast.makeText(Register.this, "Please do not leave any fields bank", Toast.LENGTH_SHORT).show();
-                } else {
-                    if (pass.equals(repass)) {
-                        if (!DB.checkEmailFormat(em)) {
-                            if (DB.isValidPassword(pass)) {
-                                Boolean insert = DB.insertDataLogin(em, name, pass, null);
-                                if (insert) {
-                                    Toast.makeText(Register.this, "Make account successfully", Toast.LENGTH_SHORT).show();
-                                    preferenceManager.putBoolean("isLogin", false);
-                                    preferenceManager.putString("userEmail", em);
-                                    preferenceManager.putString("userName", name);
-                                    Intent intent = new Intent(getApplicationContext(), login.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    startActivity(intent);
-                                } else {
-                                    Toast.makeText(Register.this, "Make account failed", Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                Toast.makeText(Register.this, "Password is very low", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(Register.this, "User already exists or email format wrong", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(Register.this, "Passwords not matching", Toast.LENGTH_SHORT).show();
-                    }
-                }
+                User userModel = new User();
+                userModel.setEmail(em);
+                userModel.setPort(8888);
+                userModel.setImage("abc");
+                userModel.setName(name);
+                userModel.setPassword(pass);
+                userModel.setID("123456");
+
+                userRef.child(userModel.getID())
+                        .setValue(userModel)
+                        .addOnFailureListener(e -> {
+                           Toast.makeText(Register.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(Register.this, "Register success!", Toast.LENGTH_SHORT).show();
+                            Common.currentUser = userModel;
+                            Intent intent = new Intent(getApplicationContext(), login.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        });
+
+//                if (name.equals("") || em.equals("") || pass.equals("") || repass.equals("")) {
+//                    Toast.makeText(Register.this, "Please do not leave any fields bank", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    if(pass.equals(repass)) {
+//                        if(pass.length() >= 6) {
+//                            FirebaseAuth.getInstance().createUserWithEmailAndPassword(em, pass).addOnCompleteListener(
+//                                new OnCompleteListener<AuthResult>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<AuthResult> task) {
+//                                        if (task.isSuccessful()) {
+//                                            Toast.makeText(Register.this, "Signed up successfully", Toast.LENGTH_SHORT).show();
+//                                        } else {
+//                                            Toast.makeText(Register.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+//                                        }
+//                                    }
+//                                }
+//                            );
+//                        } else {
+//                            Toast.makeText(Register.this, "Password is very low", Toast.LENGTH_SHORT).show();
+//                        }
+//                    } else {
+//                        Toast.makeText(Register.this, "Passwords not matching", Toast.LENGTH_SHORT).show();
+//                    }
+//                }
             }
         });
     }
+
 
     @SuppressLint("MissingPermission")
     @Override
@@ -361,6 +410,14 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         preferenceManager.putBoolean("isLogin", false);
         Intent intent = new Intent(getApplicationContext(), login.class);
         startActivity(intent);
+    }
+
+    public int Random_Code()
+    {
+        int min = 100000;
+        int max = 999999;
+        int random_int = (int)Math.floor(Math.random()*(max-min+1)+min);
+        return random_int;
     }
 
 }
