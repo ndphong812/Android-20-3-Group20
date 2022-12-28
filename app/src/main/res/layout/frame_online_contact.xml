@@ -3,31 +3,43 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:layout_width="67dp"
+    android:layout_width="74dp"
     android:layout_height="wrap_content"
     android:paddingTop="3dp"
     android:paddingBottom="3dp"
     android:paddingLeft="@dimen/_6dp"
     android:paddingRight="@dimen/_6dp"
     >
-
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/avatar"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/ic_launcher_background"
         android:layout_width="55dp"
         android:layout_height="55dp"
         app:shapeAppearanceOverlay="@style/cornerImageView"
         />
-
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/onlineImage"
+        android:src="@drawable/ic_launcher_background"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:shapeAppearanceOverlay="@style/cornerImageView"
+        app:strokeColor="@color/black"
+        app:strokeWidth="2dp"
+        android:padding="5dp"
+        android:layout_gravity="end"
+        android:translationY="-22dp"
+        android:translationX="3dp"
+        />
     <TextView
         android:id="@+id/caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/hello_blank_fragment"
-        android:textSize="12sp"
+        android:textSize="14sp"
         android:gravity="center"
         android:textColor="@color/black"
         android:ellipsize="end"
         android:lines="2"
+        android:translationY="-20dp"
         />
 </LinearLayout>

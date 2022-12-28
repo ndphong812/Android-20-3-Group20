@@ -121,7 +121,6 @@
                 android:scrollbars="none"
                 android:overScrollMode="never"
                 >
-
                 <LinearLayout
                     android:id="@+id/view_group"
                     android:layout_width="wrap_content"
@@ -129,7 +128,6 @@
                     android:orientation="horizontal"
                     android:paddingLeft="@dimen/_12dp"
                     android:paddingRight="@dimen/_12dp">
-
                     <LinearLayout
                         android:layout_width="61dp"
                         android:layout_height="wrap_content"
