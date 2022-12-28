@@ -4,7 +4,6 @@ import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_UNSPECIFIED;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -30,17 +29,24 @@ import com.example.messenger.Database.DataContext;
 import com.example.messenger.Services.PreferenceManager;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
-
+import com.squareup.picasso.Picasso;
 import android.util.Base64;
 
 public class SettingsActivity extends AppCompatActivity{
@@ -70,6 +76,7 @@ public class SettingsActivity extends AppCompatActivity{
 
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
+        StorageReference imageStorage = storageReference.child("images/867af964-9b57-45b2-9abf-0efffc366c5e");
 
         shp = new PreferenceManager(getApplicationContext());
         DB = new DataContext(this);
@@ -80,15 +87,36 @@ public class SettingsActivity extends AppCompatActivity{
 
         avatarUser = findViewById(R.id.avatarImg);
 
+        try{
+            final File localFile = File.createTempFile("867af964-9b57-45b2-9abf-0efffc366c5e","png");
+            imageStorage.getFile(localFile)
+                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(SettingsActivity.this, "Oke", Toast.LENGTH_SHORT).show();
+                            Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                            avatarUser.setImageBitmap(bitmap);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(SettingsActivity.this, "Error loading images", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
         System.out.println(shp.getString("userEmail"));
 
-        if(DB.getImage(shp.getString("userEmail")) == null) {
-            avatarUser.setImageResource(R.drawable.ic_launcher_background);
-        } else {
-            byte[] bytes = Base64.decode(DB.getImage(shp.getString("userEmail")), Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            avatarUser.setImageBitmap(bitmap);
-        }
+//        if(DB.getImage(shp.getString("userEmail")) == null) {
+//            avatarUser.setImageResource(R.drawable.ic_launcher_background);
+//        } else {
+//            byte[] bytes = Base64.decode(DB.getImage(shp.getString("userEmail")), Base64.DEFAULT);
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//            avatarUser.setImageBitmap(bitmap);
+//        }
 
 
         String[] firstSectionLabels = {"Chế độ tối", "Tin nhắn đang chờ", "Đoạn chat đã lưu trữ"};
