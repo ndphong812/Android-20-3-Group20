@@ -189,11 +189,11 @@ public class ChatsFragment extends Fragment {
         contacts = getListContact();
         customContactAdapter.setData(contacts);
 
-//        if(currentPage < totalPage) {
-//            customContactAdapter.addFooterLoading();
-//        }else {
-//            isLastPage = true;
-//        }
+        if(currentPage < totalPage) {
+            customContactAdapter.addFooterLoading();
+        }else {
+            isLastPage = true;
+        }
     }
     private List<Contact> getListContact() {
         List<Contact> list = new ArrayList<>();
