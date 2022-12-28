@@ -72,9 +72,9 @@ public class ChatsFragment extends Fragment {
 
         shapeableImageViewAvatar = view.findViewById(R.id.Mainavatar);
         if(shp.getString("imageUser") != null) {
-            byte[] bytes = Base64.decode(shp.getString("imageUser"), Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            shapeableImageViewAvatar.setImageBitmap(bitmap);
+//            byte[] bytes = Base64.decode(shp.getString("imageUser"), Base64.DEFAULT);
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//            shapeableImageViewAvatar.setImageBitmap(bitmap);
         }
         shapeableImageViewAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
