@@ -89,6 +89,5 @@ public class MainActivity extends FragmentActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout,  fragment);
         fragmentTransaction.commit();
-
     }
 }

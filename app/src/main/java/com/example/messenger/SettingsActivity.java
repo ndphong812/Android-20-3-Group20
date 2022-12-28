@@ -21,11 +21,17 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.messenger.Database.DataContext;
 import com.example.messenger.Services.PreferenceManager;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -36,6 +42,7 @@ import android.util.Base64;
 public class SettingsActivity extends AppCompatActivity{
 
     PreferenceManager shp;
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://messenger-50d65-default-rtdb.firebaseio.com/");
     private String encodedImage;
     ImageView avatarUser;
     DataContext DB;
@@ -45,19 +52,23 @@ public class SettingsActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_settings);
 
-        int itemHeight = 165;
+        ListView optionsListView = findViewById(R.id.firstListView);
 
-        ListView firstListView = findViewById(R.id.firstListView);
-        ListView secondListView = findViewById(R.id.secondListView);
-        ListView thirdListView = findViewById(R.id.thirdListView);
-        ListView fourthListView = findViewById(R.id.fourthListView);
         shp = new PreferenceManager(getApplicationContext());
         DB = new DataContext(this);
 
-
         TextView UserName = findViewById(R.id.usernameTxt);
-        UserName.setText(shp.getString("userName"));
+        databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                UserName.setText(snapshot.child(shp.getString("userID")).child("name").getValue(String.class));
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         avatarUser = findViewById(R.id.avatarImg);
 
         System.out.println(shp.getString("userEmail"));
@@ -70,29 +81,13 @@ public class SettingsActivity extends AppCompatActivity{
             avatarUser.setImageBitmap(bitmap);
         }
 
+        String[] sectionLabels = {"Chế độ tối", "Đăng xuất", "Đổi mật khẩu"};
 
-        String[] firstSectionLabels = {"Chế độ tối", "Tin nhắn đang chờ", "Đoạn chat đã lưu trữ"};
-        String[] secondSectionLabels = {"Trạng thái hoạt động", "Tên người dùng"};
-        String[] thirdSectionLabels = {"Quyền riêng tư", "Avatar", "Thông báo và âm thanh", "SMS", "Danh bạ điện thoại", "Ảnh và file phương tiện", "Bong bóng"};
-        String[] fourthSectionLabels = {"Chuyển tài khoản", "Cài đặt tài khoản", "Trợ giúp", "Chính sách và quyền lợi"};
+        Integer[] sectionIcons = {R.drawable.ic_dark_mode, R.drawable.ic_switch_account, R.drawable.ic_account_settings};
 
-        Integer[] firstSectionIcons = {R.drawable.ic_dark_mode, R.drawable.ic_request_message, R.drawable.ic_archived_chat};
-        Integer[] secondSectionIcons = {R.drawable.ic_active_status, R.drawable.ic_username};
-        Integer[] thirdSectionIcons = {R.drawable.ic_privacy, R.drawable.ic_avatar, R.drawable.ic_notification, R.drawable.ic_sms, R.drawable.ic_contacts, R.drawable.ic_image_media, R.drawable.ic_bubbles};
-        Integer[] fourthSectionIcons = {R.drawable.ic_switch_account, R.drawable.ic_account_settings, R.drawable.ic_help, R.drawable.ic_policies};
+        AdapterSettings firstAdapter;
 
-        AdapterSettings firstAdapter, secondAdapter, thirdAdapter, fourthAdapter;
-
-        firstListView.getLayoutParams().height = firstSectionLabels.length * itemHeight;
-        secondListView.getLayoutParams().height = secondSectionLabels.length * itemHeight;
-        thirdListView.getLayoutParams().height = thirdSectionLabels.length * itemHeight;
-        fourthListView.getLayoutParams().height = fourthSectionLabels.length * itemHeight;
-
-        firstAdapter = new AdapterSettings(SettingsActivity.this, R.layout.layout_settings_item, firstSectionLabels, firstSectionIcons);
-        secondAdapter = new AdapterSettings(SettingsActivity.this, R.layout.layout_settings_item, secondSectionLabels, secondSectionIcons);
-        thirdAdapter = new AdapterSettings(SettingsActivity.this, R.layout.layout_settings_item, thirdSectionLabels, thirdSectionIcons);
-        fourthAdapter = new AdapterSettings(SettingsActivity.this, R.layout.layout_settings_item, fourthSectionLabels, fourthSectionIcons);
-
+        firstAdapter = new AdapterSettings(SettingsActivity.this, R.layout.layout_settings_item, sectionLabels, sectionIcons);
 
         avatarUser.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,51 +99,28 @@ public class SettingsActivity extends AppCompatActivity{
             }
         });
 
-        firstListView.setAdapter(firstAdapter);
-        firstListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        optionsListView.setAdapter(firstAdapter);
+        optionsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i == 0) {
-                    if (AppCompatDelegate.getDefaultNightMode() == MODE_NIGHT_UNSPECIFIED) {
-                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
-                        Toast.makeText(SettingsActivity.this, "Chế độ tối đang bật", Toast.LENGTH_LONG).show();
-                    } else if (AppCompatDelegate.getDefaultNightMode() == MODE_NIGHT_NO) {
-                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
-                        Toast.makeText(SettingsActivity.this, "Chế độ tối đang bật", Toast.LENGTH_LONG).show();
+                switch (i) {
+                    case 0:
+                        if (AppCompatDelegate.getDefaultNightMode() == MODE_NIGHT_UNSPECIFIED) {
+                            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
+                            Toast.makeText(SettingsActivity.this, "Chế độ tối đang bật", Toast.LENGTH_LONG).show();
+                        } else if (AppCompatDelegate.getDefaultNightMode() == MODE_NIGHT_NO) {
+                            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
+                            Toast.makeText(SettingsActivity.this, "Chế độ tối đang bật", Toast.LENGTH_LONG).show();
 
-                    } else {
-                        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
-                        Toast.makeText(SettingsActivity.this, "Chế độ tối đang tắt", Toast.LENGTH_LONG).show();
-
-                    }
-                    ;
-                } else {
-                    Toast.makeText(SettingsActivity.this, "This part is not available for now!", Toast.LENGTH_LONG).show();
+                        } else {
+                            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
+                            Toast.makeText(SettingsActivity.this, "Chế độ tối đang tắt", Toast.LENGTH_LONG).show();
+                        }
+                        break;
+                    default:
+                        Toast.makeText(SettingsActivity.this, "This part is not available for now!", Toast.LENGTH_LONG).show();
+                        break;
                 }
-            }
-        });
-
-        secondListView.setAdapter(secondAdapter);
-        secondListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(SettingsActivity.this, "This part is not available for now!", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        thirdListView.setAdapter(thirdAdapter);
-        thirdListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(SettingsActivity.this, "This part is not available for now!", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        fourthListView.setAdapter(fourthAdapter);
-        fourthListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(SettingsActivity.this, "This part is not available for now!", Toast.LENGTH_LONG).show();
             }
         });
     }

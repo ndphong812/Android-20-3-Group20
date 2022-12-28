@@ -16,7 +16,7 @@
         <ImageButton
             android:id="@+id/btnBack"
             android:layout_width="57dp"
-            android:layout_height="10dp"
+            android:layout_height="match_parent"
             android:background="@color/transparent"
             android:paddingTop="5dp"
             android:src="@drawable/ic_baseline_arrow_back_24"
@@ -32,10 +32,10 @@
     </LinearLayout>
 
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none">
+<!--    <ScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:scrollbars="none">-->
         <LinearLayout
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -61,8 +61,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="10dp"
                     android:id="@+id/usernameTxt"
-                    android:layout_gravity="center_horizontal"
-                    android:text="This is a username"/>
+                    android:layout_gravity="center_horizontal" />
             </LinearLayout>
 
             <LinearLayout
@@ -75,55 +74,7 @@
                     android:layout_height="wrap_content"
                     android:scrollbars="none"
                     android:divider="@color/transparent"/>
-
-                <TextView
-                    android:textSize="18sp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:paddingStart="15dp"
-                    android:text="Trang cá nhân"/>
-
-                <ListView
-                    android:id="@+id/secondListView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none"
-                    android:divider="@color/transparent"/>
-
-                <TextView
-                    android:textSize="18sp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:paddingStart="15dp"
-                    android:text="Tùy chọn"/>
-
-                <ListView
-                    android:id="@+id/thirdListView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none"
-                    android:divider="@color/transparent"/>
-
-                <TextView
-                    android:textSize="18sp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:paddingStart="15dp"
-                    android:text="Tài khoản"/>
-
-                <ListView
-                    android:id="@+id/fourthListView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none"
-                    android:divider="@color/transparent"/>
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+<!--    </ScrollView>-->
 </LinearLayout>
