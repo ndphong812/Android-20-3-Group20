@@ -183,12 +183,6 @@ public class SettingsActivity extends AppCompatActivity{
 
         // Defining Implicit Intent to mobile gallery
 
-        Toast
-                .makeText(SettingsActivity.this,
-                        "Loading...",
-                        Toast.LENGTH_SHORT)
-                .show();
-
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
