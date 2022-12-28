@@ -67,6 +67,7 @@ public class login extends Activity {
                             if(snapshot.hasChild(temp)){
                                 final String password = snapshot.child(temp).child("password").getValue(String.class);
                                 if(password.equals(pass)) {
+                                    preferenceManager.putString("username",user);
                                     Toast.makeText(login.this, "OK", Toast.LENGTH_SHORT).show();
                                     Intent intent  = new Intent(getApplicationContext(), MainActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

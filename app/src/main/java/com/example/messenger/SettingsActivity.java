@@ -53,6 +53,7 @@ public class SettingsActivity extends AppCompatActivity{
 
     PreferenceManager shp;
     private String encodedImage;
+    private PreferenceManager preferenceManager;
     ImageView avatarUser;
     DataContext DB;
     private final int PICK_IMAGE_REQUEST = 22;
@@ -67,7 +68,7 @@ public class SettingsActivity extends AppCompatActivity{
         setContentView(R.layout.layout_settings);
 
         int itemHeight = 165;
-
+        preferenceManager = new PreferenceManager(getApplicationContext());
 
         ListView firstListView = findViewById(R.id.firstListView);
         ListView secondListView = findViewById(R.id.secondListView);
@@ -76,7 +77,7 @@ public class SettingsActivity extends AppCompatActivity{
 
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-        StorageReference imageStorage = storageReference.child("images/867af964-9b57-45b2-9abf-0efffc366c5e");
+        StorageReference imageStorage = storageReference.child("images/"+preferenceManager.getString("username"));
 
         shp = new PreferenceManager(getApplicationContext());
         DB = new DataContext(this);
@@ -88,7 +89,7 @@ public class SettingsActivity extends AppCompatActivity{
         avatarUser = findViewById(R.id.avatarImg);
 
         try{
-            final File localFile = File.createTempFile("867af964-9b57-45b2-9abf-0efffc366c5e","png");
+            final File localFile = File.createTempFile(preferenceManager.getString("username"),"png");
             imageStorage.getFile(localFile)
                     .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                         @Override
@@ -282,7 +283,7 @@ public class SettingsActivity extends AppCompatActivity{
                     = storageReference
                     .child(
                             "images/"
-                                    + UUID.randomUUID().toString());
+                                    + preferenceManager.getString("username"));
 
             // adding listeners on upload
             // or failure of image
