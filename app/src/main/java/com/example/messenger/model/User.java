@@ -14,18 +14,19 @@ public class User implements Serializable {
     public String email;
     public String password;
     public String image;
-
+    public Boolean isLogined;
     public User() {
 
     }
 
-    public User(String ID, int port, String name, String email, String password, String image) {
+    public User(String ID, int port, String name, String email, String password, String image, Boolean isLogined) {
         this.id = ID;
         this.port = port;
         this.name = name;
         this.email = email;
         this.password = password;
         this.image = image;
+        this.isLogined = isLogined;
     }
 
     public User(int port) {
@@ -78,5 +79,13 @@ public class User implements Serializable {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public Boolean getIsLogined() {
+        return isLogined;
+    }
+
+    public void setIsLogined(Boolean isLogined) {
+        this.isLogined = isLogined;
     }
 }

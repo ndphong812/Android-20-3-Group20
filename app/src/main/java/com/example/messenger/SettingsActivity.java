@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -57,7 +58,7 @@ public class SettingsActivity extends AppCompatActivity{
     DataContext DB;
     private final int PICK_IMAGE_REQUEST = 22;
     private Uri filePath;
-
+    Button logoutButton;
     FirebaseStorage storage;
     StorageReference storageReference;
 
@@ -87,7 +88,6 @@ public class SettingsActivity extends AppCompatActivity{
             }
         });
         avatarUser = findViewById(R.id.avatarImg);
-
         try{
             final File localFile = File.createTempFile(preferenceManager.getString("username"),"png");
             imageStorage.getFile(localFile)
@@ -158,6 +158,25 @@ public class SettingsActivity extends AppCompatActivity{
                             AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
                             Toast.makeText(SettingsActivity.this, "Chế độ tối đang tắt", Toast.LENGTH_LONG).show();
                         }
+                        break;
+                    case 1:
+                        databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String user = preferenceManager.getString("username");
+                                String temp = user.split("@", 2)[0];
+                                Toast.makeText(SettingsActivity.this, "Logout successfully", Toast.LENGTH_SHORT).show();
+                                databaseReference.child("User").child(temp.toString()).child("isLogined").setValue(false);
+
+                                Intent intent  = new Intent(getApplicationContext(), login.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
                         break;
                     default:
                         Toast.makeText(SettingsActivity.this, "This part is not available for now!", Toast.LENGTH_LONG).show();
