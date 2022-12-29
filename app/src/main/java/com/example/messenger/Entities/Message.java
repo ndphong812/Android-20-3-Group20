@@ -1,24 +1,16 @@
 package com.example.messenger.Entities;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Environment;
-import android.util.Log;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
-public class Message implements Serializable {
+public class Message {
+    public String FromMail;
+    public String ToMail;
+    public String Message;
+    public String SentDate;
+
     private static final String TAG = "Message";
     public static final int TEXT_MESSAGE = 1;
-    public static final int IMAGE_MESSAGE = 2;
-    public static final int VIDEO_MESSAGE = 3;
-    public static final int AUDIO_MESSAGE = 4;
-    public static final int FILE_MESSAGE = 5;
 
     private int mType;
     private String mText;
@@ -30,10 +22,18 @@ public class Message implements Serializable {
     private String filePath;
     private boolean isMine;
 
-    //// MARK: 16/06/2018 stores a record of all users this message been to
-    private ArrayList<String> user_record;
+    public Message() {}
 
-    //Getters and Setters
+    public Message(int type, String fromMail, String toMail, String message, String sentDate, Boolean IsMine, InetAddress sender) {
+        FromMail = fromMail;
+        ToMail = toMail;
+        Message = message;
+        SentDate = sentDate;
+        isMine = IsMine;
+        mType = type;
+        senderAddress = sender;
+    }
+
     public int getmType() { return mType; }
     public void setmType(int mType) { this.mType = mType; }
     public String getmText() { return mText; }
@@ -52,56 +52,38 @@ public class Message implements Serializable {
     public void setFilePath(String filePath) { this.filePath = filePath; }
     public boolean isMine() { return isMine; }
     public void setMine(boolean isMine) { this.isMine = isMine; }
-    public ArrayList<String> getUser_record() {
-        return user_record;
-    }
-    public void setUser_record(String user_name) {
-        this.user_record.add(user_name);
+
+    public String getFromMail() {
+        return FromMail;
     }
 
-    public Message(int type, String text, InetAddress sender, String name){
-        mType = type;
-        mText = text;
-        senderAddress = sender;
-        chatName = name;
-        user_record = new ArrayList<>();
+    public void setFromMail(String fromMail) {
+        FromMail = fromMail;
     }
 
-    public Bitmap byteArrayToBitmap(byte[] b){
-        Log.v(TAG, "Convert byte array to image (bitmap)");
-        return BitmapFactory.decodeByteArray(b, 0, b.length);
+    public String getToMail() {
+        return ToMail;
     }
 
-    public void saveByteArrayToFile(Context context){
-        Log.v(TAG, "Save byte array to file");
-        switch(mType){
-            case Message.AUDIO_MESSAGE:
-                filePath = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath()+"/"+fileName;
-                break;
-            case Message.VIDEO_MESSAGE:
-                filePath = context.getExternalFilesDir(Environment.DIRECTORY_MOVIES).getAbsolutePath()+"/"+fileName;
-                break;
-            case Message.FILE_MESSAGE:
-                filePath = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()+"/"+fileName;
-                break;
-        }
-
-        File file = new File(filePath);
-
-        if (file.exists()) {
-            file.delete();
-        }
-
-        try {
-            FileOutputStream fos=new FileOutputStream(file.getPath());
-
-            fos.write(byteArray);
-            fos.close();
-            Log.v(TAG, "Write byte array to file DONE !");
-        }
-        catch (java.io.IOException e) {
-            e.printStackTrace();
-            Log.e(TAG, "Write byte array to file FAILED !");
-        }
+    public void setToMail(String toMail) {
+        ToMail = toMail;
     }
+
+    public String getMessage() {
+        return Message;
+    }
+
+    public void setMessage(String message) {
+        Message = message;
+    }
+
+    public String getSentDate() {
+        return SentDate;
+    }
+
+    public void setSentDate(String sentDate) {
+        SentDate = sentDate;
+    }
+
+
 }
