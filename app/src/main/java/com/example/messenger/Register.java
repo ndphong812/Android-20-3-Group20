@@ -409,6 +409,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         preferenceManager.putBoolean("isLogin", false);
         Intent intent = new Intent(getApplicationContext(), login.class);
         startActivity(intent);
+        finish();
     }
 
     public int Random_Code()

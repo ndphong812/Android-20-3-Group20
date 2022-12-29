@@ -74,6 +74,7 @@ public class login extends Activity {
                                     Intent intent  = new Intent(getApplicationContext(), MainActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(intent);
+                                    finish();
                                 }else{
                                     Toast.makeText(login.this, "Failed", Toast.LENGTH_SHORT).show();
                                 }

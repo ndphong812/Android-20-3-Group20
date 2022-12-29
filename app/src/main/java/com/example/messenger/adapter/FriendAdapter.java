@@ -30,6 +30,7 @@ import com.example.messenger.ChatActivity;
 import com.example.messenger.ChatsFragment;
 import com.example.messenger.MainActivity;
 import com.example.messenger.R;
+import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.model.Contact;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -78,9 +79,10 @@ public class FriendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if(holder.getItemViewType() == TYPE_ITEM) {
             Contact contact = contacts.get(position);
             ContactViewHolder contactViewHolder = (ContactViewHolder) holder;
-            byte[] bytes = Base64.decode(contact.getAvatarPath(), Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            contactViewHolder.avatar.setImageBitmap(bitmap);
+
+            LoadImageFromURL loadImageFromURL = new LoadImageFromURL(contactViewHolder.avatar);
+            loadImageFromURL.execute();
+
             contactViewHolder.chatName.setText(contact.getUsername());
             contactViewHolder.latestChat.setText(contact.getLatestMessage());
             contactViewHolder.layoutItem.setOnClickListener(view -> {

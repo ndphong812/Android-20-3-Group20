@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends FragmentActivity {
-
     ActivityMainBinding binding;
     ArrayList<User> listUsers;
     DataContext DB;
@@ -57,7 +56,7 @@ public class MainActivity extends FragmentActivity {
                 break;
             }
         }
-        chatFragment.UsersData(listUsers);
+
         ft.replace(R.id.frame_layout, chatFragment);
         ft.commit();
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -73,7 +72,6 @@ public class MainActivity extends FragmentActivity {
                             break;
                         }
                     }
-                    chatFragment.UsersData(listUsers);
                     ft2.replace(R.id.frame_layout, chatFragment);
                     ft2.commit();
                     break;
