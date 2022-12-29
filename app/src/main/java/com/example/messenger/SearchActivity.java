@@ -1,6 +1,5 @@
 package com.example.messenger;
 
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -113,24 +112,17 @@ public class SearchActivity extends Activity {
                 }
             }
         });
-
-        imageButtonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent backIntent = new Intent(getApplication(), MainActivity.class);
-                startActivity(backIntent);
-                finish();
-                listResult.clear();
-            }
+        imageButtonBack.setOnClickListener(view -> {
+            Intent backIntent = new Intent(getApplication(), MainActivity.class);
+            startActivity(backIntent);
+            finish();
+            listResult.clear();
         });
 
-        imageButtonClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                editTextSearch.setText("");
-                editTextSearch.requestFocus();
-                listResult.clear();
-            }
+        imageButtonClear.setOnClickListener(view -> {
+            editTextSearch.setText("");
+            editTextSearch.requestFocus();
+            listResult.clear();
         });
     }
 }

@@ -41,6 +41,9 @@ public class User implements Serializable {
         return friends;
     }
 
+    public void pushFriends(String newFriendID) {
+        this.friends.add(newFriendID);
+    }
     public User(int port) {
         this.port = port;
     }
