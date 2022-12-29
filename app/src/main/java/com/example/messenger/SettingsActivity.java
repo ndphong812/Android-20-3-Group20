@@ -178,6 +178,9 @@ public class SettingsActivity extends AppCompatActivity{
                             }
                         });
                         break;
+                    case 2:
+
+                        break;
                     default:
                         Toast.makeText(SettingsActivity.this, "This part is not available for now!", Toast.LENGTH_LONG).show();
                         break;
