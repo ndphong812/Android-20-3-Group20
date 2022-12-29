@@ -7,13 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.messenger.R;
+import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.model.Contact;
+import com.example.messenger.model.User;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import org.w3c.dom.Text;
@@ -21,15 +24,17 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewUserAdapter extends ArrayAdapter<Contact> {
+public class NewUserAdapter extends ArrayAdapter<User> {
 
     private Context context;
-    private ArrayList<Contact> listUsers;
+    private ArrayList<User> listUsers;
+    private User currentUser;
 
-    public NewUserAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Contact> objects) {
+    public NewUserAdapter(@NonNull Context context, int resource, @NonNull ArrayList<User> objects, User currentUser) {
         super(context, resource, objects);
         this.context = context;
         this.listUsers = objects;
+        this.currentUser = currentUser;
     }
 
     @NonNull
@@ -44,14 +49,20 @@ public class NewUserAdapter extends ArrayAdapter<Contact> {
 
             viewHolder.avatar = (ShapeableImageView) convertView.findViewById(R.id.avatar);
             viewHolder.username = (TextView) convertView.findViewById(R.id.username);
+            viewHolder.addBtn = (Button) convertView.findViewById(R.id.addFriend);
 
             convertView.setTag(viewHolder);
         }else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.avatar.setImageBitmap(BitmapFactory.decodeFile(listUsers.get(position).getAvatarPath()));
-        viewHolder.username.setText(listUsers.get(position).getUsername());
+        LoadImageFromURL loadImageFromURL = new LoadImageFromURL(viewHolder.avatar);
+        loadImageFromURL.execute(listUsers.get(position).getImage());
+        viewHolder.username.setText(listUsers.get(position).getName());
+
+        if(currentUser.getFriends().contains(listUsers.get(position).getName())) {
+            viewHolder.addBtn.setVisibility(View.INVISIBLE);
+        }
 
         return convertView;
     }
@@ -59,5 +70,6 @@ public class NewUserAdapter extends ArrayAdapter<Contact> {
     public class ViewHolder {
         ShapeableImageView avatar;
         TextView username;
+        Button addBtn;
     }
 }

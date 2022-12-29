@@ -15,6 +15,7 @@
         android:paddingRight="@dimen/_12dp"
         android:paddingBottom="@dimen/_6dp"
         android:paddingTop="@dimen/_6dp"
+        android:background="@drawable/border_layout"
         >
         <ImageButton
             android:id="@+id/back_btn"
@@ -25,14 +26,24 @@
             android:background="@drawable/circle_corner_white"
             android:contentDescription="@string/content_des"
             />
+
         <EditText
-            android:layout_width="match_parent"
+            android:id="@+id/search_input"
+            android:layout_width="280dp"
             android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/_16dp"
             android:background="@null"
             android:hint="@string/search"
-            android:layout_marginStart="@dimen/_16dp"
-            android:focusable="true"
-            android:inputType="text"
+            android:inputType="text" />
+        <ImageButton
+            android:id="@+id/clear_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_baseline_close_24"
+            android:padding="@dimen/_8dp"
+            android:background="@drawable/circle_corner_white"
+            android:contentDescription="@string/content_des"
+            android:visibility="invisible"
             />
     </LinearLayout>
 

@@ -146,7 +146,6 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         rt_password = (EditText) findViewById(R.id.rt_password);
         register = (Button) findViewById(R.id.require_btn);
 
-
         button = findViewById(R.id.button);
 
         preferenceManager = new PreferenceManager(getApplicationContext());
@@ -201,6 +200,9 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 userModel.setPassword(pass);
                 userModel.setID(userModel.getEmail().split("@", 2)[0]);
                 userModel.setIsLogined(false);
+                List<String> friends = new ArrayList<>();
+                friends.add("");
+                userModel.setFriends(friends);
 
                 userRef.child(userModel.getID())
                         .setValue(userModel)

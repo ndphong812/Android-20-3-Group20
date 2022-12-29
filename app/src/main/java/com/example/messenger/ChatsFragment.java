@@ -1,20 +1,19 @@
 package com.example.messenger;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -86,6 +85,7 @@ public class ChatsFragment extends Fragment {
         preferenceManager = new PreferenceManager(getContext());
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -106,24 +106,12 @@ public class ChatsFragment extends Fragment {
         });
 
         //Handle search box
+        editTextSearch.setFocusableInTouchMode(false);
         editTextSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("ListFriend", (Serializable) listUsers);
-                searchIntent.putExtras(bundle);
                 startActivity(searchIntent);
-                getActivity().finish();
-            }
-        });
-
-        editTextSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
-                startActivity(searchIntent);
-                getActivity().finish();
             }
         });
 

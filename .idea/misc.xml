@@ -11,11 +11,18 @@
         <entry key="..\:/SV/22-23/Mobile/PJ/Android-20-3-Group20/app/src/main/res/layout/picture_sender.xml" value="0.27447916666666666" />
         <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/drawable/back_ground.xml" value="0.1235" />
         <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/drawable/border_image.xml" value="0.1235" />
+        <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/drawable/border_layout.xml" value="0.1235" />
+        <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/drawable/button_pressed.xml" value="0.1235" />
         <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/drawable/circle_corner_grey_100.xml" value="0.1235" />
         <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/drawable/circle_corner_grey_100_round_20.xml" value="0.1235" />
         <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/drawable/circle_corner_primary.xml" value="0.1235" />
         <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/drawable/circle_corner_white.xml" value="0.1235" />
+        <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.1235" />
+        <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/layout/activity_chat.xml" value="0.16770833333333332" />
+        <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/layout/activity_main.xml" value="0.16770833333333332" />
+        <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/layout/activity_search.xml" value="0.16770833333333332" />
         <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/layout/fragment_chats.xml" value="0.16770833333333332" />
+        <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/layout/frame_new_user.xml" value="0.16770833333333332" />
         <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/layout/frame_online_contact.xml" value="0.3333333333333333" />
         <entry key="..\:/Workspace/android/Android-20-3-Group20/app/src/main/res/layout/login.xml" value="0.1" />
         <entry key="..\:/Workspace/android/Messenger/Android-20-3-Group20/app/src/main/res/drawable-v24/circle_corner.xml" value="0.1235" />
