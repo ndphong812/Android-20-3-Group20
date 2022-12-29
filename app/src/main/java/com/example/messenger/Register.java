@@ -203,6 +203,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 userModel.setName(name);
                 userModel.setPassword(pass);
                 userModel.setID(userModel.getEmail().split("@", 2)[0]);
+                userModel.setIsLogined(false);
 
                 if (name.equals("") || em.equals("") || pass.equals("") || repass.equals("")) {
                     Toast.makeText(Register.this, "Please do not leave any fields bank", Toast.LENGTH_SHORT).show();
