@@ -18,6 +18,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.messenger.P2P.Client;
+import com.example.messenger.P2P.Server;
+import com.example.messenger.Receivers.WifiDirectBroadcastReceiver;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.adapter.ContactAdapter;
 import com.example.messenger.model.Contact;

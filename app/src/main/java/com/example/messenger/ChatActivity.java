@@ -1,46 +1,48 @@
 package com.example.messenger;
 
 
-import android.app.Activity;
+import android.Manifest;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ShareActionProvider;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.Database.DataContext;
+import com.example.messenger.Entities.Message;
+import com.example.messenger.Receivers.WifiDirectBroadcastReceiver;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.adapter.ChatAdapter;
 import com.example.messenger.databinding.ActivityChatBinding;
 import com.example.messenger.model.Contact;
-import com.example.messenger.model.Message;
 import com.example.messenger.model.User;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,11 +80,38 @@ public class ChatActivity extends AppCompatActivity {
     private EmojIconActions emojIconActions;
     private ConstraintLayout activityChatLayout;
     private PreferenceManager shp;
-    Uri fileUri;
     public static final int MY_RESULT_LOAD_IMAGE = 7172;
     public static final int MY_CAMERA_REQUEST_CODE = 7171;
     String senderEmail;
     DataContext DB;
+
+    private static final String TAG = "ChatActivity";
+    private static final int PICK_IMAGE = 1;
+    private static final int TAKE_PHOTO = 2;
+    private static final int RECORD_AUDIO = 3;
+    private static final int RECORD_VIDEO = 4;
+    private static final int CHOOSE_FILE = 5;
+    private static final int DRAWING = 6;
+    private static final int DOWNLOAD_IMAGE = 100;
+    private static final int DELETE_MESSAGE = 101;
+    private static final int DOWNLOAD_FILE = 102;
+    private static final int COPY_TEXT = 103;
+    private static final int SHARE_TEXT = 104;
+    private static final int REQUEST_PERMISSIONS_REQUIRED = 7;
+
+    private WifiP2pManager mManager;
+    private WifiP2pManager.Channel mChannel;
+    private WifiDirectBroadcastReceiver mReceiver;
+    private IntentFilter mIntentFilter;
+    private EditText edit;
+    private static ListView listView;
+    private static List<Message> listMessage;
+    private static ChatAdapter chatAdapter;
+    private Uri fileUri;
+    private String fileURL;
+    private ArrayList<Uri> tmpFilesUri;
+    private Uri mPhotoUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +121,30 @@ public class ChatActivity extends AppCompatActivity {
         shp = new PreferenceManager(getApplicationContext());
         setContentView(binding.getRoot());
         getChatContact();
+
+
+        mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+        mChannel = mManager.initialize(this, getMainLooper(), null);
+        mReceiver = WifiDirectBroadcastReceiver.createInstance();
+        mReceiver.setmActivity(this);
+
+        String[] PERMISSIONS = {
+                Manifest.permission.CAMERA,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.RECORD_AUDIO
+        };
+
+        if(!hasPermissions(this, PERMISSIONS)){
+            ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSIONS_REQUIRED);
+        }
+
+        mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+
 
         // Init attributes
         imageButtonBack = (ImageButton) findViewById(R.id.back_btn);
@@ -177,8 +230,8 @@ public class ChatActivity extends AppCompatActivity {
                 String msg = editTextInputChat.getText().toString();
                 if(!msg.equals("")) {
                     String sentDate = CurrentDateTimeChat();
-                    DB.insertDataMessage(senderEmail, receiverUser.getEmail(), msg, sentDate);
-                    customChatAdapter.addChatItem(new Message(1,senderEmail,receiverUser.getEmail(), msg,sentDate, true));
+                    sendMessage(Message.TEXT_MESSAGE);
+//                    customChatAdapter.addChatItem(new Message(senderEmail,receiverUser.getEmail(), msg,sentDate, true));
                     recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
                     editTextInputChat.setText("");
                     editTextInputChat.requestFocus();
@@ -209,6 +262,10 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
         emojIconActions.setUseSystemEmoji(true);
+    }
+
+    private void sendMessage(int type) {
+        Message message = new Message();
     }
 
 
@@ -243,19 +300,44 @@ public class ChatActivity extends AppCompatActivity {
 
     private List<Message> getListMessage() {
         List<Message> list = new ArrayList<>();
-        list = DB.getChat(senderEmail, receiverUser.getEmail());
         Collections.sort(list, new Comparator<Message>() {
             @Override
             public int compare(Message message, Message t1) {
                 return message.getSentDate().compareTo(t1.getSentDate());
             }
         });
-        for(int i=0;i<list.size();i++) {
-            if(!list.get(i).getFromMail().equals(senderEmail)) {
-                list.get(i).setFromSelf(false);
+//        for(int i=0;i<list.size();i++) {
+//            if(!list.get(i).getFromMail().equals(senderEmail)) {
+//                list.get(i).setFromSelf(false);
+//            }
+//        }
+        return list;
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
             }
         }
-        return list;
+        return true;
+    }
+
+    public static void refreshList(Message message, boolean isMine){
+//		Log.v(TAG, "Refresh message list starts");
+
+        message.setMine(isMine);
+//		Log.e(TAG, "refreshList: message is from :"+message.getSenderAddress().getHostAddress() );
+//		Log.e(TAG, "refreshList: message is from :"+isMine );
+        listMessage.add(message);
+        chatAdapter.notifyDataSetChanged();
+
+//    	Log.v(TAG, "Chat Adapter notified of the changes");
+
+        //Scroll to the last element of the list
+        listView.setSelection(listMessage.size() - 1);
     }
 
     @Override
@@ -292,6 +374,4 @@ public class ChatActivity extends AppCompatActivity {
             }
         }
     }
-
-
 }

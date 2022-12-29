@@ -68,6 +68,7 @@ public class login extends Activity {
                                 final String password = snapshot.child(temp).child("password").getValue(String.class);
                                 if(password.equals(pass)) {
                                     Toast.makeText(login.this, "OK", Toast.LENGTH_SHORT).show();
+                                    preferenceManager.putString("userID", temp);
                                     Intent intent  = new Intent(getApplicationContext(), MainActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(intent);
@@ -83,24 +84,6 @@ public class login extends Activity {
 
                         }
                     });
-//
-//                    FirebaseAuth.getInstance().signInWithEmailAndPassword(user, pass).addOnCompleteListener(
-//                            new OnCompleteListener<AuthResult>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<AuthResult> task) {
-//                                    if (task.isSuccessful()) {
-//                                        Intent intent  = new Intent(getApplicationContext(), MainActivity.class);
-//                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                        startActivity(intent);
-//                                        preferenceManager.putBoolean("isLogin", true);
-//                                        preferenceManager.putString("userEmail", user);
-//                                        Toast.makeText(login.this, "Sign in successfully", Toast.LENGTH_SHORT).show();
-//                                    } else {
-//                                        Toast.makeText(login.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
-//                                    }
-//                                }
-//                            }
-//                    );
                 }
             }
         });
