@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class User implements Serializable {
 
@@ -15,6 +17,7 @@ public class User implements Serializable {
     public String password;
     public String image;
     public Boolean isLogined;
+    public List<String> friends;
     public User() {
 
     }
@@ -27,8 +30,20 @@ public class User implements Serializable {
         this.password = password;
         this.image = image;
         this.isLogined = isLogined;
+        this.friends = new ArrayList<>();
     }
 
+    public void setFriends(List<String> friends) {
+        this.friends = friends;
+    }
+
+    public List<String> getFriends() {
+        return friends;
+    }
+
+    public void pushFriends(String newFriendID) {
+        this.friends.add(newFriendID);
+    }
     public User(int port) {
         this.port = port;
     }

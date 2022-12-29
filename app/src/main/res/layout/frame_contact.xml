@@ -10,7 +10,7 @@
         >
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/avatar"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/ic_launcher_background"
             app:shapeAppearanceOverlay="@style/cornerImageView"
             android:layout_width="55dp"
             android:layout_height="55dp"

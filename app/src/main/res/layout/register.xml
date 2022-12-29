@@ -176,7 +176,6 @@
                         android:textColor="@color/primary"
                         android:onClick="onClick"
                         android:text="Đã có tài khoản?"/>
-
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

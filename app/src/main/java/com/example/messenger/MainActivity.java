@@ -17,12 +17,15 @@ import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.databinding.ActivityMainBinding;
 import com.example.messenger.model.User;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends FragmentActivity {
-
     ActivityMainBinding binding;
     ArrayList<User> listUsers;
     DataContext DB;
@@ -30,6 +33,7 @@ public class MainActivity extends FragmentActivity {
     private Intent intent;
     private Bundle bundle;
     private PreferenceManager shp;
+    private DatabaseReference databaseReference;
     String userLogin;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,9 @@ public class MainActivity extends FragmentActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         replaceFragment(new ChatsFragment());
         setContentView(binding.getRoot());
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child("User");
+
         DB = new DataContext(this);
         shp =  new PreferenceManager(getApplicationContext());
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -49,7 +56,7 @@ public class MainActivity extends FragmentActivity {
                 break;
             }
         }
-        chatFragment.UsersData(listUsers);
+
         ft.replace(R.id.frame_layout, chatFragment);
         ft.commit();
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -65,7 +72,6 @@ public class MainActivity extends FragmentActivity {
                             break;
                         }
                     }
-                    chatFragment.UsersData(listUsers);
                     ft2.replace(R.id.frame_layout, chatFragment);
                     ft2.commit();
                     break;
@@ -89,5 +95,29 @@ public class MainActivity extends FragmentActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout,  fragment);
         fragmentTransaction.commit();
+    }
+
+    public ArrayList<HashMap<String, Object>> recArrayList(DataSnapshot snapshot){
+        ArrayList<HashMap<String, Object>> list = new ArrayList<>();
+        if (snapshot == null){
+            return list;
+        }
+        // This is awesome! You don't have to know the data structure of the database.
+        Object fieldsObj = new Object();
+        HashMap fldObj;
+
+        for (DataSnapshot shot : snapshot.getChildren()){
+            try{
+                fldObj = (HashMap)shot.getValue(fieldsObj.getClass());
+            }catch (Exception ex){
+                // My custom error handler. See 'ErrorHandler' in Gist
+//                ErrorHandler.logError(ex);
+                continue;
+            }
+            // Include the primary key of this Firebase data record. Named it 'recKeyID'
+            fldObj.put("recKeyID", shot.getKey());
+            list.add(fldObj);
+        }
+        return list;
     }
 }

@@ -22,9 +22,34 @@ import com.example.messenger.Register;
 import java.net.InetAddress;
 
 public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
+    public static final int IS_OWNER = 1;
+    public static final int IS_CLIENT = 2;
+
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
     private Register activity;
+    private InetAddress ownerAddr;
+    private int isGroupeOwner;
+
+    private WifiDirectBroadcastReceiver(){
+        super();
+    }
+
+
+    public int isGroupeOwner() { return isGroupeOwner; }
+    public InetAddress getOwnerAddr() { return ownerAddr; }
+    public void setmManager(WifiP2pManager mManager) { this.manager = mManager; }
+    public void setmChannel(WifiP2pManager.Channel mChannel) { this.channel = mChannel; }
+    public void setmActivity(Activity mActivity) { this.activity = (Register) mActivity; }
+
+    private static WifiDirectBroadcastReceiver instance;
+
+    public static WifiDirectBroadcastReceiver createInstance(){
+        if(instance == null){
+            instance = new WifiDirectBroadcastReceiver();
+        }
+        return instance;
+    }
 
     /**
      * @param manager WifiP2pManager system service
@@ -87,7 +112,20 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
                 DeviceDetailFragment fragment = (DeviceDetailFragment) activity
                         .getFragmentManager().findFragmentById(R.id.frag_detail);
                 manager.requestConnectionInfo(channel, fragment);
-                connectToRegister();
+                manager.requestConnectionInfo(channel, new WifiP2pManager.ConnectionInfoListener() {
+                    @Override
+                    public void onConnectionInfoAvailable(WifiP2pInfo info) {
+                        ownerAddr = info.groupOwnerAddress;
+
+                        if(info.groupFormed && info.isGroupOwner) {
+                            isGroupeOwner = IS_OWNER;
+                            connectToRegister();
+                        } else if(info.groupFormed) {
+                            isGroupeOwner = IS_CLIENT;
+                            connectToRegister();
+                        }
+                    }
+                });
 
             } else {
                 // It's a disconnect

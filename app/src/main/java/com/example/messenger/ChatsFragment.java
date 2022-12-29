@@ -1,8 +1,7 @@
 package com.example.messenger;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,6 +14,7 @@ import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -47,22 +47,15 @@ public class ChatsFragment extends Fragment {
     private PreferenceManager preferenceManager;
 
     //Attributes
-    private EditText editTextSearch;
-    private ShapeableImageView shapeableImageViewAvatar;
-    private ContactAdapter customContactAdapter;
-    private PreferenceManager shp;
-    private ArrayList<User> listUsers = new ArrayList<User>();
+    EditText editTextSearch;
+    ShapeableImageView shapeableImageViewAvatar;
+    ContactAdapter customContactAdapter;
+    PreferenceManager shp;
 
     //List users
-    private List<User> onlineUsers = new ArrayList<>();
-    private List<Contact> contacts;
-
-
-    //Variable for loading
-    private boolean isLoading;
-    private boolean isLastPage;
-    private final int totalPage = 2;
-    private int currentPage = 1;
+    List<User> onlineUsers = new ArrayList<>();
+    List<Contact> contacts = new ArrayList<>();
+    private User currentUser;
 
     public ChatsFragment() {
         // Required empty public constructor
@@ -75,10 +68,6 @@ public class ChatsFragment extends Fragment {
         return fragment;
     }
 
-    public void UsersData(ArrayList<User> Users) {
-        this.listUsers = Users;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +75,7 @@ public class ChatsFragment extends Fragment {
         preferenceManager = new PreferenceManager(getContext());
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -106,24 +96,12 @@ public class ChatsFragment extends Fragment {
         });
 
         //Handle search box
+        editTextSearch.setFocusableInTouchMode(false);
         editTextSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("ListFriend", (Serializable) listUsers);
-                searchIntent.putExtras(bundle);
                 startActivity(searchIntent);
-                getActivity().finish();
-            }
-        });
-
-        editTextSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
-                startActivity(searchIntent);
-                getActivity().finish();
             }
         });
 
@@ -150,77 +128,34 @@ public class ChatsFragment extends Fragment {
             }
         });
 
-        //Render contacts Attribute for contacts
-//        RecyclerView recyclerViewContacts = view.findViewById(R.id.rcv_contacts);
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-//        recyclerViewContacts.setLayoutManager(linearLayoutManager);
-//        customContactAdapter = new ContactAdapter(getActivity());
-//
-//        recyclerViewContacts.setAdapter(customContactAdapter);
-//        setFirstData();
-//        recyclerViewContacts.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
-//            @Override
-//            public void loadMoreItems() {
-//                isLoading = true;
-//                currentPage += 1;
-//                loadNextPage();
-//            }
-//
-//            @Override
-//            public boolean isLoading() {
-//                return isLoading;
-//            }
-//
-//            @Override
-//            public boolean isLastPage() {
-//                return isLastPage;
-//            }
-//        });
-//
+        //Render current friends
+        RecyclerView recyclerViewContacts = view.findViewById(R.id.rcv_contacts);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerViewContacts.setLayoutManager(linearLayoutManager);
 
+        databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    User user = dataSnapshot.getValue(User.class);
+                    if(user != null ) {
+                        if(currentUser.getFriends().contains(user.id)) {
+                            contacts.add(new Contact(user.id, user.getName(), user.getImage(), "", ""));
+                        }
+                    }
+                }
+
+                customContactAdapter = new ContactAdapter(getActivity());
+                customContactAdapter.setData(contacts);
+                recyclerViewContacts.setAdapter(customContactAdapter);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
         return view;
     }
 
-    /**
-     * Function for change pagination
-     */
-
-    private void setFirstData() {
-        contacts = getListContact();
-        customContactAdapter.setData(contacts);
-
-        if(currentPage < totalPage) {
-            customContactAdapter.addFooterLoading();
-        }else {
-            isLastPage = true;
-        }
-    }
-    private List<Contact> getListContact() {
-        List<Contact> list = new ArrayList<>();
-        for(int i = 0; i< listUsers.size(); i++) {
-            list.add(new Contact(listUsers.get(i).getName(), listUsers.get(i).getImage(), "Quan Nguyen", "Hello world"));
-        }
-        return list;
-    }
-    private void loadNextPage() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                List<Contact> list = getListContact();
-                customContactAdapter.removeFooterLoading();
-                contacts.addAll(list);
-                customContactAdapter.notifyDataSetChanged();
-
-                isLoading = false;
-                if(currentPage < totalPage) {
-                    customContactAdapter.addFooterLoading();
-                }else {
-                    isLastPage = true;
-                }
-            }
-        }, 3000);
-    }
-
+    //2 function for handling asynchronous when call API to firebase
     private void readUser(FirebaseCallback firebaseCallback) {
         databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -231,6 +166,8 @@ public class ChatsFragment extends Fragment {
                     if(user.isLogined) {
                         if(!currentUserID.equals(user.id)) {
                             onlineUsers.add(user);
+                        }else{
+                            currentUser = user;
                         }
                     }
                 }
@@ -241,6 +178,7 @@ public class ChatsFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
+
     private interface FirebaseCallback {
         void onCallback(List<User> list);
     }

@@ -2,23 +2,16 @@ package com.example.messenger.adapter;
 
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,23 +19,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.ChatActivity;
-import com.example.messenger.ChatsFragment;
-import com.example.messenger.MainActivity;
 import com.example.messenger.R;
+import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.model.Contact;
 import com.google.android.material.imageview.ShapeableImageView;
-
-import java.io.Serializable;
 import java.util.List;
 
 public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final int TYPE_ITEM = 1;
-    private static final int TYPE_LOADING = 2;
     private List<Contact> contacts;
-    private boolean isLoadingAdd;
     private final Context context;
-    private ContactAdapter adapter;
-
+    ContactAdapter adapter;
 
     public ContactAdapter(Context context) {
         this.context = context;
@@ -53,113 +39,88 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged();
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        if(contacts != null && position == contacts.size() - 1 && isLoadingAdd) {
-            return TYPE_LOADING;
-        }
-        return TYPE_ITEM;
-    }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if(viewType == TYPE_ITEM) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.frame_contact, parent, false);
-            return new ContactViewHolder(view);
-        }else if(viewType == TYPE_LOADING) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.frame_loading_item, parent, false);
-            return new ContactViewHolder(view);
-        }
-        return null;
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.frame_contact, parent, false);
+        return new ContactViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        if(holder.getItemViewType() == TYPE_ITEM) {
-            Contact contact = contacts.get(position);
-            ContactViewHolder contactViewHolder = (ContactViewHolder) holder;
-            if(contact.getAvatarPath() == null) {
-                contactViewHolder.avatar.setImageResource(R.drawable.ic_launcher_background);
-            } else {
-                byte[] bytes = Base64.decode(contact.getAvatarPath(), Base64.DEFAULT);
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0, bytes.length);
-                contactViewHolder.avatar.setImageBitmap(bitmap);
-            }
-            contactViewHolder.chatName.setText(contact.getUsername());
-            contactViewHolder.latestChat.setText(contact.getLatestMessage());
-            contactViewHolder.layoutItem.setOnClickListener(view -> {
-                chatWithOther(contact);
-            });
+        Contact contact = contacts.get(position);
+        ContactViewHolder viewHolder = (ContactViewHolder) holder;
 
-            contactViewHolder.layoutItem.setOnLongClickListener(view -> {
-                AlertDialog.Builder builder1=new AlertDialog.Builder(context);
-                builder1.setMessage("Xóa cuộc trò chuyện này?");
-                builder1.setCancelable(true);
-                builder1.setPositiveButton(
-                        "Có",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                contacts.remove(position);
-                                notifyItemRemoved(position);
-                                setData(contacts);
-                                Toast.makeText(context,"Đã xóa cuộc trò chuyện",Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                builder1.setNegativeButton(
-                        "Không",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-                AlertDialog alert11 = builder1.create();
-                alert11.show();
-                return false;
-            });
+        if(contact.getAvatarPath().length() == 0) {
+            viewHolder.avatar.setImageResource(R.drawable.user);
+        } else {
+            LoadImageFromURL loadImageFromURL = new LoadImageFromURL(viewHolder.avatar);
+            loadImageFromURL.execute(contact.getAvatarPath());
         }
+
+        viewHolder.chatName.setText(contact.getUsername());
+        viewHolder.latestChat.setText(contact.getLatestMessage());
+
+        //Handle click on each item
+        viewHolder.layoutItem.setOnClickListener(view -> {
+            chatWithOther(contact);
+        });
+
+        //Handle long click on each item
+        viewHolder.layoutItem.setOnLongClickListener(view -> {
+            AlertDialog.Builder builder1=new AlertDialog.Builder(context);
+            builder1.setMessage("Xóa cuộc trò chuyện này?");
+            builder1.setCancelable(true);
+            builder1.setPositiveButton(
+                    "Có",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            contacts.remove(position);
+                            notifyItemRemoved(position);
+                            setData(contacts);
+                            Toast.makeText(context,"Đã xóa cuộc trò chuyện",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            builder1.setNegativeButton(
+                    "Không",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alert11 = builder1.create();
+            alert11.show();
+            return false;
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return this.contacts.size();
     }
 
     public void chatWithOther(Contact contact) {
-        Intent intent = new Intent(context, ChatActivity.class);
-
+        Intent intent = new Intent(context.getApplicationContext(), ChatActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //Pass data here
         Bundle bundle = new Bundle();
         bundle.putSerializable("contact", contact);
         intent.putExtras(bundle);
 
         //Change screen
-        context.startActivity(intent);
-
+        context.getApplicationContext().startActivity(intent);
     }
-    @Override
-    public int getItemCount() {
-        if(contacts != null) {
-            return contacts.size();
-        }
-        return 0;
-    }
-    public void addFooterLoading() {
-        this.isLoadingAdd = true;
-        contacts.add(new Contact());
-    }
-    public void removeFooterLoading() {
-        this.isLoadingAdd = false;
-
-        int pos = contacts.size() - 1;
-        Contact contact = contacts.get(pos);
-        if(contact != null) {
-            contacts.remove(pos);
-            notifyItemRemoved(pos);
-        }
-    }
+    
     public void removeItem(int pos) {
         Contact contact = contacts.get(pos);
         if(contact != null) {
             contacts.remove(pos);
             notifyItemRemoved(pos);
-        }}
+        }
+    }
+    
     public class ContactViewHolder extends RecyclerView.ViewHolder   {
         private ShapeableImageView avatar;
         private TextView chatName;
@@ -172,7 +133,6 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             this.chatName = itemView.findViewById(R.id.chat_name);
             this.latestChat = itemView.findViewById(R.id.latest_chat);
             this.layoutItem = itemView.findViewById(R.id.layout_item);
-
         }
 
         public ShapeableImageView getShapeableImageView() {
@@ -186,16 +146,5 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public TextView getLatestChat() {
             return latestChat;
         }
-
-
-    }
-
-    public class LoadingViewHolder extends RecyclerView.ViewHolder {
-        ProgressBar progressBar;
-        public LoadingViewHolder(@NonNull View itemView) {
-            super(itemView);
-            progressBar = itemView.findViewById(R.id.progress_bar);
-        }
     }
 }
-

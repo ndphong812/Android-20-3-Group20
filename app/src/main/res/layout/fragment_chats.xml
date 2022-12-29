@@ -163,7 +163,9 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcv_contacts"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:translationY="-40dp"
+                />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </FrameLayout>

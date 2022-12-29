@@ -4,15 +4,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.messenger.Entities.Message;
 import com.example.messenger.R;
-import com.example.messenger.model.ChatItem;
-import com.example.messenger.model.Message;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
@@ -70,7 +68,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if(listChat.get(position).getFromSelf()) {
+        if(listChat.get(position).isMine()) {
             return MSG_TYPE_RIGHT;
         }else{
             return MSG_TYPE_LEFT;

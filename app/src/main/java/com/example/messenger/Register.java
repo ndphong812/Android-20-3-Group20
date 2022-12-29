@@ -35,6 +35,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.messenger.Database.DataContext;
+import com.example.messenger.P2P.Client;
+import com.example.messenger.P2P.Server;
 import com.example.messenger.Receivers.WifiDirectBroadcastReceiver;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.model.User;
@@ -68,7 +70,8 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
     private boolean retryChannel = false;
     private final IntentFilter intentFilter = new IntentFilter();
     private WifiP2pManager.Channel channel;
-    private BroadcastReceiver receiver = null;
+//    private BroadcastReceiver receiver = null;
+    private WifiDirectBroadcastReceiver receiver;
 
 
     private LinearLayout registerView;
@@ -146,7 +149,6 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         rt_password = (EditText) findViewById(R.id.rt_password);
         register = (Button) findViewById(R.id.require_btn);
 
-
         button = findViewById(R.id.button);
 
         preferenceManager = new PreferenceManager(getApplicationContext());
@@ -201,45 +203,43 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 userModel.setPassword(pass);
                 userModel.setID(userModel.getEmail().split("@", 2)[0]);
                 userModel.setIsLogined(false);
+                List<String> friends = new ArrayList<>();
+                friends.add("");
+                userModel.setFriends(friends);
 
-                userRef.child(userModel.getID())
-                        .setValue(userModel)
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(Register.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(Register.this, "Register success!", Toast.LENGTH_SHORT).show();
-                            Common.currentUser = userModel;
-                            Intent intent = new Intent(getApplicationContext(), login.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                            finish();
-                        });
-
-//                if (name.equals("") || em.equals("") || pass.equals("") || repass.equals("")) {
-//                    Toast.makeText(Register.this, "Please do not leave any fields bank", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    if(pass.equals(repass)) {
-//                        if(pass.length() >= 6) {
-//                            FirebaseAuth.getInstance().createUserWithEmailAndPassword(em, pass).addOnCompleteListener(
-//                                new OnCompleteListener<AuthResult>() {
-//                                    @Override
-//                                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                                        if (task.isSuccessful()) {
-//                                            Toast.makeText(Register.this, "Signed up successfully", Toast.LENGTH_SHORT).show();
-//                                        } else {
-//                                            Toast.makeText(Register.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-//                                        }
-//                                    }
-//                                }
-//                            );
-//                        } else {
-//                            Toast.makeText(Register.this, "Password is very low", Toast.LENGTH_SHORT).show();
-//                        }
-//                    } else {
-//                        Toast.makeText(Register.this, "Passwords not matching", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
+                if (name.equals("") || em.equals("") || pass.equals("") || repass.equals("")) {
+                    Toast.makeText(Register.this, "Please do not leave any fields bank", Toast.LENGTH_SHORT).show();
+                } else {
+                    if(pass.equals(repass)) {
+                        if(pass.length() >= 6) {
+                            if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_OWNER) {
+                                Server server = new Server();
+                                server.start();
+                            }
+                            else if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_CLIENT){
+                                Client client = new Client(receiver.getOwnerAddr());
+                                client.start();
+                            }
+                            userRef.child(userModel.getID())
+                                    .setValue(userModel)
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(Register.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    })
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(Register.this, "Register success!", Toast.LENGTH_SHORT).show();
+                                        Common.currentUser = userModel;
+                                        Intent intent = new Intent(getApplicationContext(), login.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                        finish();
+                                    });
+                        } else {
+                            Toast.makeText(Register.this, "Password is very low", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(Register.this, "Passwords not matching", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
     }
@@ -249,7 +249,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
     @Override
     public void onResume() {
         super.onResume();
-        receiver = new WifiDirectBroadcastReceiver(manager, channel, this);
+//        receiver = new WifiDirectBroadcastReceiver(manager, channel, this);
         registerReceiver(receiver, intentFilter);
     }
 
@@ -409,6 +409,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         preferenceManager.putBoolean("isLogin", false);
         Intent intent = new Intent(getApplicationContext(), login.class);
         startActivity(intent);
+        finish();
     }
 
     public int Random_Code()
