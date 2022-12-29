@@ -7,20 +7,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 
+import com.example.messenger.Entities.Message;
 import com.example.messenger.Services.PreferenceManager;
-import com.example.messenger.model.Message;
 import com.example.messenger.model.User;
 
-import java.security.SecureRandom;
-import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 
 public class DataContext extends SQLiteOpenHelper {
     public static final String DBNAME = "Messengers.db";
@@ -123,12 +117,10 @@ public class DataContext extends SQLiteOpenHelper {
             c1.moveToFirst();
             while (!c1.isAfterLast()) {
                 Message mess = new Message();
-                mess.rowid = 1;
                 mess.FromMail = c1.getString(c1.getColumnIndex("FromMail"));
                 mess.ToMail = c1.getString(c1.getColumnIndex("ToMail"));
                 mess.Message = c1.getString(c1.getColumnIndex("Message"));
                 mess.SentDate = c1.getString(c1.getColumnIndex("SentDate"));
-                mess.fromSelf = true;
                 messageList.add(mess);
                 c1.moveToNext();
             }
@@ -138,12 +130,10 @@ public class DataContext extends SQLiteOpenHelper {
             c2.moveToFirst();
             while (!c2.isAfterLast()) {
                 Message mess = new Message();
-                mess.rowid = 1;
                 mess.FromMail = c2.getString(c2.getColumnIndex("FromMail"));
                 mess.ToMail = c2.getString(c2.getColumnIndex("ToMail"));
                 mess.Message = c2.getString(c2.getColumnIndex("Message"));
                 mess.SentDate = c2.getString(c2.getColumnIndex("SentDate"));
-                mess.fromSelf = true;
                 messageList.add(mess);
                 c2.moveToNext();
             }
