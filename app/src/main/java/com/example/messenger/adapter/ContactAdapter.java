@@ -6,8 +6,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -22,10 +26,20 @@ import com.example.messenger.ChatActivity;
 import com.example.messenger.R;
 import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.model.Contact;
+import com.example.messenger.model.User;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.List;
 
 public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://messenger-50d65-default-rtdb.firebaseio.com/");
+
     private List<Contact> contacts;
     private final Context context;
     ContactAdapter adapter;
@@ -38,7 +52,6 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.contacts = list;
         notifyDataSetChanged();
     }
-
 
     @NonNull
     @Override
@@ -64,36 +77,9 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         //Handle click on each item
         viewHolder.layoutItem.setOnClickListener(view -> {
-            chatWithOther(contact);
+//            chatWithOther(contact);
         });
 
-        //Handle long click on each item
-        viewHolder.layoutItem.setOnLongClickListener(view -> {
-            AlertDialog.Builder builder1=new AlertDialog.Builder(context);
-            builder1.setMessage("Xóa cuộc trò chuyện này?");
-            builder1.setCancelable(true);
-            builder1.setPositiveButton(
-                    "Có",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            contacts.remove(position);
-                            notifyItemRemoved(position);
-                            setData(contacts);
-                            Toast.makeText(context,"Đã xóa cuộc trò chuyện",Toast.LENGTH_SHORT).show();
-                        }
-                    });
-            builder1.setNegativeButton(
-                    "Không",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
-
-            AlertDialog alert11 = builder1.create();
-            alert11.show();
-            return false;
-        });
     }
 
     @Override
@@ -113,15 +99,54 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         context.getApplicationContext().startActivity(intent);
     }
     
-    public void removeItem(int pos) {
+    public void deleteMessage(int pos) {
         Contact contact = contacts.get(pos);
         if(contact != null) {
             contacts.remove(pos);
+            //Call API for remove
             notifyItemRemoved(pos);
         }
     }
-    
-    public class ContactViewHolder extends RecyclerView.ViewHolder   {
+
+    public void unfriendAndDeleteMessage(int pos, User currentUser) {
+        //handle UI
+        String friendId = contacts.get(pos).getId();
+        currentUser.getFriends().remove(friendId);
+        //Call API to firebase
+        databaseReference
+                .child("User")
+                .child(currentUser.getID())
+                .child("friends")
+                .setValue(currentUser.getFriends());
+
+        databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    User user = dataSnapshot.getValue(User.class);
+                    if(user != null ) {
+                        if(user.getID().equals(friendId)) {
+                            user.getFriends().remove(currentUser.getID());
+                            databaseReference
+                                    .child("User")
+                                    .child(user.getID())
+                                    .child("friends")
+                                    .setValue(user.getFriends())
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            deleteMessage(pos);
+                                        }
+                                    });
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+    public class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         private ShapeableImageView avatar;
         private TextView chatName;
         private TextView latestChat;
@@ -133,6 +158,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             this.chatName = itemView.findViewById(R.id.chat_name);
             this.latestChat = itemView.findViewById(R.id.latest_chat);
             this.layoutItem = itemView.findViewById(R.id.layout_item);
+            layoutItem.setOnCreateContextMenuListener(this);
         }
 
         public ShapeableImageView getShapeableImageView() {
@@ -145,6 +171,13 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public TextView getLatestChat() {
             return latestChat;
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+            contextMenu.setHeaderTitle("Lựa chọn bất kỳ");
+            contextMenu.add(getAdapterPosition(), 101, 0, "Xóa cuộc trò chuyện");
+            contextMenu.add(getAdapterPosition(), 102, 0, "Hủy kết bạn");
         }
     }
 }

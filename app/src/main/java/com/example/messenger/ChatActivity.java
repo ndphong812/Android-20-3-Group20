@@ -2,6 +2,8 @@ package com.example.messenger;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +30,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -56,30 +57,29 @@ import java.util.List;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends Activity {
 
-    private ActivityChatBinding binding;
+    ActivityChatBinding binding;
+    Intent intent;
+    Bundle bundle;
+    TextView chatName;
+    ImageButton imageButtonBack;
+    LinearLayout linearLayoutActions;
+    ImageButton imageButtonShowMore;
+    ImageButton imageButtonSendMessage;
+    ImageButton imageButtonSendImage;
+    ImageButton imageButtonSendCamera;
+    ImageView imageButtonEmoji;
+    ImageView imgPreview;
 
-    private Intent intent;
-    private Bundle bundle;
-    private TextView chatName;
-    private ImageButton imageButtonBack;
-    private LinearLayout linearLayoutActions;
-    private ImageButton imageButtonShowMore;
-    private ImageButton imageButtonSendMessage;
-    private ImageButton imageButtonSendImage;
-    private ImageButton imageButtonSendCamera;
-    private ImageView imageButtonEmoji;
-    private ImageView imgPreview;
-
-    private Contact currentContact;
+    Contact currentContact;
     private User receiverUser;
     private List<Message> listChat;
     private ChatAdapter customChatAdapter;
     private EmojiconEditText editTextInputChat;
-    private EmojIconActions emojIconActions;
-    private ConstraintLayout activityChatLayout;
-    private PreferenceManager shp;
+    EmojIconActions emojIconActions;
+    ConstraintLayout activityChatLayout;
+    PreferenceManager shp;
     public static final int MY_RESULT_LOAD_IMAGE = 7172;
     public static final int MY_CAMERA_REQUEST_CODE = 7171;
     String senderEmail;
@@ -99,19 +99,20 @@ public class ChatActivity extends AppCompatActivity {
     private static final int SHARE_TEXT = 104;
     private static final int REQUEST_PERMISSIONS_REQUIRED = 7;
 
-    private WifiP2pManager mManager;
-    private WifiP2pManager.Channel mChannel;
-    private WifiDirectBroadcastReceiver mReceiver;
-    private IntentFilter mIntentFilter;
+    WifiP2pManager mManager;
+    WifiP2pManager.Channel mChannel;
+    WifiDirectBroadcastReceiver mReceiver;
+    IntentFilter mIntentFilter;
     private EditText edit;
+    @SuppressLint("StaticFieldLeak")
     private static ListView listView;
     private static List<Message> listMessage;
+    @SuppressLint("StaticFieldLeak")
     private static ChatAdapter chatAdapter;
     private Uri fileUri;
     private String fileURL;
     private ArrayList<Uri> tmpFilesUri;
     private Uri mPhotoUri;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +122,6 @@ public class ChatActivity extends AppCompatActivity {
         shp = new PreferenceManager(getApplicationContext());
         setContentView(binding.getRoot());
         getChatContact();
-
 
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         mChannel = mManager.initialize(this, getMainLooper(), null);

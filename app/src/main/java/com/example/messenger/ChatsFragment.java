@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,6 +74,24 @@ public class ChatsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         shp = new PreferenceManager(getContext());
         preferenceManager = new PreferenceManager(getContext());
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        super.onContextItemSelected(item);
+
+        switch (item.getItemId()) {
+            case 101:
+                customContactAdapter.deleteMessage(item.getGroupId());
+                //CAll API delete conversation
+
+                return true;
+            case 102:
+                //Call API for unfriend and delete conversation
+                customContactAdapter.unfriendAndDeleteMessage(item.getGroupId(), currentUser);
+                return true;
+        }
+        return true;
     }
 
     @SuppressLint("ClickableViewAccessibility")
