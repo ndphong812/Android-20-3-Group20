@@ -163,7 +163,8 @@ public class ChatActivity extends Activity {
         RecyclerView recyclerViewMessages = (RecyclerView) findViewById(R.id.rcv_messages);
         emojIconActions = new EmojIconActions(this, binding.getRoot(), imageButtonEmoji, editTextInputChat);
 
-        chatName.setText(receiverUser.getName());
+//        chatName.setText(receiverUser.getName());
+        chatName.setText("Tan");
         //Handle events
         setUpMessages(recyclerViewMessages);
         emojIconActions.ShowEmojicon();

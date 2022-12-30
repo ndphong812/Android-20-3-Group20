@@ -77,7 +77,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         //Handle click on each item
         viewHolder.layoutItem.setOnClickListener(view -> {
-//            chatWithOther(contact);
+            chatWithOther(contact);
         });
 
     }
