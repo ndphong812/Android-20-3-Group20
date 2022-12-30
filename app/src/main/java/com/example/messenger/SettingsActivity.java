@@ -27,9 +27,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.messenger.Database.DataContext;
+import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.Services.PreferenceManager;
+import com.example.messenger.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -54,7 +57,7 @@ public class SettingsActivity extends AppCompatActivity{
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://messenger-50d65-default-rtdb.firebaseio.com/");
     private String encodedImage;
     private PreferenceManager preferenceManager;
-    ImageView avatarUser;
+    ShapeableImageView avatarUser;
     DataContext DB;
     private final int PICK_IMAGE_REQUEST = 22;
     private Uri filePath;
@@ -80,6 +83,8 @@ public class SettingsActivity extends AppCompatActivity{
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserName.setText(snapshot.child(preferenceManager.getString("userID")).child("name").getValue(String.class));
+                LoadImageFromURL loadImageFromURL = new LoadImageFromURL(avatarUser);
+                loadImageFromURL.execute(snapshot.child(preferenceManager.getString("userID")).child("image").getValue(String.class));
             }
 
             @Override
@@ -88,36 +93,29 @@ public class SettingsActivity extends AppCompatActivity{
             }
         });
         avatarUser = findViewById(R.id.avatarImg);
-        try{
-            final File localFile = File.createTempFile(preferenceManager.getString("username"),"png");
-            imageStorage.getFile(localFile)
-                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                            Toast.makeText(SettingsActivity.this, "Oke", Toast.LENGTH_SHORT).show();
-                            Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                            avatarUser.setImageBitmap(bitmap);
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(SettingsActivity.this, "Error loading images", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        System.out.println(preferenceManager.getString("userEmail"));
-
-//        if(DB.getImage(shp.getString("userEmail")) == null) {
-//            avatarUser.setImageResource(R.drawable.ic_launcher_background);
-//        } else {
-//            byte[] bytes = Base64.decode(DB.getImage(shp.getString("userEmail")), Base64.DEFAULT);
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//            avatarUser.setImageBitmap(bitmap);
+//        try{
+//            final File localFile = File.createTempFile(preferenceManager.getString("username"),"png");
+//            imageStorage.getFile(localFile)
+//                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+//                        @Override
+//                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+//                            Toast.makeText(SettingsActivity.this, "Oke", Toast.LENGTH_SHORT).show();
+//                            Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+//                            avatarUser.setImageBitmap(bitmap);
+//                        }
+//                    })
+//                    .addOnFailureListener(new OnFailureListener() {
+//                        @Override
+//                        public void onFailure(@NonNull Exception e) {
+//                            Toast.makeText(SettingsActivity.this, "Error loading images", Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
 //        }
+//        catch (IOException e){
+//            e.printStackTrace();
+//        }
+
+        System.out.println(preferenceManager.getString("userEmail"));
 
         String[] sectionLabels = {"Chế độ tối", "Đăng xuất", "Đổi mật khẩu"};
 
@@ -130,14 +128,7 @@ public class SettingsActivity extends AppCompatActivity{
         avatarUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Toast.makeText(SettingsActivity.this, "Click avatar", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//                pickImage.launch(intent);
-//                DB.updateImageUser(shp.getString("userEmail"), shp.getString("imageUser"));
-
                 SelectImage();
-//                uploadImage();
             }
         });
 

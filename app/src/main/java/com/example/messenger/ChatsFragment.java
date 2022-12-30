@@ -90,6 +90,10 @@ public class ChatsFragment extends Fragment {
                 //Call API for unfriend and delete conversation
                 customContactAdapter.unfriendAndDeleteMessage(item.getGroupId(), currentUser);
                 return true;
+            case 103:
+                //Call API for unfriend and delete conversation
+                customContactAdapter.blockFriend(item.getGroupId(), currentUser);
+                return true;
         }
         return true;
     }

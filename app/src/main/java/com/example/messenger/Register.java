@@ -195,7 +195,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 User userModel = new User();
                 userModel.setEmail(em);
                 userModel.setPort(8888);
-                userModel.setImage("");
+                userModel.setImage("https://demoda.vn/wp-content/uploads/2022/01/anh-avatar-trang-den-cute-du-trend-600x600.jpg");
                 userModel.setName(name);
                 userModel.setPassword(pass);
                 userModel.setID(userModel.getEmail().split("@", 2)[0]);

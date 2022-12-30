@@ -146,6 +146,19 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
+
+    public void blockFriend(int pos, User currentUser) {
+        //handle UI
+        String friendId = contacts.get(pos).getId();
+        currentUser.getBlocks().add(friendId);
+        //Call API to firebase
+        databaseReference
+                .child("User")
+                .child(currentUser.getID())
+                .child("blocks")
+                .setValue(currentUser.getBlocks());
+    }
+
     public class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         private ShapeableImageView avatar;
         private TextView chatName;
@@ -178,6 +191,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             contextMenu.setHeaderTitle("Lựa chọn bất kỳ");
             contextMenu.add(getAdapterPosition(), 101, 0, "Xóa cuộc trò chuyện");
             contextMenu.add(getAdapterPosition(), 102, 0, "Hủy kết bạn");
+            contextMenu.add(getAdapterPosition(), 103, 0, "Chặn người dùng này");
         }
     }
 }
