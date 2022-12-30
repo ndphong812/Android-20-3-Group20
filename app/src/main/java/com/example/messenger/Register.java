@@ -173,10 +173,8 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         registerView = findViewById(R.id.mainRegister);
         connectView = findViewById(R.id.connectMain);
 
-
         database = FirebaseDatabase.getInstance();
         userRef = database.getReference("User");
-
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -185,7 +183,6 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 connectView.setVisibility(View.GONE);
             }
         });
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -251,14 +248,22 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
     @Override
     public void onResume() {
         super.onResume();
-//        receiver = new WifiDirectBroadcastReceiver(manager, channel, this);
-        registerReceiver(receiver, intentFilter);
+        receiver = new WifiDirectBroadcastReceiver(manager, channel, this);
+        try{
+            registerReceiver(receiver, intentFilter);
+        }catch (Exception e){
+            // already registered
+        }
     }
 
     @Override
     public void onPause() {
+        try{
+            unregisterReceiver(receiver);
+        }catch (Exception e){
+            // already unregistered
+        }
         super.onPause();
-        unregisterReceiver(receiver);
     }
 
     public void resetData() {
@@ -374,6 +379,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                     Toast.LENGTH_LONG).show();
         }
     }
+
     @Override
     public void cancelDisconnect() {
         /*
