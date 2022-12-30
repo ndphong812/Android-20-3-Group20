@@ -195,7 +195,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 User userModel = new User();
                 userModel.setEmail(em);
                 userModel.setPort(8888);
-                userModel.setImage("abc");
+                userModel.setImage("");
                 userModel.setName(name);
                 userModel.setPassword(pass);
                 userModel.setID(userModel.getEmail().split("@", 2)[0]);

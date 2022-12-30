@@ -102,8 +102,10 @@ public class ChatsFragment extends Fragment {
 
         //Binding view
         shapeableImageViewAvatar = view.findViewById(R.id.Mainavatar);
+
         editTextSearch =  view.findViewById(R.id.search_input);
         ViewGroup scrollViewOnlineUsers = view.findViewById(R.id.view_group);
+
 
         //Handle click avatar to get setting
         shapeableImageViewAvatar.setOnClickListener(new View.OnClickListener() {
@@ -187,6 +189,8 @@ public class ChatsFragment extends Fragment {
                             onlineUsers.add(user);
                         }else{
                             currentUser = user;
+                            LoadImageFromURL loadImageFromURL = new LoadImageFromURL(shapeableImageViewAvatar);
+                            loadImageFromURL.execute(currentUser.getImage());
                         }
                     }
                 }
