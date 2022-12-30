@@ -2,7 +2,9 @@ package com.example.messenger.AsyncTasks;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.util.Log;
 
+import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
 
 import java.io.BufferedInputStream;
@@ -14,7 +16,7 @@ import java.net.Socket;
 import java.util.List;
 
 public class ReceiveMessageClient extends AbstractReceiver {
-	private static final int SERVER_PORT = 4446;
+	private static final int SERVER_PORT = 8888;
 	private Context mContext;
 	private ServerSocket socket;
 
@@ -60,11 +62,9 @@ public class ReceiveMessageClient extends AbstractReceiver {
 	@Override
 	protected void onProgressUpdate(Message... values) {
 		super.onProgressUpdate(values);
-		playNotification(mContext, values[0]);		
-
-//		if(isActivityRunning(MainActivity.class)) {
-//			ChatActivity.refreshList(values[0], false);
-//		}
+		playNotification(mContext, values[0]);
+		Log.e("Message1", values[0].getMessage());
+		ChatActivity.refreshList(values[0], false);
 
 	}
 	

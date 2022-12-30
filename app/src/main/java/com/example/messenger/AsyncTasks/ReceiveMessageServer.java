@@ -12,7 +12,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ReceiveMessageServer extends AbstractReceiver {
-	private static final int SERVER_PORT = 4445;
+	private static final int SERVER_PORT = 8888;
 	private Context mContext;
 	private ServerSocket serverSocket;
 
@@ -65,5 +65,7 @@ public class ReceiveMessageServer extends AbstractReceiver {
 		
 		new SendMessageServer(mContext, false).executeOnExecutor(THREAD_POOL_EXECUTOR, values);
 	}
+
+
 	
 }

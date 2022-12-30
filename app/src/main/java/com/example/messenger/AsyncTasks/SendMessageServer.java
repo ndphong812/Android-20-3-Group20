@@ -3,7 +3,9 @@ package com.example.messenger.AsyncTasks;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
+import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.P2P.Server;
 
@@ -19,7 +21,7 @@ import java.util.List;
 public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 	private static final String TAG = "SendMessageServer";
 	private Context mContext;
-	private static final int SERVER_PORT = 4446;
+	private static final int SERVER_PORT = 8888;
 	private boolean isMine;
 
 
@@ -30,7 +32,7 @@ public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 	
 	@Override
 	protected Message doInBackground(Message... msg) {
-//		Log.v(TAG, "doInBackground");
+		Log.v(TAG, "doInBackground");
 		
 		//Display le message on the sender before sending it
 		publishProgress(msg);
@@ -38,7 +40,7 @@ public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 		//Send the message to clients
 		try {			
 			ArrayList<InetAddress> listClients = Server.clients;
-//			Log.e(TAG, "doInBackground: number of clients: "+ listClients.size() +" ");
+			Log.e(TAG, "doInBackground: number of clients: "+ listClients.size() +" ");
 			for(InetAddress addr : listClients){
 
 				//// MARK: 16/06/2018 servers send msg to clients, so recording this instance IS necessary
@@ -51,16 +53,16 @@ public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 				Socket socket = new Socket();
 				socket.setReuseAddress(true);
 				socket.bind(null);
-//				Log.e(TAG,"Connect to client: " + addr.getHostAddress());
+				Log.e(TAG,"Connect to client: " + addr.getHostAddress());
 				socket.connect(new InetSocketAddress(addr, SERVER_PORT));
 
-//				Log.e(TAG, "doInBackground: connect to "+ addr.getHostAddress() +" succeeded");
+				Log.e(TAG, "doInBackground: connect to "+ addr.getHostAddress() +" succeeded");
 
 				OutputStream outputStream = socket.getOutputStream();
 				
 				new ObjectOutputStream(outputStream).writeObject(msg[0]);
 				
-//			    Log.e(TAG, "doInBackground: write to "+ addr.getHostAddress() +" succeeded");
+			    Log.e(TAG, "doInBackground: write to "+ addr.getHostAddress() +" succeeded");
 			    socket.close();
 			}
 			
@@ -74,10 +76,8 @@ public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 	@Override
 	protected void onProgressUpdate(Message... values) {
 		super.onProgressUpdate(values);
-		
-//		if(isActivityRunning(MainActivity.class)){
-//			ChatActivity.refreshList(values[0], isMine);
-//		}
+		Log.e("Message3", values[0].getMessage());
+		ChatActivity.refreshList(values[0], isMine);
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class Message {
     private String filePath;
     private boolean isMine;
 
-    public Message() {}
+//    public Message() {}
 
     public Message(int type, String fromMail, String toMail, String message, String sentDate, Boolean IsMine, InetAddress sender) {
         FromMail = fromMail;
