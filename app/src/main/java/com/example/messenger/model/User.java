@@ -18,6 +18,7 @@ public class User implements Serializable {
     public String image;
     public Boolean isLogined;
     public List<String> friends;
+    public List<String> blocks;
     public User() {
 
     }
@@ -31,6 +32,7 @@ public class User implements Serializable {
         this.image = image;
         this.isLogined = isLogined;
         this.friends = new ArrayList<>();
+        this.blocks = new ArrayList<>();
     }
 
     public void setFriends(List<String> friends) {
@@ -44,6 +46,19 @@ public class User implements Serializable {
     public void pushFriends(String newFriendID) {
         this.friends.add(newFriendID);
     }
+
+    public void setBlocks(List<String> blocks) {
+        this.blocks = blocks;
+    }
+
+    public List<String> getBlocks() {
+        return blocks;
+    }
+
+    public void pushBlocks(String newBlockId) {
+        this.blocks.add(newBlockId);
+    }
+
     public User(int port) {
         this.port = port;
     }
