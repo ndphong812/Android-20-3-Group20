@@ -27,7 +27,7 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
-    private Register activity;
+    private Activity activity;
     private InetAddress ownerAddr;
     private int isGroupeOwner;
 
@@ -40,7 +40,7 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
     public InetAddress getOwnerAddr() { return ownerAddr; }
     public void setmManager(WifiP2pManager mManager) { this.manager = mManager; }
     public void setmChannel(WifiP2pManager.Channel mChannel) { this.channel = mChannel; }
-    public void setmActivity(Activity mActivity) { this.activity = (Register) mActivity; }
+    public void setmActivity(Activity mActivity) { this.activity = mActivity; }
 
     private static WifiDirectBroadcastReceiver instance;
 
@@ -79,10 +79,10 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                 // Wifi Direct mode is enabled
-                activity.setIsWifiP2pEnabled(true);
+                ((Register)activity).setIsWifiP2pEnabled(true);
             } else {
-                activity.setIsWifiP2pEnabled(false);
-                activity.resetData();
+                ((Register)activity).setIsWifiP2pEnabled(false);
+                ((Register)activity).resetData();
 
             }
             Log.d(Register.TAG, "P2P state changed - " + state);
@@ -129,7 +129,7 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
 
             } else {
                 // It's a disconnect
-                activity.resetData();
+                ((Register)activity).resetData();
             }
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             DeviceListFragment fragment = (DeviceListFragment) activity.getFragmentManager()
@@ -143,8 +143,8 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
     private void connectToRegister() {
         Log.e("Class name", activity.getClass().toString());
         if(activity.getClass() == Register.class) {
-            (activity).getRegisterView().setVisibility(View.VISIBLE);
-            (activity).getConnectView().setVisibility(View.GONE);
+            ((Register)activity).getRegisterView().setVisibility(View.VISIBLE);
+            ((Register)activity).getConnectView().setVisibility(View.GONE);
         }
     }
 }

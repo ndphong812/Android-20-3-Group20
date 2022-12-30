@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,6 +76,28 @@ public class ChatsFragment extends Fragment {
         preferenceManager = new PreferenceManager(getContext());
     }
 
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        super.onContextItemSelected(item);
+
+        switch (item.getItemId()) {
+            case 101:
+                customContactAdapter.deleteMessage(item.getGroupId());
+                //CAll API delete conversation
+
+                return true;
+            case 102:
+                //Call API for unfriend and delete conversation
+                customContactAdapter.unfriendAndDeleteMessage(item.getGroupId(), currentUser);
+                return true;
+            case 103:
+                //Call API for unfriend and delete conversation
+                customContactAdapter.blockFriend(item.getGroupId(), currentUser);
+                return true;
+        }
+        return true;
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -83,8 +106,10 @@ public class ChatsFragment extends Fragment {
 
         //Binding view
         shapeableImageViewAvatar = view.findViewById(R.id.Mainavatar);
+
         editTextSearch =  view.findViewById(R.id.search_input);
         ViewGroup scrollViewOnlineUsers = view.findViewById(R.id.view_group);
+
 
         //Handle click avatar to get setting
         shapeableImageViewAvatar.setOnClickListener(new View.OnClickListener() {
@@ -168,6 +193,8 @@ public class ChatsFragment extends Fragment {
                             onlineUsers.add(user);
                         }else{
                             currentUser = user;
+                            LoadImageFromURL loadImageFromURL = new LoadImageFromURL(shapeableImageViewAvatar);
+                            loadImageFromURL.execute(currentUser.getImage());
                         }
                     }
                 }
