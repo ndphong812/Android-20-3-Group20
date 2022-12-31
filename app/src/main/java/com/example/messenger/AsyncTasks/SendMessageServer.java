@@ -21,7 +21,7 @@ import java.util.List;
 public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 	private static final String TAG = "SendMessageServer";
 	private Context mContext;
-	private static final int SERVER_PORT = 8888;
+	private static final int SERVER_PORT = 4446;
 	private boolean isMine;
 
 

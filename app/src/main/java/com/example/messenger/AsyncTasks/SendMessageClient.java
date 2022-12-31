@@ -19,10 +19,10 @@ import java.util.List;
 public class SendMessageClient extends AsyncTask<Message, Message, Message>{
 	private static final String TAG = "SendMessageClient";
 	private Context mContext;
-	private static final int SERVER_PORT = 8888;
+	private static final int SERVER_PORT = 4445;
 	private InetAddress mServerAddr;
 	
-	public SendMessageClient(Context context, InetAddress serverAddr){
+	public SendMessageClient(Context context, InetAddress serverAddr) {
 		mContext = context;
 		mServerAddr = serverAddr;
 	}
@@ -68,7 +68,7 @@ public class SendMessageClient extends AsyncTask<Message, Message, Message>{
 	protected void onProgressUpdate(Message... msg) {
 		super.onProgressUpdate(msg);
 		Log.e("Message2", msg[0].getMessage());
-		ChatActivity.refreshList(msg[0], true);
+		ChatActivity.refreshList(msg[0], false);
 	}
 
 	@Override

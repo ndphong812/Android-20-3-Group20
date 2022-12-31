@@ -76,6 +76,8 @@ public class ChatActivity extends Activity {
     ImageView imageButtonEmoji;
     ImageView imgPreview;
 
+    PreferenceManager preferenceManager;
+
     Contact currentContact;
     private User receiverUser;
     private static List<Message> listChat;
@@ -119,6 +121,8 @@ public class ChatActivity extends Activity {
     private ArrayList<Uri> tmpFilesUri;
     private Uri mPhotoUri;
 
+    private Register register;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,7 +135,11 @@ public class ChatActivity extends Activity {
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         mChannel = mManager.initialize(this, getMainLooper(), null);
         mReceiver = WifiDirectBroadcastReceiver.createInstance();
+        mReceiver.setmChannel(mChannel);
+        mReceiver.setmManager(mManager);
         mReceiver.setmActivity(this);
+
+
 
         String[] PERMISSIONS = {
                 Manifest.permission.CAMERA,
@@ -149,6 +157,8 @@ public class ChatActivity extends Activity {
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+
+        startService(new Intent(this, MessageService.class));
 
 
         // Init attributes
@@ -176,12 +186,13 @@ public class ChatActivity extends Activity {
         setUpMessages(recyclerViewMessages);
         emojIconActions.ShowEmojicon();
 
+        preferenceManager = new PreferenceManager(getApplicationContext());
+
         imageButtonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent backMainScreenIntent = new Intent(getApplication(), MainActivity.class);
                 startActivity(backMainScreenIntent);
-
             }
         });
 
@@ -239,7 +250,7 @@ public class ChatActivity extends Activity {
                 if(!msg.equals("")) {
                     sendMessage(Message.TEXT_MESSAGE, msg);
 //                    customChatAdapter.addChatItem(new Message(senderEmail,receiverUser.getEmail(), msg,sentDate, true));
-                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
+//                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
                 }else {
                     Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
                 }
@@ -267,20 +278,55 @@ public class ChatActivity extends Activity {
             }
         });
         emojIconActions.setUseSystemEmoji(true);
+        Log.e("StartChatABCDXYZ", preferenceManager.getString("type"));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onResume() {
+        super.onResume();
+        registerReceiver(mReceiver, mIntentFilter);
+
+        mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                Log.v(TAG, "Discovery process succeeded");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Log.v(TAG, "Discovery process failed");
+            }
+        });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            unregisterReceiver(mReceiver);
+        } catch(Exception e) {
+
+        }
+    }
+
+
     private void sendMessage(int type, String msg) {
-        String sentDate = CurrentDateTimeChat();
-        Message message = new Message(Message.TEXT_MESSAGE,senderEmail,"aaa", msg, sentDate, true, null);
+        String sentDate = null;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            sentDate = CurrentDateTimeChat();
+        }
+        Message message = new Message(Message.TEXT_MESSAGE, senderEmail,"aaa", msg, sentDate, true, null);
+
         customChatAdapter.addChatItem(message);
 
-        if(mReceiver.isGroupeOwner() == WifiDirectBroadcastReceiver.IS_OWNER) {
+        if(preferenceManager.getString("type").equals(WifiDirectBroadcastReceiver.IS_OWNER + "")) {
             Log.e(TAG, "Message hydrated, start SendMessageServer AsyncTask");
 
             new SendMessageServer(ChatActivity.this, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);
         }
-        else if(mReceiver.isGroupeOwner() == WifiDirectBroadcastReceiver.IS_CLIENT){
+        else if(preferenceManager.getString("type").equals(WifiDirectBroadcastReceiver.IS_CLIENT + "")){
             Log.e(TAG, "Message hydrated, start SendMessageClient AsyncTask");
 
             new SendMessageClient(ChatActivity.this, mReceiver.getOwnerAddr()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);

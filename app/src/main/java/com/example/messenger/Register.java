@@ -1,11 +1,7 @@
 package com.example.messenger;
 
-import static com.example.messenger.R.layout.register;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -25,26 +21,17 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.messenger.Database.DataContext;
 import com.example.messenger.P2P.Client;
 import com.example.messenger.P2P.Server;
 import com.example.messenger.Receivers.WifiDirectBroadcastReceiver;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -52,7 +39,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Register extends AppCompatActivity implements WifiP2pManager.ChannelListener, DeviceListFragment.DeviceActionListener {
     private PreferenceManager preferenceManager;
@@ -72,6 +58,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
     private WifiP2pManager.Channel channel;
 //    private BroadcastReceiver receiver = null;
     private WifiDirectBroadcastReceiver receiver;
+    public int check = 0;
 
 
     private LinearLayout registerView;
@@ -82,6 +69,10 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
     }
     public LinearLayout getConnectView() {
         return connectView;
+    }
+
+    public int getCheck(){
+        return check;
     }
 
 
@@ -184,6 +175,8 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
             }
         });
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -212,10 +205,12 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                     if(pass.equals(repass)) {
                         if(pass.length() >= 6) {
                             if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_OWNER) {
+                                preferenceManager.putString("type", "1");
                                 Server server = new Server();
                                 server.start();
                             }
                             else if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_CLIENT){
+                                preferenceManager.putString("type", "2");
                                 Client client = new Client(receiver.getOwnerAddr());
                                 client.start();
                             }
@@ -415,17 +410,19 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
 
     public void onClick(View v) {
         preferenceManager.putBoolean("isLogin", false);
+        if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_OWNER) {
+            preferenceManager.putString("type", "1");
+            Log.e("Serverne","hahahahah");
+            Server server = new Server();
+            server.start();
+        }
+        else if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_CLIENT){
+            preferenceManager.putString("type", "2");
+            Client client = new Client(receiver.getOwnerAddr());
+            client.start();
+        }
         Intent intent = new Intent(getApplicationContext(), login.class);
         startActivity(intent);
         finish();
     }
-
-    public int Random_Code()
-    {
-        int min = 100000;
-        int max = 999999;
-        int random_int = (int)Math.floor(Math.random()*(max-min+1)+min);
-        return random_int;
-    }
-
 }

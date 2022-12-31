@@ -16,7 +16,7 @@ import java.net.Socket;
 import java.util.List;
 
 public class ReceiveMessageClient extends AbstractReceiver {
-	private static final int SERVER_PORT = 8888;
+	private static final int SERVER_PORT = 4446;
 	private Context mContext;
 	private ServerSocket socket;
 
