@@ -77,10 +77,10 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
 
             // UI update to indicate wifi p2p status.
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
-            if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
+            if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED && activity.getClass() == Register.class) {
                 // Wifi Direct mode is enabled
                 ((Register)activity).setIsWifiP2pEnabled(true);
-            } else {
+            } else if(state != WifiP2pManager.WIFI_P2P_STATE_ENABLED && activity.getClass() == Register.class) {
                 ((Register)activity).setIsWifiP2pEnabled(false);
                 ((Register)activity).resetData();
 

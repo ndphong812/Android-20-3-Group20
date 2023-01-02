@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
+import com.example.messenger.Register;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.net.Socket;
 import java.util.List;
 
 public class ReceiveMessageClient extends AbstractReceiver {
-	private static final int SERVER_PORT = 8888;
+	private static final int SERVER_PORT = 4446;
 	private Context mContext;
 	private ServerSocket socket;
 
@@ -64,7 +65,8 @@ public class ReceiveMessageClient extends AbstractReceiver {
 		super.onProgressUpdate(values);
 		playNotification(mContext, values[0]);
 		Log.e("Message1", values[0].getMessage());
-		ChatActivity.refreshList(values[0], false);
+//		if(isActivityRunning(ChatActivity.class))
+//		ChatActivity.refreshList(values[0], false);
 
 	}
 	

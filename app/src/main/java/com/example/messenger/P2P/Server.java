@@ -24,11 +24,11 @@ public class Server extends Thread{
         try {
             serverSocket = new ServerSocket(SERVER_PORT);
             // Collect client ip's
-            while(true) {
+            while (true) {
                 Socket clientSocket = serverSocket.accept();
                 if(!clients.contains(clientSocket.getInetAddress())){
                     clients.add(clientSocket.getInetAddress());
-//		    	   Log.v(TAG, "New client: " + clientSocket.getInetAddress().getHostAddress());
+		    	   Log.e(TAG, "New client: " + clientSocket.getInetAddress().getHostAddress());
                 }
 
                 clientSocket.close();
