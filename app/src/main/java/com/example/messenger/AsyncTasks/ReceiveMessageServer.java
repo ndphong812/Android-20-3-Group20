@@ -3,6 +3,7 @@ package com.example.messenger.AsyncTasks;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ReceiveMessageServer extends AbstractReceiver {
-	private static final int SERVER_PORT = 4446;
+	private static final int SERVER_PORT = 4445;
 	private Context mContext;
 	private ServerSocket serverSocket;
 
@@ -64,6 +65,7 @@ public class ReceiveMessageServer extends AbstractReceiver {
 		super.onProgressUpdate(values);
 		playNotification(mContext, values[0]);
 		Log.e("isReceiver", values[0].getMessage());
+
 		new SendMessageServer(mContext, false).executeOnExecutor(THREAD_POOL_EXECUTOR, values);
 	}
 

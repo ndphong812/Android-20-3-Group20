@@ -28,7 +28,7 @@ public class Server extends Thread{
                 Socket clientSocket = serverSocket.accept();
                 if(!clients.contains(clientSocket.getInetAddress())){
                     clients.add(clientSocket.getInetAddress());
-		    	   Log.v(TAG, "New client: " + clientSocket.getInetAddress().getHostAddress());
+		    	   Log.e(TAG, "New client: " + clientSocket.getInetAddress().getHostAddress());
                 }
 
                 clientSocket.close();

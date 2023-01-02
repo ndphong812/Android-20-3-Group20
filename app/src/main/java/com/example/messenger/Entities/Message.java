@@ -1,9 +1,10 @@
 package com.example.messenger.Entities;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
-public class Message {
+public class Message implements Serializable {
     public String FromMail;
     public String ToMail;
     public String Message;

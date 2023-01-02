@@ -278,7 +278,6 @@ public class ChatActivity extends Activity {
             }
         });
         emojIconActions.setUseSystemEmoji(true);
-        Log.e("StartChatABCDXYZ", preferenceManager.getString("type"));
     }
 
     @SuppressLint("MissingPermission")
@@ -317,9 +316,10 @@ public class ChatActivity extends Activity {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             sentDate = CurrentDateTimeChat();
         }
+
         Message message = new Message(Message.TEXT_MESSAGE, senderEmail,"aaa", msg, sentDate, true, null);
 
-        customChatAdapter.addChatItem(message);
+//        customChatAdapter.addChatItem(message);
 
         if(preferenceManager.getString("type").equals(WifiDirectBroadcastReceiver.IS_OWNER + "")) {
             Log.e(TAG, "Message hydrated, start SendMessageServer AsyncTask");
@@ -328,7 +328,7 @@ public class ChatActivity extends Activity {
         }
         else if(preferenceManager.getString("type").equals(WifiDirectBroadcastReceiver.IS_CLIENT + "")){
             Log.e(TAG, "Message hydrated, start SendMessageClient AsyncTask");
-
+            Log.e(TAG, mReceiver.getOwnerAddr() + "");
             new SendMessageClient(ChatActivity.this, mReceiver.getOwnerAddr()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);
         }
 
@@ -394,16 +394,15 @@ public class ChatActivity extends Activity {
     }
 
     public static void refreshList(Message message, boolean isMine){
-//		Log.v(TAG, "Refresh message list starts");
-
+		Log.v(TAG, "Refresh message list starts");
         message.setMine(isMine);
 //		Log.e(TAG, "refreshList: message is from :"+message.getSenderAddress().getHostAddress() );
-//		Log.e(TAG, "refreshList: message is from :"+isMine );
+		Log.e(TAG, "refreshList: message is from :" + isMine );
         listChat.add(message);
         customChatAdapter.addChatItem(message);
-        chatAdapter.notifyDataSetChanged();
+//        chatAdapter.notifyDataSetChanged();
 
-//    	Log.v(TAG, "Chat Adapter notified of the changes");
+    	Log.v(TAG, "Chat Adapter notified of the changes");
 
         //Scroll to the last element of the list
         recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);

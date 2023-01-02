@@ -71,10 +71,6 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         return connectView;
     }
 
-    public int getCheck(){
-        return check;
-    }
-
 
     Button button;
 
@@ -204,16 +200,6 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 } else {
                     if(pass.equals(repass)) {
                         if(pass.length() >= 6) {
-                            if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_OWNER) {
-                                preferenceManager.putString("type", "1");
-                                Server server = new Server();
-                                server.start();
-                            }
-                            else if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_CLIENT){
-                                preferenceManager.putString("type", "2");
-                                Client client = new Client(receiver.getOwnerAddr());
-                                client.start();
-                            }
                             userRef.child(userModel.getID())
                                     .setValue(userModel)
                                     .addOnFailureListener(e -> {
@@ -418,6 +404,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         }
         else if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_CLIENT){
             preferenceManager.putString("type", "2");
+            Toast.makeText(Register.this, receiver.getOwnerAddr() + "", Toast.LENGTH_SHORT).show();
             Client client = new Client(receiver.getOwnerAddr());
             client.start();
         }

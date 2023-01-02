@@ -25,7 +25,6 @@ public class MessageService extends Service {
         preferenceManager = new PreferenceManager(getApplicationContext());
 
         //Start the AsyncTask for the server to receive messages
-        Log.e("HOOOOOOOOOOOOOO", WifiDirectBroadcastReceiver.IS_OWNER + "");
         if(preferenceManager.getString("type").equals(WifiDirectBroadcastReceiver.IS_OWNER + "")) {
             Log.v(TAG, "Start the AsyncTask for the server to receive messages");
             new ReceiveMessageServer(getApplicationContext()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[])null);

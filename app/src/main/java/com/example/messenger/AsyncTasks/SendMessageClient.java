@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
+import com.example.messenger.Register;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -68,7 +69,8 @@ public class SendMessageClient extends AsyncTask<Message, Message, Message>{
 	protected void onProgressUpdate(Message... msg) {
 		super.onProgressUpdate(msg);
 		Log.e("Message2", msg[0].getMessage());
-		ChatActivity.refreshList(msg[0], false);
+//		if(isActivityRunning(ChatActivity.class))
+		ChatActivity.refreshList(msg[0], true);
 	}
 
 	@Override

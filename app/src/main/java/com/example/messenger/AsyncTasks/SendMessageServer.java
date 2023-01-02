@@ -8,6 +8,7 @@ import android.util.Log;
 import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.P2P.Server;
+import com.example.messenger.Register;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -46,7 +47,7 @@ public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 				//// MARK: 16/06/2018 servers send msg to clients, so recording this instance IS necessary
 				// before it leaves server
 
-				if(msg[0].getSenderAddress()!=null && addr.getHostAddress().equals(msg[0].getSenderAddress().getHostAddress())){
+				if(msg[0].getSenderAddress() != null && addr.getHostAddress().equals(msg[0].getSenderAddress().getHostAddress())){
 					return msg[0];
 				}			
 				
@@ -77,6 +78,7 @@ public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 	protected void onProgressUpdate(Message... values) {
 		super.onProgressUpdate(values);
 		Log.e("Message3", values[0].getMessage());
+//		if(isActivityRunning(ChatActivity.class))
 		ChatActivity.refreshList(values[0], isMine);
 	}
 
