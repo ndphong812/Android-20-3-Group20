@@ -78,17 +78,5 @@ public class SendMessageClient extends AsyncTask<Message, Message, Message>{
 //		Log.v(TAG, "onPostExecute");
 		super.onPostExecute(result);
 	}
-	
-	@SuppressWarnings("rawtypes")
-	public Boolean isActivityRunning(Class activityClass) {
-        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
 
-        for (ActivityManager.RunningTaskInfo task : tasks) {
-            if (activityClass.getCanonicalName().equalsIgnoreCase(task.baseActivity.getClassName()))
-                return true;
-        }
-
-        return false;
-	}
 }

@@ -72,7 +72,6 @@ public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 	protected void onProgressUpdate(Message... values) {
 		super.onProgressUpdate(values);
 		Log.e("Message3", values[0].getMessage());
-//		if(isActivityRunning(ChatActivity.class))
 		ChatActivity.refreshList(values[0], isMine);
 	}
 
@@ -81,18 +80,5 @@ public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 //		Log.v(TAG, "onPostExecute");
 		super.onPostExecute(result);
 	}
-	
-	@SuppressWarnings("rawtypes")
-	public Boolean isActivityRunning(Class activityClass)
-	{
-        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
 
-        for (ActivityManager.RunningTaskInfo task : tasks) {
-            if (activityClass.getCanonicalName().equalsIgnoreCase(task.baseActivity.getClassName()))
-                return true;
-        }
-
-        return false;
-	}
 }

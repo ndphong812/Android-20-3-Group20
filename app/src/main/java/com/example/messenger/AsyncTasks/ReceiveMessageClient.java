@@ -63,23 +63,10 @@ public class ReceiveMessageClient extends AbstractReceiver {
 	@Override
 	protected void onProgressUpdate(Message... values) {
 		super.onProgressUpdate(values);
-		playNotification(mContext, values[0]);
+//		playNotification(mContext, values[0]);
 		Log.e("Message1", values[0].getMessage());
-//		if(isActivityRunning(ChatActivity.class))
-//		ChatActivity.refreshList(values[0], false);
+		ChatActivity.refreshList(values[0], false);
 
 	}
-	
-	@SuppressWarnings("rawtypes")
-	public Boolean isActivityRunning(Class activityClass) {
-        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
 
-        for (ActivityManager.RunningTaskInfo task : tasks) {
-            if (activityClass.getCanonicalName().equalsIgnoreCase(task.baseActivity.getClassName()))
-                return true;
-        }
-
-        return false;
-	}
 }

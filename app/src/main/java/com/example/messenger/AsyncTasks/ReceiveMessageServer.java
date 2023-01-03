@@ -63,7 +63,7 @@ public class ReceiveMessageServer extends AbstractReceiver {
 	@Override
 	protected void onProgressUpdate(Message... values) {
 		super.onProgressUpdate(values);
-		playNotification(mContext, values[0]);
+//		playNotification(mContext, values[0]);
 		Log.e("isReceiver", values[0].getMessage());
 
 		new SendMessageServer(mContext, false).executeOnExecutor(THREAD_POOL_EXECUTOR, values);
