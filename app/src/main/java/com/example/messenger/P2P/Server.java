@@ -13,6 +13,7 @@ public class Server extends Thread{
     private static final int SERVER_PORT = 8888;
     public static ArrayList<InetAddress> clients;
     private ServerSocket serverSocket;
+
     public Server(){
         clients = new ArrayList<InetAddress>();
     }
@@ -30,7 +31,6 @@ public class Server extends Thread{
                     clients.add(clientSocket.getInetAddress());
 		    	   Log.e(TAG, "New client: " + clientSocket.getInetAddress().getHostAddress());
                 }
-
                 clientSocket.close();
             }
         } catch (IOException e) {

@@ -41,6 +41,8 @@ import com.example.messenger.AsyncTasks.SendMessageClient;
 import com.example.messenger.AsyncTasks.SendMessageServer;
 import com.example.messenger.Database.DataContext;
 import com.example.messenger.Entities.Message;
+import com.example.messenger.P2P.Client;
+import com.example.messenger.P2P.Server;
 import com.example.messenger.Receivers.WifiDirectBroadcastReceiver;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.adapter.ChatAdapter;
@@ -107,8 +109,6 @@ public class ChatActivity extends Activity {
     private static final int SHARE_TEXT = 104;
     private static final int REQUEST_PERMISSIONS_REQUIRED = 7;
 
-    WifiP2pManager mManager;
-    WifiP2pManager.Channel mChannel;
     WifiDirectBroadcastReceiver mReceiver;
     IntentFilter mIntentFilter;
     @SuppressLint("StaticFieldLeak")
@@ -132,13 +132,10 @@ public class ChatActivity extends Activity {
         setContentView(binding.getRoot());
         getChatContact();
 
-        mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        mChannel = mManager.initialize(this, getMainLooper(), null);
+//        mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+//        mChannel = mManager.initialize(this, getMainLooper(), null);
         mReceiver = WifiDirectBroadcastReceiver.createInstance();
-        mReceiver.setmChannel(mChannel);
-        mReceiver.setmManager(mManager);
         mReceiver.setmActivity(this);
-
 
 
         String[] PERMISSIONS = {
@@ -248,6 +245,7 @@ public class ChatActivity extends Activity {
             public void onClick(View view) {
                 String msg = editTextInputChat.getText().toString();
                 if(!msg.equals("")) {
+                    Log.d("M1", msg);
                     sendMessage(Message.TEXT_MESSAGE, msg);
 //                    customChatAdapter.addChatItem(new Message(senderEmail,receiverUser.getEmail(), msg,sentDate, true));
 //                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
@@ -285,18 +283,6 @@ public class ChatActivity extends Activity {
     public void onResume() {
         super.onResume();
         registerReceiver(mReceiver, mIntentFilter);
-
-        mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Log.v(TAG, "Discovery process succeeded");
-            }
-
-            @Override
-            public void onFailure(int reason) {
-                Log.v(TAG, "Discovery process failed");
-            }
-        });
     }
 
     @Override
@@ -305,7 +291,7 @@ public class ChatActivity extends Activity {
         try {
             unregisterReceiver(mReceiver);
         } catch(Exception e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -317,18 +303,18 @@ public class ChatActivity extends Activity {
             sentDate = CurrentDateTimeChat();
         }
 
+
         Message message = new Message(Message.TEXT_MESSAGE, senderEmail,"aaa", msg, sentDate, true, null);
 
 //        customChatAdapter.addChatItem(message);
+        Log.d("2. Type", mReceiver.isGroupOwner() + "");
+        Log.d("2. IS_OWNER", WifiDirectBroadcastReceiver.IS_OWNER + "");
+        Log.d("3. IS_CLIENT", WifiDirectBroadcastReceiver.IS_CLIENT + "");
 
-        if(preferenceManager.getString("type").equals(WifiDirectBroadcastReceiver.IS_OWNER + "")) {
-            Log.e(TAG, "Message hydrated, start SendMessageServer AsyncTask");
-
+        if(mReceiver.isGroupOwner() == WifiDirectBroadcastReceiver.IS_OWNER){
             new SendMessageServer(ChatActivity.this, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);
         }
-        else if(preferenceManager.getString("type").equals(WifiDirectBroadcastReceiver.IS_CLIENT + "")){
-            Log.e(TAG, "Message hydrated, start SendMessageClient AsyncTask");
-            Log.e(TAG, mReceiver.getOwnerAddr() + "");
+        else if(mReceiver.isGroupOwner() == WifiDirectBroadcastReceiver.IS_CLIENT){
             new SendMessageClient(ChatActivity.this, mReceiver.getOwnerAddr()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);
         }
 

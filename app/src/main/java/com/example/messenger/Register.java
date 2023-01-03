@@ -56,10 +56,8 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
     private boolean retryChannel = false;
     private final IntentFilter intentFilter = new IntentFilter();
     private WifiP2pManager.Channel channel;
-//    private BroadcastReceiver receiver = null;
     private WifiDirectBroadcastReceiver receiver;
     public int check = 0;
-
 
     private LinearLayout registerView;
     private LinearLayout connectView;
@@ -71,9 +69,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         return connectView;
     }
 
-
     Button button;
-
 
     public void setIsWifiP2pEnabled(boolean isWifiP2pEnabled) {
         this.isWifiP2pEnabled = isWifiP2pEnabled;
@@ -84,45 +80,13 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_CODE_ACCESS_FINE_LOCATION:
-                if  (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "Fine location permission is not granted!");
-                    finish();
-                }
-                break;
+        if (requestCode == PERMISSIONS_REQUEST_CODE_ACCESS_FINE_LOCATION) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG, "Fine location permission is not granted!");
+                finish();
+            }
         }
     }
-
-    private boolean initP2p() {
-        // Device capability definition check
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_DIRECT)) {
-            Log.e(TAG, "Wi-Fi Direct is not supported by this device.");
-            return false;
-        }
-        // Hardware capability check
-        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (wifiManager == null) {
-            Log.e(TAG, "Cannot get Wi-Fi system service.");
-            return false;
-        }
-        if (!wifiManager.isP2pSupported()) {
-            Log.e(TAG, "Wi-Fi Direct is not supported by the hardware or Wi-Fi is off.");
-            return false;
-        }
-        manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        if (manager == null) {
-            Log.e(TAG, "Cannot get Wi-Fi Direct system service.");
-            return false;
-        }
-        channel = manager.initialize(this, getMainLooper(), null);
-        if (channel == null) {
-            Log.e(TAG, "Cannot initialize Wi-Fi Direct.");
-            return false;
-        }
-        return true;
-    }
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,14 +103,21 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         button = findViewById(R.id.button);
 
         preferenceManager = new PreferenceManager(getApplicationContext());
-
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-        if (!initP2p()) {
-            finish();
-        }
+
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+        channel = manager.initialize(this, getMainLooper(), null);
+
+        receiver = WifiDirectBroadcastReceiver.createInstance();
+        receiver.setmManager(manager);
+        receiver.setmChannel(channel);
+        receiver.setmActivity(this);
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -227,9 +198,8 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
 
     @SuppressLint("MissingPermission")
     @Override
-    public void onResume() {
-        super.onResume();
-        receiver = new WifiDirectBroadcastReceiver(manager, channel, this);
+    public void onStart() {
+        super.onStart();
         try{
             registerReceiver(receiver, intentFilter);
         }catch (Exception e){
@@ -395,14 +365,14 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
 
 
     public void onClick(View v) {
+
         preferenceManager.putBoolean("isLogin", false);
-        if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_OWNER) {
+        if(receiver.isGroupOwner() ==  WifiDirectBroadcastReceiver.IS_OWNER) {
             preferenceManager.putString("type", "1");
-            Log.e("Serverne","hahahahah");
             Server server = new Server();
             server.start();
         }
-        else if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_CLIENT){
+        else if(receiver.isGroupOwner() ==  WifiDirectBroadcastReceiver.IS_CLIENT){
             preferenceManager.putString("type", "2");
             Toast.makeText(Register.this, receiver.getOwnerAddr() + "", Toast.LENGTH_SHORT).show();
             Client client = new Client(receiver.getOwnerAddr());
