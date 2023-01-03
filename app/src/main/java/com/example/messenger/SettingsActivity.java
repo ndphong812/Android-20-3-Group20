@@ -12,11 +12,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
@@ -62,12 +71,16 @@ public class SettingsActivity extends AppCompatActivity{
     private final int PICK_IMAGE_REQUEST = 22;
     private Uri filePath;
     Button logoutButton;
+    ImageButton backButton;
     FirebaseStorage storage;
     StorageReference storageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getSupportActionBar().hide();
         setContentView(R.layout.layout_settings);
 
         ListView optionsListView = findViewById(R.id.firstListView);
@@ -77,6 +90,18 @@ public class SettingsActivity extends AppCompatActivity{
         storageReference = storage.getReference();
         StorageReference imageStorage = storageReference.child("images/"+preferenceManager.getString("username"));
         DB = new DataContext(this);
+
+        backButton = (ImageButton) findViewById(R.id.btnBack);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         TextView UserName = findViewById(R.id.usernameTxt);
         databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -170,7 +195,65 @@ public class SettingsActivity extends AppCompatActivity{
                         });
                         break;
                     case 2:
+                        LayoutInflater inflater = (LayoutInflater)
+                                getSystemService(LAYOUT_INFLATER_SERVICE);
+                        View popupView = inflater.inflate(R.layout.update_password_popup, null);
 
+                        int width = LinearLayout.LayoutParams.MATCH_PARENT;
+                        int height = LinearLayout.LayoutParams.MATCH_PARENT;
+                        boolean focusable = true;
+                        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+                        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+                        popupView.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                popupWindow.dismiss();
+                                return true;
+                            }
+                        });
+
+                        EditText oldPassword = (EditText) popupWindow.getContentView().findViewById(R.id.old_password);
+                        EditText newPassword = (EditText) popupWindow.getContentView().findViewById(R.id.new_password);
+                        EditText retypeNewPassword = (EditText) popupWindow.getContentView().findViewById(R.id.retype_new_password);
+                        Button changePassword = (Button) popupWindow.getContentView().findViewById(R.id.update_btn);
+
+                        changePassword.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String oldPass = oldPassword.getText().toString();
+                                String newPass = newPassword.getText().toString();
+                                String retypePass = retypeNewPassword.getText().toString();
+
+                                if (oldPass.equals("") || newPass.equals("") || retypePass.equals("")) {
+                                    Toast.makeText(getApplicationContext(), "Please do not leave any fields bank", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if (oldPass.equals(snapshot.child(preferenceManager.getString("userID")).child("password").getValue(String.class))) {
+                                                if (newPass.equals(retypePass) && newPass.length() >= 6) {
+                                                    databaseReference.child("User").child(preferenceManager.getString("userID")).child("password").setValue(newPass);
+                                                    Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+                                                } else if (newPass.length() < 6) {
+                                                    Toast.makeText(getApplicationContext(), "Password length must be longer than 6 characters", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    Toast.makeText(getApplicationContext(), "New password doesn't match", Toast.LENGTH_SHORT).show();
+                                                }
+                                            } else {
+                                                Toast.makeText(getApplicationContext(), "Wrong old password", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                }
+                            }
+                        });
                         break;
                     default:
                         Toast.makeText(SettingsActivity.this, "This part is not available for now!", Toast.LENGTH_LONG).show();
