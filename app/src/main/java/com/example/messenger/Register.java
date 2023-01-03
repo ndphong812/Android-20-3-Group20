@@ -1,11 +1,7 @@
 package com.example.messenger;
 
-import static com.example.messenger.R.layout.register;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -25,26 +21,17 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.messenger.Database.DataContext;
 import com.example.messenger.P2P.Client;
 import com.example.messenger.P2P.Server;
 import com.example.messenger.Receivers.WifiDirectBroadcastReceiver;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -52,7 +39,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Register extends AppCompatActivity implements WifiP2pManager.ChannelListener, DeviceListFragment.DeviceActionListener {
     private PreferenceManager preferenceManager;
@@ -70,9 +56,8 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
     private boolean retryChannel = false;
     private final IntentFilter intentFilter = new IntentFilter();
     private WifiP2pManager.Channel channel;
-//    private BroadcastReceiver receiver = null;
     private WifiDirectBroadcastReceiver receiver;
-
+    public int check = 0;
 
     private LinearLayout registerView;
     private LinearLayout connectView;
@@ -84,9 +69,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         return connectView;
     }
 
-
     Button button;
-
 
     public void setIsWifiP2pEnabled(boolean isWifiP2pEnabled) {
         this.isWifiP2pEnabled = isWifiP2pEnabled;
@@ -97,45 +80,13 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_CODE_ACCESS_FINE_LOCATION:
-                if  (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "Fine location permission is not granted!");
-                    finish();
-                }
-                break;
+        if (requestCode == PERMISSIONS_REQUEST_CODE_ACCESS_FINE_LOCATION) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG, "Fine location permission is not granted!");
+                finish();
+            }
         }
     }
-
-    private boolean initP2p() {
-        // Device capability definition check
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_DIRECT)) {
-            Log.e(TAG, "Wi-Fi Direct is not supported by this device.");
-            return false;
-        }
-        // Hardware capability check
-        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (wifiManager == null) {
-            Log.e(TAG, "Cannot get Wi-Fi system service.");
-            return false;
-        }
-        if (!wifiManager.isP2pSupported()) {
-            Log.e(TAG, "Wi-Fi Direct is not supported by the hardware or Wi-Fi is off.");
-            return false;
-        }
-        manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        if (manager == null) {
-            Log.e(TAG, "Cannot get Wi-Fi Direct system service.");
-            return false;
-        }
-        channel = manager.initialize(this, getMainLooper(), null);
-        if (channel == null) {
-            Log.e(TAG, "Cannot initialize Wi-Fi Direct.");
-            return false;
-        }
-        return true;
-    }
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,14 +103,21 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         button = findViewById(R.id.button);
 
         preferenceManager = new PreferenceManager(getApplicationContext());
-
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-        if (!initP2p()) {
-            finish();
-        }
+
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+        channel = manager.initialize(this, getMainLooper(), null);
+
+        receiver = WifiDirectBroadcastReceiver.createInstance();
+        receiver.setmManager(manager);
+        receiver.setmChannel(channel);
+        receiver.setmActivity(this);
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -184,6 +142,8 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
             }
         });
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -211,14 +171,6 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 } else {
                     if(pass.equals(repass)) {
                         if(pass.length() >= 6) {
-                            if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_OWNER) {
-                                Server server = new Server();
-                                server.start();
-                            }
-                            else if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_CLIENT){
-                                Client client = new Client(receiver.getOwnerAddr());
-                                client.start();
-                            }
                             userRef.child(userModel.getID())
                                     .setValue(userModel)
                                     .addOnFailureListener(e -> {
@@ -246,9 +198,8 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
 
     @SuppressLint("MissingPermission")
     @Override
-    public void onResume() {
-        super.onResume();
-        receiver = new WifiDirectBroadcastReceiver(manager, channel, this);
+    public void onStart() {
+        super.onStart();
         try{
             registerReceiver(receiver, intentFilter);
         }catch (Exception e){
@@ -414,18 +365,21 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
 
 
     public void onClick(View v) {
+
         preferenceManager.putBoolean("isLogin", false);
+        if(receiver.isGroupOwner() ==  WifiDirectBroadcastReceiver.IS_OWNER) {
+            preferenceManager.putString("type", "1");
+            Server server = new Server();
+            server.start();
+        }
+        else if(receiver.isGroupOwner() ==  WifiDirectBroadcastReceiver.IS_CLIENT){
+            preferenceManager.putString("type", "2");
+            Toast.makeText(Register.this, receiver.getOwnerAddr() + "", Toast.LENGTH_SHORT).show();
+            Client client = new Client(receiver.getOwnerAddr());
+            client.start();
+        }
         Intent intent = new Intent(getApplicationContext(), login.class);
         startActivity(intent);
         finish();
     }
-
-    public int Random_Code()
-    {
-        int min = 100000;
-        int max = 999999;
-        int random_int = (int)Math.floor(Math.random()*(max-min+1)+min);
-        return random_int;
-    }
-
 }

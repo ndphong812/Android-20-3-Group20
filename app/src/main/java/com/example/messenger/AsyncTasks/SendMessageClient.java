@@ -3,8 +3,11 @@ package com.example.messenger.AsyncTasks;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
+import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
+import com.example.messenger.Register;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -20,14 +23,14 @@ public class SendMessageClient extends AsyncTask<Message, Message, Message>{
 	private static final int SERVER_PORT = 4445;
 	private InetAddress mServerAddr;
 	
-	public SendMessageClient(Context context, InetAddress serverAddr){
+	public SendMessageClient(Context context, InetAddress serverAddr) {
 		mContext = context;
 		mServerAddr = serverAddr;
 	}
 	
 	@Override
 	protected Message doInBackground(Message... msg) {
-//		Log.v(TAG, "doInBackground");
+		Log.v(TAG, "doInBackground");
 		
 		//Display le message on the sender before sending it
 		publishProgress(msg);
@@ -38,13 +41,13 @@ public class SendMessageClient extends AsyncTask<Message, Message, Message>{
 			socket.setReuseAddress(true);
 			socket.bind(null);
 			socket.connect(new InetSocketAddress(mServerAddr, SERVER_PORT));
-//			Log.v(TAG, "doInBackground: connect succeeded");
+			Log.v(TAG, "doInBackground: connect succeeded");
 			
 			OutputStream outputStream = socket.getOutputStream();
 			
 			new ObjectOutputStream(outputStream).writeObject(msg[0]);
 			
-//		    Log.v(TAG, "doInBackground: send message succeeded");
+		    Log.v(TAG, "doInBackground: send message succeeded");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally{
@@ -65,9 +68,9 @@ public class SendMessageClient extends AsyncTask<Message, Message, Message>{
 	@Override
 	protected void onProgressUpdate(Message... msg) {
 		super.onProgressUpdate(msg);
-//		if(isActivityRunning(MainActivity.class)){
-//			ChatActivity.refreshList(msg[0], true);
-//		}
+		Log.e("Message2", msg[0].getMessage());
+//		if(isActivityRunning(ChatActivity.class))
+		ChatActivity.refreshList(msg[0], true);
 	}
 
 	@Override
@@ -75,17 +78,5 @@ public class SendMessageClient extends AsyncTask<Message, Message, Message>{
 //		Log.v(TAG, "onPostExecute");
 		super.onPostExecute(result);
 	}
-	
-	@SuppressWarnings("rawtypes")
-	public Boolean isActivityRunning(Class activityClass) {
-        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
 
-        for (ActivityManager.RunningTaskInfo task : tasks) {
-            if (activityClass.getCanonicalName().equalsIgnoreCase(task.baseActivity.getClassName()))
-                return true;
-        }
-
-        return false;
-	}
 }

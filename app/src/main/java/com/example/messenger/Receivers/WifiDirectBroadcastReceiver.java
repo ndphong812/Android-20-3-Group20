@@ -29,46 +29,29 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
     private WifiP2pManager.Channel channel;
     private Activity activity;
     private InetAddress ownerAddr;
-    private int isGroupeOwner;
+    private int isGroupOwner;
 
     private WifiDirectBroadcastReceiver(){
         super();
     }
 
 
-    public int isGroupeOwner() { return isGroupeOwner; }
+    public int isGroupOwner() { return isGroupOwner; }
     public InetAddress getOwnerAddr() { return ownerAddr; }
     public void setmManager(WifiP2pManager mManager) { this.manager = mManager; }
     public void setmChannel(WifiP2pManager.Channel mChannel) { this.channel = mChannel; }
     public void setmActivity(Activity mActivity) { this.activity = mActivity; }
 
-    private static WifiDirectBroadcastReceiver instance;
+    @SuppressLint("StaticFieldLeak")
+    private static WifiDirectBroadcastReceiver mInstance = null;
 
     public static WifiDirectBroadcastReceiver createInstance(){
-        if(instance == null){
-            instance = new WifiDirectBroadcastReceiver();
+        if(mInstance == null){
+            mInstance = new WifiDirectBroadcastReceiver();
         }
-        return instance;
+        return mInstance;
     }
 
-    /**
-     * @param manager WifiP2pManager system service
-     * @param channel Wifi p2p channel
-     * @param activity activity associated with the receiver
-     */
-    public WifiDirectBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel,
-                                       Register activity) {
-        super();
-        this.manager = manager;
-        this.channel = channel;
-        this.activity = activity;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see android.content.BroadcastReceiver#onReceive(android.content.Context,
-     * android.content.Intent)
-     */
     @SuppressLint("MissingPermission")
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -77,10 +60,10 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
 
             // UI update to indicate wifi p2p status.
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
-            if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
+            if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED && activity.getClass() == Register.class) {
                 // Wifi Direct mode is enabled
                 ((Register)activity).setIsWifiP2pEnabled(true);
-            } else {
+            } else if(state != WifiP2pManager.WIFI_P2P_STATE_ENABLED && activity.getClass() == Register.class) {
                 ((Register)activity).setIsWifiP2pEnabled(false);
                 ((Register)activity).resetData();
 
@@ -106,9 +89,6 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
                     .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
             if (networkInfo.isConnected()) {
-                // we are connected with the other device, request connection
-                // info to find group owner IP
-
                 DeviceDetailFragment fragment = (DeviceDetailFragment) activity
                         .getFragmentManager().findFragmentById(R.id.frag_detail);
                 manager.requestConnectionInfo(channel, fragment);
@@ -118,10 +98,10 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
                         ownerAddr = info.groupOwnerAddress;
 
                         if(info.groupFormed && info.isGroupOwner) {
-                            isGroupeOwner = IS_OWNER;
+                            isGroupOwner = IS_OWNER;
                             connectToRegister();
                         } else if(info.groupFormed) {
-                            isGroupeOwner = IS_CLIENT;
+                            isGroupOwner = IS_CLIENT;
                             connectToRegister();
                         }
                     }

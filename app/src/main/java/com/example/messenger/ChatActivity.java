@@ -13,11 +13,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -35,8 +37,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.messenger.AsyncTasks.SendMessageClient;
+import com.example.messenger.AsyncTasks.SendMessageServer;
 import com.example.messenger.Database.DataContext;
 import com.example.messenger.Entities.Message;
+import com.example.messenger.P2P.Client;
+import com.example.messenger.P2P.Server;
 import com.example.messenger.Receivers.WifiDirectBroadcastReceiver;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.adapter.ChatAdapter;
@@ -72,10 +78,12 @@ public class ChatActivity extends Activity {
     ImageView imageButtonEmoji;
     ImageView imgPreview;
 
+    PreferenceManager preferenceManager;
+
     Contact currentContact;
     private User receiverUser;
-    private List<Message> listChat;
-    private ChatAdapter customChatAdapter;
+    private static List<Message> listChat;
+    private static ChatAdapter customChatAdapter;
     private EmojiconEditText editTextInputChat;
     EmojIconActions emojIconActions;
     ConstraintLayout activityChatLayout;
@@ -84,6 +92,8 @@ public class ChatActivity extends Activity {
     public static final int MY_CAMERA_REQUEST_CODE = 7171;
     String senderEmail;
     DataContext DB;
+
+    private static RecyclerView recyclerViewMessages;
 
     private static final String TAG = "ChatActivity";
     private static final int PICK_IMAGE = 1;
@@ -99,11 +109,8 @@ public class ChatActivity extends Activity {
     private static final int SHARE_TEXT = 104;
     private static final int REQUEST_PERMISSIONS_REQUIRED = 7;
 
-    WifiP2pManager mManager;
-    WifiP2pManager.Channel mChannel;
     WifiDirectBroadcastReceiver mReceiver;
     IntentFilter mIntentFilter;
-    private EditText edit;
     @SuppressLint("StaticFieldLeak")
     private static ListView listView;
     private static List<Message> listMessage;
@@ -114,6 +121,8 @@ public class ChatActivity extends Activity {
     private ArrayList<Uri> tmpFilesUri;
     private Uri mPhotoUri;
 
+    private Register register;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,10 +132,11 @@ public class ChatActivity extends Activity {
         setContentView(binding.getRoot());
         getChatContact();
 
-        mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        mChannel = mManager.initialize(this, getMainLooper(), null);
+//        mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+//        mChannel = mManager.initialize(this, getMainLooper(), null);
         mReceiver = WifiDirectBroadcastReceiver.createInstance();
         mReceiver.setmActivity(this);
+
 
         String[] PERMISSIONS = {
                 Manifest.permission.CAMERA,
@@ -145,6 +155,8 @@ public class ChatActivity extends Activity {
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
+        startService(new Intent(this, MessageService.class));
+
 
         // Init attributes
         imageButtonBack = (ImageButton) findViewById(R.id.back_btn);
@@ -160,8 +172,10 @@ public class ChatActivity extends Activity {
 
         activityChatLayout = (ConstraintLayout) findViewById(R.id.activity_main_layout);
         imageButtonEmoji = (ImageView) findViewById(R.id.emoji_btn);
-        RecyclerView recyclerViewMessages = (RecyclerView) findViewById(R.id.rcv_messages);
+        recyclerViewMessages = (RecyclerView) findViewById(R.id.rcv_messages);
         emojIconActions = new EmojIconActions(this, binding.getRoot(), imageButtonEmoji, editTextInputChat);
+
+        chatAdapter = new ChatAdapter(this, listChat);
 
 //        chatName.setText(receiverUser.getName());
         chatName.setText("Tan");
@@ -169,12 +183,13 @@ public class ChatActivity extends Activity {
         setUpMessages(recyclerViewMessages);
         emojIconActions.ShowEmojicon();
 
+        preferenceManager = new PreferenceManager(getApplicationContext());
+
         imageButtonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent backMainScreenIntent = new Intent(getApplication(), MainActivity.class);
                 startActivity(backMainScreenIntent);
-
             }
         });
 
@@ -230,12 +245,10 @@ public class ChatActivity extends Activity {
             public void onClick(View view) {
                 String msg = editTextInputChat.getText().toString();
                 if(!msg.equals("")) {
-                    String sentDate = CurrentDateTimeChat();
-                    sendMessage(Message.TEXT_MESSAGE);
+                    Log.d("M1", msg);
+                    sendMessage(Message.TEXT_MESSAGE, msg);
 //                    customChatAdapter.addChatItem(new Message(senderEmail,receiverUser.getEmail(), msg,sentDate, true));
-                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
-                    editTextInputChat.setText("");
-                    editTextInputChat.requestFocus();
+//                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
                 }else {
                     Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
                 }
@@ -265,8 +278,48 @@ public class ChatActivity extends Activity {
         emojIconActions.setUseSystemEmoji(true);
     }
 
-    private void sendMessage(int type) {
-        Message message = new Message();
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onResume() {
+        super.onResume();
+        registerReceiver(mReceiver, mIntentFilter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            unregisterReceiver(mReceiver);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void sendMessage(int type, String msg) {
+        String sentDate = null;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            sentDate = CurrentDateTimeChat();
+        }
+
+
+        Message message = new Message(Message.TEXT_MESSAGE, senderEmail,"aaa", msg, sentDate, true, null);
+
+//        customChatAdapter.addChatItem(message);
+        Log.d("2. Type", mReceiver.isGroupOwner() + "");
+        Log.d("2. IS_OWNER", WifiDirectBroadcastReceiver.IS_OWNER + "");
+        Log.d("3. IS_CLIENT", WifiDirectBroadcastReceiver.IS_CLIENT + "");
+
+        if(mReceiver.isGroupOwner() == WifiDirectBroadcastReceiver.IS_OWNER){
+            new SendMessageServer(ChatActivity.this, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);
+        }
+        else if(mReceiver.isGroupOwner() == WifiDirectBroadcastReceiver.IS_CLIENT){
+            new SendMessageClient(ChatActivity.this, mReceiver.getOwnerAddr()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);
+        }
+
+        editTextInputChat.setText("");
+        editTextInputChat.requestFocus();
     }
 
 
@@ -327,18 +380,18 @@ public class ChatActivity extends Activity {
     }
 
     public static void refreshList(Message message, boolean isMine){
-//		Log.v(TAG, "Refresh message list starts");
-
+		Log.v(TAG, "Refresh message list starts");
         message.setMine(isMine);
 //		Log.e(TAG, "refreshList: message is from :"+message.getSenderAddress().getHostAddress() );
-//		Log.e(TAG, "refreshList: message is from :"+isMine );
-        listMessage.add(message);
-        chatAdapter.notifyDataSetChanged();
+		Log.e(TAG, "refreshList: message is from :" + isMine );
+        listChat.add(message);
+        customChatAdapter.addChatItem(message);
+//        chatAdapter.notifyDataSetChanged();
 
-//    	Log.v(TAG, "Chat Adapter notified of the changes");
+    	Log.v(TAG, "Chat Adapter notified of the changes");
 
         //Scroll to the last element of the list
-        listView.setSelection(listMessage.size() - 1);
+        recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
     }
 
     @Override
