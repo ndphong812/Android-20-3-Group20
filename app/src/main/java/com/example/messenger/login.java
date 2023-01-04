@@ -71,7 +71,6 @@ public class login extends Activity {
                             String temp = user.split("@", 2)[0];
                             if(snapshot.hasChild(temp)){
                                 final String password = snapshot.child(temp).child("password").getValue(String.class);
-
                                 boolean matched = false;
                                 try {
                                     matched = validatePassword(pass, password);
