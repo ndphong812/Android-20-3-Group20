@@ -37,8 +37,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 public class Register extends AppCompatActivity implements WifiP2pManager.ChannelListener, DeviceListFragment.DeviceActionListener {
     private PreferenceManager preferenceManager;
@@ -101,7 +109,6 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         register = (Button) findViewById(R.id.require_btn);
 
         button = findViewById(R.id.button);
-
         preferenceManager = new PreferenceManager(getApplicationContext());
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -151,13 +158,44 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 String em = email.getText().toString();
                 String pass = password.getText().toString();
                 String repass = rt_password.getText().toString();
+                String generatedPassword = null;
 
+//                try
+//                {
+//                    // Create MessageDigest instance for MD5
+//                    MessageDigest md = MessageDigest.getInstance("MD5");
+//
+//                    // Add password bytes to digest
+//                    md.update(pass.getBytes());
+//
+//                    // Get the hash's bytes
+//                    byte[] bytes = md.digest();
+//
+//                    // This bytes[] has bytes in decimal format. Convert it to hexadecimal format
+//                    StringBuilder sb = new StringBuilder();
+//                    for (int i = 0; i < bytes.length; i++) {
+//                        sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+//                    }
+//
+//                    // Get complete hashed password in hex format
+//                    generatedPassword = sb.toString();
+//                } catch (NoSuchAlgorithmException e) {
+//                    e.printStackTrace();
+//                }
+//                System.out.println(generatedPassword);
+                try {
+                    generatedPassword = generateStorngPasswordHash(pass);
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                }
                 User userModel = new User();
                 userModel.setEmail(em);
                 userModel.setPort(8888);
                 userModel.setImage("https://demoda.vn/wp-content/uploads/2022/01/anh-avatar-trang-den-cute-du-trend-600x600.jpg");
                 userModel.setName(name);
-                userModel.setPassword(pass);
+                userModel.setPassword(generatedPassword);
                 userModel.setID(userModel.getEmail().split("@", 2)[0]);
                 userModel.setIsLogined(false);
                 List<String> friends = new ArrayList<>();
@@ -381,5 +419,41 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         Intent intent = new Intent(getApplicationContext(), login.class);
         startActivity(intent);
         finish();
+    }
+
+    private static String generateStorngPasswordHash(String password)
+            throws NoSuchAlgorithmException, InvalidKeySpecException
+    {
+        int iterations = 1000;
+        char[] chars = password.toCharArray();
+        byte[] salt = getSalt();
+
+        PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+
+        byte[] hash = skf.generateSecret(spec).getEncoded();
+        return iterations + ":" + toHex(salt) + ":" + toHex(hash);
+    }
+
+    private static byte[] getSalt() throws NoSuchAlgorithmException
+    {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+        return salt;
+    }
+
+    private static String toHex(byte[] array) throws NoSuchAlgorithmException
+    {
+        BigInteger bi = new BigInteger(1, array);
+        String hex = bi.toString(16);
+
+        int paddingLength = (array.length * 2) - hex.length();
+        if(paddingLength > 0)
+        {
+            return String.format("%0"  +paddingLength + "d", 0) + hex;
+        }else{
+            return hex;
+        }
     }
 }
