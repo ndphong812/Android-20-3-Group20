@@ -1,6 +1,8 @@
 package com.example.messenger.adapter;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,8 @@ import com.example.messenger.R;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
+
+import javax.mail.MessageAware;
 
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -75,7 +79,22 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public class ChatViewHolder extends RecyclerView.ViewHolder {
+    public void deleteMessage (int pos) {
+        Message message = listChat.get(pos);
+        Log.e("Message Menu", "delete message" + message.getMessage());
+    }
+
+    public void copyMessage (int pos) {
+        Message message = listChat.get(pos);
+        Log.e("Message Menu", "copy message" + message.getMessage());
+    }
+
+    public void downloadMessage (int pos) {
+        Message message = listChat.get(pos);
+        Log.e("Message Menu", "download message" + message.getMessage());
+    }
+
+    public class ChatViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
         private TextView message ;
         private ShapeableImageView avatar;
@@ -84,6 +103,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
             message = itemView.findViewById(R.id.message);
             avatar = itemView.findViewById(R.id.avatar);
+            message.setOnCreateContextMenuListener(this);
+        }
+
+        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+            contextMenu.setHeaderTitle("Lựa chọn bất kỳ");
+            contextMenu.add(getAdapterPosition(), 201, 0, "Xóa tin nhắn");
+            contextMenu.add(getAdapterPosition(), 202, 0, "Copy tin nhắn");
+            contextMenu.add(getAdapterPosition(), 203, 0, "Tải");
         }
     }
 }

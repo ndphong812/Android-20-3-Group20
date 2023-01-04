@@ -20,6 +20,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -29,6 +30,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
@@ -247,7 +249,9 @@ public class ChatActivity extends Activity {
                 if(!msg.equals("")) {
                     Log.d("M1", msg);
                     sendMessage(Message.TEXT_MESSAGE, msg);
+                    Message message = new Message(Message.TEXT_MESSAGE, senderEmail,"aaa", msg, "34", true, null);
 //                    customChatAdapter.addChatItem(new Message(senderEmail,receiverUser.getEmail(), msg,sentDate, true));
+                    customChatAdapter.addChatItem(message);
 //                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
                 }else {
                     Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
@@ -322,6 +326,27 @@ public class ChatActivity extends Activity {
         editTextInputChat.requestFocus();
     }
 
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        super.onContextItemSelected(item);
+
+        switch (item.getItemId()) {
+            case 201:
+                customChatAdapter.deleteMessage(item.getGroupId());
+                //CAll API delete message
+
+                return true;
+            case 202:
+                //Call API for copy message
+                customChatAdapter.copyMessage(item.getGroupId());
+                return true;
+            case 203:
+                //Call API for download message content
+                customChatAdapter.downloadMessage(item.getGroupId());
+                return true;
+        }
+        return true;
+    }
 
     private void setUpMessages(RecyclerView recyclerView) {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
