@@ -43,12 +43,19 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private List<Contact> contacts;
     private final Context context;
     ContactAdapter adapter;
+    Contact selfContact;
+
 
     public ContactAdapter(Context context) {
         this.context = context;
     }
 
-    public void setData(List<Contact> list) {
+    public void setData(User currentUser, List<Contact> list) {
+        selfContact = new Contact(currentUser.getID(),
+                currentUser.getName(),
+                currentUser.getImage(),
+                "",
+                "");
         this.contacts = list;
         notifyDataSetChanged();
     }
@@ -77,7 +84,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         //Handle click on each item
         viewHolder.layoutItem.setOnClickListener(view -> {
-            chatWithOther(contact);
+            chatWithOther(selfContact, contact);
         });
 
     }
@@ -87,14 +94,14 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return this.contacts.size();
     }
 
-    public void chatWithOther(Contact contact) {
+    public void chatWithOther(Contact selfContact, Contact contact) {
         Intent intent = new Intent(context.getApplicationContext(), ChatActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //Pass data here
         Bundle bundle = new Bundle();
+        bundle.putSerializable("selfContact", selfContact);
         bundle.putSerializable("contact", contact);
         intent.putExtras(bundle);
-
         //Change screen
         context.getApplicationContext().startActivity(intent);
     }
