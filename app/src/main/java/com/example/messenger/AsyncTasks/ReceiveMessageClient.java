@@ -7,6 +7,7 @@ import android.util.Log;
 import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.Register;
+import com.example.messenger.model.FireMessage;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -65,8 +66,8 @@ public class ReceiveMessageClient extends AbstractReceiver {
 		super.onProgressUpdate(values);
 //		playNotification(mContext, values[0]);
 		Log.e("Message1", values[0].getMessage());
-		ChatActivity.refreshList(values[0], false);
-
+		Message msg = values[0];
+		ChatActivity.refreshList(new FireMessage(msg.getmType(),msg.getFromMail(), msg.getToMail(), msg.getMessage(), msg.getSentDate(), false), false);
 	}
 
 }

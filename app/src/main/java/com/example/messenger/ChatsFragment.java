@@ -171,7 +171,7 @@ public class ChatsFragment extends Fragment {
                 }
 
                 customContactAdapter = new ContactAdapter(getActivity());
-                customContactAdapter.setData(contacts);
+                customContactAdapter.setData(currentUser, contacts);
                 recyclerViewContacts.setAdapter(customContactAdapter);
             }
             @Override

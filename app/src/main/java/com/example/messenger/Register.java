@@ -403,7 +403,6 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
 
 
     public void onClick(View v) {
-
         preferenceManager.putBoolean("isLogin", false);
         if(receiver.isGroupOwner() ==  WifiDirectBroadcastReceiver.IS_OWNER) {
             preferenceManager.putString("type", "1");

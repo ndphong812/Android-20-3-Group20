@@ -35,6 +35,7 @@
                 android:src="@drawable/ic_baseline_arrow_back_24" />
 
             <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/avatar"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="@dimen/_16dp"
