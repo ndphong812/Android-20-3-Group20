@@ -1,11 +1,16 @@
 package com.example.messenger.adapter;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+import android.annotation.SuppressLint;
+>>>>>>> c9d34dc25a3ca12d59195b0cc872f82eb882b592
 import android.content.ClipData;
 import android.content.ClipboardManager;
 =======
 >>>>>>> parent of 3993946 (Save text by using P2p and store in Firebase - https://ndphong.atlassian.net/browse/A2G-50?atlOrigin=eyJpIjoiMmM4YWNhMjQ3MDFkNDA2OTk1MDEzNDU0MDRkMGI0MTYiLCJwIjoiaiJ9)
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -20,13 +25,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.R;
+import com.example.messenger.Services.LoadImageFromURL;
+import com.example.messenger.model.Contact;
+import com.example.messenger.model.FireMessage;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.mail.MessageAware;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    Contact selfContact;
+    Contact currentContact;
+>>>>>>> c9d34dc25a3ca12d59195b0cc872f82eb882b592
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 =======
@@ -34,24 +54,29 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 >>>>>>> parent of 3993946 (Save text by using P2p and store in Firebase - https://ndphong.atlassian.net/browse/A2G-50?atlOrigin=eyJpIjoiMmM4YWNhMjQ3MDFkNDA2OTk1MDEzNDU0MDRkMGI0MTYiLCJwIjoiaiJ9)
 
     private Context context;
-    private List<Message> listChat;
+    private List<FireMessage> listChat;
     private final int MSG_TYPE_RIGHT = 1;
     private final int MSG_TYPE_LEFT = 0;
-
-    public ChatAdapter(Context context, List<Message> listChat) {
+    @SuppressLint("NotifyDataSetChanged")
+    public ChatAdapter(Context context, List<FireMessage> listChat) {
         this.context = context;
         this.listChat = listChat;
         notifyDataSetChanged();
     }
 
-    public void setData(List<Message> list) {
+    public void setData(List<FireMessage> list) {
         this.listChat = list;
     }
-    public void addChatItem(Message item) {
-        this.listChat.add(item);
-        notifyDataSetChanged();
+    public void setSelfContact(Contact self) {
+        this.selfContact = self;
+    }
+    public void setCurrentContact(Contact currentContact) {
+        this.currentContact = currentContact;
     }
 
+    public void addChatItem(FireMessage item) {
+        this.listChat.add(item);
+    }
 
     @NonNull
     @Override
@@ -67,10 +92,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Message currentChatItem = listChat.get(position);
+        FireMessage currentChatItem = listChat.get(position);
         ChatViewHolder chatViewHolder = (ChatViewHolder) holder;
         if(chatViewHolder.avatar != null) {
-            chatViewHolder.avatar.setImageResource(R.drawable.ic_launcher_background);
+            LoadImageFromURL loadImageFromURL = new LoadImageFromURL(chatViewHolder.avatar);
+            loadImageFromURL.execute(selfContact.getAvatarPath());
         }
 
         chatViewHolder.message.setText(currentChatItem.getMessage());
@@ -83,7 +109,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        if(listChat.get(position).isMine()) {
+        if(listChat.get(position).getFromMail().equals(selfContact.getId())) {
             return MSG_TYPE_RIGHT;
         }else{
             return MSG_TYPE_LEFT;

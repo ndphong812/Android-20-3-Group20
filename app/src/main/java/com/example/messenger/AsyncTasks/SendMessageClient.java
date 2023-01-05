@@ -8,6 +8,7 @@ import android.util.Log;
 import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.Register;
+import com.example.messenger.model.FireMessage;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -66,11 +67,10 @@ public class SendMessageClient extends AsyncTask<Message, Message, Message>{
 	}
 
 	@Override
-	protected void onProgressUpdate(Message... msg) {
-		super.onProgressUpdate(msg);
-		Log.e("Message2", msg[0].getMessage());
-//		if(isActivityRunning(ChatActivity.class))
-		ChatActivity.refreshList(msg[0], true);
+	protected void onProgressUpdate(Message... msgs) {
+		super.onProgressUpdate(msgs);
+		Message msg = msgs[0];
+		ChatActivity.refreshList(new FireMessage(msg.getmType(),msg.getFromMail(), msg.getToMail(), msg.getMessage(), msg.getSentDate(), true), true);
 	}
 
 	@Override
