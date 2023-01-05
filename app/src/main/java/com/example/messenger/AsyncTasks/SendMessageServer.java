@@ -8,6 +8,7 @@ import android.util.Log;
 import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.P2P.Server;
+import com.example.messenger.model.FireMessage;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -72,7 +73,9 @@ public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 	protected void onProgressUpdate(Message... values) {
 		super.onProgressUpdate(values);
 		Log.e("Message3", values[0].getMessage());
-		ChatActivity.refreshList(values[0], isMine);
+		Message msg = values[0];
+
+		ChatActivity.refreshList(new FireMessage(msg.getmType(),msg.getFromMail(), msg.getToMail(), msg.getMessage(), msg.getSentDate(), isMine), isMine);
 	}
 
 	@Override
