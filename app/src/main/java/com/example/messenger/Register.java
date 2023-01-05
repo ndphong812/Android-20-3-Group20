@@ -42,7 +42,6 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.SecretKeyFactory;
@@ -184,7 +183,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
 //                }
 //                System.out.println(generatedPassword);
                 try {
-                    generatedPassword = generateStorngPasswordHash(pass);
+                    generatedPassword = generateStrongPasswordHash(pass);
                 } catch (NoSuchAlgorithmException e) {
                     e.printStackTrace();
                 } catch (InvalidKeySpecException e) {
@@ -420,7 +419,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         finish();
     }
 
-    private static String generateStorngPasswordHash(String password)
+    private static String generateStrongPasswordHash(String password)
             throws NoSuchAlgorithmException, InvalidKeySpecException
     {
         int iterations = 1000;

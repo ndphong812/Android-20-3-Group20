@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -37,7 +36,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.example.messenger.AsyncTasks.SendMessageClient;
 import com.example.messenger.AsyncTasks.SendMessageServer;
@@ -184,9 +182,7 @@ public class ChatActivity extends Activity {
 
         //Handle events
         emojIconActions.ShowEmojicon();
-
         recyclerViewMessages = (RecyclerView) findViewById(R.id.rcv_messages);
-
         recyclerViewMessages.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -194,7 +190,9 @@ public class ChatActivity extends Activity {
                     recyclerViewMessages.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
+                            if(listChat.size() > 0) {
+                                recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
+                            }
                         }
                     }, 100);
                 }
@@ -227,7 +225,9 @@ public class ChatActivity extends Activity {
                     customChatAdapter.setData(listChat);
                     recyclerViewMessages.setAdapter(customChatAdapter);
 
-                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
+                    if(listChat.size() > 0) {
+                        recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
+                    }
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
@@ -252,7 +252,9 @@ public class ChatActivity extends Activity {
             public void onClick(View view) {
                 linearLayoutActions.setVisibility(View.GONE);
                 imageButtonShowMore.setVisibility(View.VISIBLE);
-                recyclerViewMessages.smoothScrollToPosition(listChat.size());
+                if(listChat.size() > 0) {
+                    recyclerViewMessages.smoothScrollToPosition(listChat.size());
+                }
             }
         });
 
@@ -263,7 +265,9 @@ public class ChatActivity extends Activity {
                     linearLayoutActions.setVisibility(View.GONE);
                     imageButtonShowMore.setVisibility(View.VISIBLE);
                 }
-                recyclerViewMessages.smoothScrollToPosition(listChat.size());
+                if(listChat.size() > 0) {
+                    recyclerViewMessages.smoothScrollToPosition(listChat.size());
+                }
             }
         });
 
@@ -417,14 +421,11 @@ public class ChatActivity extends Activity {
     }
 
     public static void refreshList(FireMessage message, boolean isMine){
-		Log.v(TAG, "Refresh message list starts");
         message.setMine(isMine);
-
         customChatAdapter.addChatItem(message);
-    	Log.v(TAG, "Chat Adapter notified of the changes");
-
         int sizeList = listChat.size();
         customChatAdapter.notifyItemInserted(sizeList - 1);
+
         //Scroll to the last element of the list
         recyclerViewMessages.smoothScrollToPosition(sizeList);
     }

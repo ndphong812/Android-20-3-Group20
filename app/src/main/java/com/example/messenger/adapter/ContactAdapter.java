@@ -26,6 +26,7 @@ import com.example.messenger.ChatActivity;
 import com.example.messenger.R;
 import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.model.Contact;
+import com.example.messenger.model.FireMessage;
 import com.example.messenger.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -50,10 +51,10 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.context = context;
     }
 
-    public void setData(User currentUser, List<Contact> list) {
-        selfContact = new Contact(currentUser.getID(),
-                currentUser.getName(),
-                currentUser.getImage(),
+    public void setData(User selfUser, List<Contact> list) {
+        selfContact = new Contact(selfUser.getID(),
+                selfUser.getName(),
+                selfUser.getImage(),
                 "",
                 "");
         this.contacts = list;
@@ -109,9 +110,28 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void deleteMessage(int pos) {
         Contact contact = contacts.get(pos);
         if(contact != null) {
-            contacts.remove(pos);
             //Call API for remove
-            notifyItemRemoved(pos);
+            databaseReference.child("Messages").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    ;
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        FireMessage fireMessage = dataSnapshot.getValue(FireMessage.class);
+                        if(fireMessage != null) {
+                            if( (fireMessage.getFromMail().equals(selfContact.getId())
+                                    && fireMessage.getToMail().equals(contact.getId()) )
+                                    || (fireMessage.getFromMail().equals(contact.getId())
+                                    && fireMessage.getToMail().equals(selfContact.getId())) ) {
+                                dataSnapshot.getRef().removeValue();
+                            }
+                        }
+                    }
+                    Toast.makeText(context, "Xóa trò chuyện thành công", Toast.LENGTH_SHORT).show();
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
         }
     }
 
@@ -143,6 +163,9 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         @Override
                                         public void onSuccess(Void unused) {
                                             deleteMessage(pos);
+
+                                            contacts.remove(pos);
+                                            notifyItemRemoved(pos);
                                         }
                                     });
                         }
@@ -152,6 +175,8 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });
+
+
     }
 
     public void blockFriend(int pos, User currentUser) {
