@@ -1,15 +1,21 @@
 package com.example.messenger.adapter;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.R;
 import com.example.messenger.Services.LoadImageFromURL;
@@ -19,6 +25,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
 
+import javax.mail.MessageAware;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Contact selfContact;
@@ -87,7 +94,32 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public class ChatViewHolder extends RecyclerView.ViewHolder {
+    public void deleteMessage (int pos) {
+        Message message = listChat.get(pos);
+        Log.e("Message Menu", "delete message" + message.getMessage());
+    }
+
+    public void copyMessage (int pos) {
+        Message message = listChat.get(pos);
+//        Log.e(message.getMessage());
+
+        if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setText(message.getMessage());
+        } else {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip = android.content.ClipData.newPlainText("Copied Text", message.getMessage());
+            clipboard.setPrimaryClip(clip);
+        }
+        Toast.makeText(context.getApplicationContext(), "Đã lưu vào bộ nhớ tạm.", Toast.LENGTH_SHORT).show();
+    }
+
+    public void downloadMessage (int pos) {
+        Message message = listChat.get(pos);
+        Log.e("Message Menu", "download message" + message.getMessage());
+    }
+
+    public class ChatViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
         private TextView message ;
         private ShapeableImageView avatar;
@@ -96,6 +128,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
             message = itemView.findViewById(R.id.message);
             avatar = itemView.findViewById(R.id.avatar);
+            message.setOnCreateContextMenuListener(this);
+        }
+
+        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+            contextMenu.setHeaderTitle("Lựa chọn bất kỳ");
+            contextMenu.add(getAdapterPosition(), 201, 0, "Xóa tin nhắn");
+            contextMenu.add(getAdapterPosition(), 202, 0, "Copy tin nhắn");
+            contextMenu.add(getAdapterPosition(), 203, 0, "Tải");
         }
     }
 }

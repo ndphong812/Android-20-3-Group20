@@ -20,6 +20,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -295,7 +296,7 @@ public class ChatActivity extends Activity {
             public void onClick(View view) {
                 String msg = editTextInputChat.getText().toString();
                 if(!msg.equals("")) {
-                    sendMessage(Message.TEXT_MESSAGE, msg);
+                    sendMessage(Message.TEXT_MESSAGE, msg);                    
                 }else {
                     Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
                 }
@@ -365,6 +366,28 @@ public class ChatActivity extends Activity {
 
         editTextInputChat.setText("");
         editTextInputChat.requestFocus();
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        super.onContextItemSelected(item);
+
+        switch (item.getItemId()) {
+            case 201:
+                customChatAdapter.deleteMessage(item.getGroupId());
+                //CAll API delete message
+
+                return true;
+            case 202:
+                //Call API for copy message
+                customChatAdapter.copyMessage(item.getGroupId());
+                return true;
+            case 203:
+                //Call API for download message content
+                customChatAdapter.downloadMessage(item.getGroupId());
+                return true;
+        }
+        return true;
     }
 
     private void getChatContact() {
