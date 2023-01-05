@@ -30,7 +30,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
@@ -249,9 +248,13 @@ public class ChatActivity extends Activity {
                 if(!msg.equals("")) {
                     Log.d("M1", msg);
                     sendMessage(Message.TEXT_MESSAGE, msg);
+<<<<<<< HEAD
                     Message message = new Message(Message.TEXT_MESSAGE, senderEmail,"aaa", msg, "34", true, null);
 //                    customChatAdapter.addChatItem(new Message(senderEmail,receiverUser.getEmail(), msg,sentDate, true));
                     customChatAdapter.addChatItem(message);
+=======
+//                    customChatAdapter.addChatItem(new Message(senderEmail,receiverUser.getEmail(), msg,sentDate, true));
+>>>>>>> parent of 3993946 (Save text by using P2p and store in Firebase - https://ndphong.atlassian.net/browse/A2G-50?atlOrigin=eyJpIjoiMmM4YWNhMjQ3MDFkNDA2OTk1MDEzNDU0MDRkMGI0MTYiLCJwIjoiaiJ9)
 //                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
                 }else {
                     Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
@@ -326,6 +329,7 @@ public class ChatActivity extends Activity {
         editTextInputChat.requestFocus();
     }
 
+<<<<<<< HEAD
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         super.onContextItemSelected(item);
@@ -347,6 +351,8 @@ public class ChatActivity extends Activity {
         }
         return true;
     }
+=======
+>>>>>>> parent of 3993946 (Save text by using P2p and store in Firebase - https://ndphong.atlassian.net/browse/A2G-50?atlOrigin=eyJpIjoiMmM4YWNhMjQ3MDFkNDA2OTk1MDEzNDU0MDRkMGI0MTYiLCJwIjoiaiJ9)
 
     private void setUpMessages(RecyclerView recyclerView) {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

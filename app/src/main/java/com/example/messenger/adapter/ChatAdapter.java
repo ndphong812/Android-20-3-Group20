@@ -1,7 +1,10 @@
 package com.example.messenger.adapter;
 
+<<<<<<< HEAD
 import android.content.ClipData;
 import android.content.ClipboardManager;
+=======
+>>>>>>> parent of 3993946 (Save text by using P2p and store in Firebase - https://ndphong.atlassian.net/browse/A2G-50?atlOrigin=eyJpIjoiMmM4YWNhMjQ3MDFkNDA2OTk1MDEzNDU0MDRkMGI0MTYiLCJwIjoiaiJ9)
 import android.content.Context;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -23,8 +26,12 @@ import java.util.List;
 
 import javax.mail.MessageAware;
 
+<<<<<<< HEAD
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+=======
+public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+>>>>>>> parent of 3993946 (Save text by using P2p and store in Firebase - https://ndphong.atlassian.net/browse/A2G-50?atlOrigin=eyJpIjoiMmM4YWNhMjQ3MDFkNDA2OTk1MDEzNDU0MDRkMGI0MTYiLCJwIjoiaiJ9)
 
     private Context context;
     private List<Message> listChat;
