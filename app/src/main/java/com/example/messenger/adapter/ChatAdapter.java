@@ -1,5 +1,7 @@
 package com.example.messenger.adapter;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -7,10 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.R;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -20,7 +24,7 @@ import java.util.List;
 import javax.mail.MessageAware;
 
 
-public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private Context context;
     private List<Message> listChat;
@@ -86,7 +90,17 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void copyMessage (int pos) {
         Message message = listChat.get(pos);
-        Log.e("Message Menu", "copy message" + message.getMessage());
+//        Log.e(message.getMessage());
+
+        if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setText(message.getMessage());
+        } else {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip = android.content.ClipData.newPlainText("Copied Text", message.getMessage());
+            clipboard.setPrimaryClip(clip);
+        }
+        Toast.makeText(context.getApplicationContext(), "Đã lưu vào bộ nhớ tạm.", Toast.LENGTH_SHORT).show();
     }
 
     public void downloadMessage (int pos) {
