@@ -68,6 +68,10 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name="com.example.messenger.MessageService"
+            android:enabled="true" />
+
     </application>
 
 </manifest>

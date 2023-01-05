@@ -43,12 +43,19 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private List<Contact> contacts;
     private final Context context;
     ContactAdapter adapter;
+    Contact selfContact;
+
 
     public ContactAdapter(Context context) {
         this.context = context;
     }
 
-    public void setData(List<Contact> list) {
+    public void setData(User currentUser, List<Contact> list) {
+        selfContact = new Contact(currentUser.getID(),
+                currentUser.getName(),
+                currentUser.getImage(),
+                "",
+                "");
         this.contacts = list;
         notifyDataSetChanged();
     }
@@ -77,7 +84,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         //Handle click on each item
         viewHolder.layoutItem.setOnClickListener(view -> {
-//            chatWithOther(contact);
+            chatWithOther(selfContact, contact);
         });
 
     }
@@ -87,14 +94,14 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return this.contacts.size();
     }
 
-    public void chatWithOther(Contact contact) {
+    public void chatWithOther(Contact selfContact, Contact contact) {
         Intent intent = new Intent(context.getApplicationContext(), ChatActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //Pass data here
         Bundle bundle = new Bundle();
+        bundle.putSerializable("selfContact", selfContact);
         bundle.putSerializable("contact", contact);
         intent.putExtras(bundle);
-
         //Change screen
         context.getApplicationContext().startActivity(intent);
     }
@@ -146,6 +153,19 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
+
+    public void blockFriend(int pos, User currentUser) {
+        //handle UI
+        String friendId = contacts.get(pos).getId();
+        currentUser.getBlocks().add(friendId);
+        //Call API to firebase
+        databaseReference
+                .child("User")
+                .child(currentUser.getID())
+                .child("blocks")
+                .setValue(currentUser.getBlocks());
+    }
+
     public class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         private ShapeableImageView avatar;
         private TextView chatName;
@@ -178,6 +198,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             contextMenu.setHeaderTitle("Lựa chọn bất kỳ");
             contextMenu.add(getAdapterPosition(), 101, 0, "Xóa cuộc trò chuyện");
             contextMenu.add(getAdapterPosition(), 102, 0, "Hủy kết bạn");
+            contextMenu.add(getAdapterPosition(), 103, 0, "Chặn người dùng này");
         }
     }
 }

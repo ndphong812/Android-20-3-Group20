@@ -116,26 +116,26 @@ public class DataContext extends SQLiteOpenHelper {
             Cursor c1 = db.rawQuery(query, new String[]{emailSend, emailReceiver});
             c1.moveToFirst();
             while (!c1.isAfterLast()) {
-                Message mess = new Message();
-                mess.FromMail = c1.getString(c1.getColumnIndex("FromMail"));
-                mess.ToMail = c1.getString(c1.getColumnIndex("ToMail"));
-                mess.Message = c1.getString(c1.getColumnIndex("Message"));
-                mess.SentDate = c1.getString(c1.getColumnIndex("SentDate"));
-                messageList.add(mess);
-                c1.moveToNext();
+//                Message mess = new Message();
+//                mess.FromMail = c1.getString(c1.getColumnIndex("FromMail"));
+//                mess.ToMail = c1.getString(c1.getColumnIndex("ToMail"));
+//                mess.Message = c1.getString(c1.getColumnIndex("Message"));
+//                mess.SentDate = c1.getString(c1.getColumnIndex("SentDate"));
+//                messageList.add(mess);
+//                c1.moveToNext();
             }
             c1.close();
 
             Cursor c2 = db.rawQuery(query, new String[]{emailReceiver, emailSend});
             c2.moveToFirst();
             while (!c2.isAfterLast()) {
-                Message mess = new Message();
-                mess.FromMail = c2.getString(c2.getColumnIndex("FromMail"));
-                mess.ToMail = c2.getString(c2.getColumnIndex("ToMail"));
-                mess.Message = c2.getString(c2.getColumnIndex("Message"));
-                mess.SentDate = c2.getString(c2.getColumnIndex("SentDate"));
-                messageList.add(mess);
-                c2.moveToNext();
+//                Message mess = new Message();
+//                mess.FromMail = c2.getString(c2.getColumnIndex("FromMail"));
+//                mess.ToMail = c2.getString(c2.getColumnIndex("ToMail"));
+//                mess.Message = c2.getString(c2.getColumnIndex("Message"));
+//                mess.SentDate = c2.getString(c2.getColumnIndex("SentDate"));
+//                messageList.add(mess);
+//                c2.moveToNext();
             }
 //            Log.e("jjj", messageList.get(0).getMessage());
             c2.close();

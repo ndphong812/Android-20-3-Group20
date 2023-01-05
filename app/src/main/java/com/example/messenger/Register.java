@@ -1,11 +1,7 @@
 package com.example.messenger;
 
-import static com.example.messenger.R.layout.register;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -25,34 +21,32 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.messenger.Database.DataContext;
 import com.example.messenger.P2P.Client;
 import com.example.messenger.P2P.Server;
 import com.example.messenger.Receivers.WifiDirectBroadcastReceiver;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 public class Register extends AppCompatActivity implements WifiP2pManager.ChannelListener, DeviceListFragment.DeviceActionListener {
     private PreferenceManager preferenceManager;
@@ -70,9 +64,8 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
     private boolean retryChannel = false;
     private final IntentFilter intentFilter = new IntentFilter();
     private WifiP2pManager.Channel channel;
-//    private BroadcastReceiver receiver = null;
     private WifiDirectBroadcastReceiver receiver;
-
+    public int check = 0;
 
     private LinearLayout registerView;
     private LinearLayout connectView;
@@ -84,9 +77,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         return connectView;
     }
 
-
     Button button;
-
 
     public void setIsWifiP2pEnabled(boolean isWifiP2pEnabled) {
         this.isWifiP2pEnabled = isWifiP2pEnabled;
@@ -97,45 +88,13 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_CODE_ACCESS_FINE_LOCATION:
-                if  (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Log.e(TAG, "Fine location permission is not granted!");
-                    finish();
-                }
-                break;
+        if (requestCode == PERMISSIONS_REQUEST_CODE_ACCESS_FINE_LOCATION) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG, "Fine location permission is not granted!");
+                finish();
+            }
         }
     }
-
-    private boolean initP2p() {
-        // Device capability definition check
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_DIRECT)) {
-            Log.e(TAG, "Wi-Fi Direct is not supported by this device.");
-            return false;
-        }
-        // Hardware capability check
-        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (wifiManager == null) {
-            Log.e(TAG, "Cannot get Wi-Fi system service.");
-            return false;
-        }
-        if (!wifiManager.isP2pSupported()) {
-            Log.e(TAG, "Wi-Fi Direct is not supported by the hardware or Wi-Fi is off.");
-            return false;
-        }
-        manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        if (manager == null) {
-            Log.e(TAG, "Cannot get Wi-Fi Direct system service.");
-            return false;
-        }
-        channel = manager.initialize(this, getMainLooper(), null);
-        if (channel == null) {
-            Log.e(TAG, "Cannot initialize Wi-Fi Direct.");
-            return false;
-        }
-        return true;
-    }
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,16 +109,22 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
         register = (Button) findViewById(R.id.require_btn);
 
         button = findViewById(R.id.button);
-
         preferenceManager = new PreferenceManager(getApplicationContext());
-
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-        if (!initP2p()) {
-            finish();
-        }
+
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+        channel = manager.initialize(this, getMainLooper(), null);
+
+        receiver = WifiDirectBroadcastReceiver.createInstance();
+        receiver.setmManager(manager);
+        receiver.setmChannel(channel);
+        receiver.setmActivity(this);
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -184,6 +149,8 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
             }
         });
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -191,13 +158,44 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 String em = email.getText().toString();
                 String pass = password.getText().toString();
                 String repass = rt_password.getText().toString();
+                String generatedPassword = null;
 
+//                try
+//                {
+//                    // Create MessageDigest instance for MD5
+//                    MessageDigest md = MessageDigest.getInstance("MD5");
+//
+//                    // Add password bytes to digest
+//                    md.update(pass.getBytes());
+//
+//                    // Get the hash's bytes
+//                    byte[] bytes = md.digest();
+//
+//                    // This bytes[] has bytes in decimal format. Convert it to hexadecimal format
+//                    StringBuilder sb = new StringBuilder();
+//                    for (int i = 0; i < bytes.length; i++) {
+//                        sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+//                    }
+//
+//                    // Get complete hashed password in hex format
+//                    generatedPassword = sb.toString();
+//                } catch (NoSuchAlgorithmException e) {
+//                    e.printStackTrace();
+//                }
+//                System.out.println(generatedPassword);
+                try {
+                    generatedPassword = generateStorngPasswordHash(pass);
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                }
                 User userModel = new User();
                 userModel.setEmail(em);
                 userModel.setPort(8888);
-                userModel.setImage("abc");
+                userModel.setImage("https://demoda.vn/wp-content/uploads/2022/01/anh-avatar-trang-den-cute-du-trend-600x600.jpg");
                 userModel.setName(name);
-                userModel.setPassword(pass);
+                userModel.setPassword(generatedPassword);
                 userModel.setID(userModel.getEmail().split("@", 2)[0]);
                 userModel.setIsLogined(false);
                 List<String> friends = new ArrayList<>();
@@ -211,14 +209,6 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
                 } else {
                     if(pass.equals(repass)) {
                         if(pass.length() >= 6) {
-                            if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_OWNER) {
-                                Server server = new Server();
-                                server.start();
-                            }
-                            else if(receiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_CLIENT){
-                                Client client = new Client(receiver.getOwnerAddr());
-                                client.start();
-                            }
                             userRef.child(userModel.getID())
                                     .setValue(userModel)
                                     .addOnFailureListener(e -> {
@@ -246,9 +236,8 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
 
     @SuppressLint("MissingPermission")
     @Override
-    public void onResume() {
-        super.onResume();
-        receiver = new WifiDirectBroadcastReceiver(manager, channel, this);
+    public void onStart() {
+        super.onStart();
         try{
             registerReceiver(receiver, intentFilter);
         }catch (Exception e){
@@ -415,17 +404,55 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
 
     public void onClick(View v) {
         preferenceManager.putBoolean("isLogin", false);
+        if(receiver.isGroupOwner() ==  WifiDirectBroadcastReceiver.IS_OWNER) {
+            preferenceManager.putString("type", "1");
+            Server server = new Server();
+            server.start();
+        }
+        else if(receiver.isGroupOwner() ==  WifiDirectBroadcastReceiver.IS_CLIENT){
+            preferenceManager.putString("type", "2");
+            Toast.makeText(Register.this, receiver.getOwnerAddr() + "", Toast.LENGTH_SHORT).show();
+            Client client = new Client(receiver.getOwnerAddr());
+            client.start();
+        }
         Intent intent = new Intent(getApplicationContext(), login.class);
         startActivity(intent);
         finish();
     }
 
-    public int Random_Code()
+    private static String generateStorngPasswordHash(String password)
+            throws NoSuchAlgorithmException, InvalidKeySpecException
     {
-        int min = 100000;
-        int max = 999999;
-        int random_int = (int)Math.floor(Math.random()*(max-min+1)+min);
-        return random_int;
+        int iterations = 1000;
+        char[] chars = password.toCharArray();
+        byte[] salt = getSalt();
+
+        PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+
+        byte[] hash = skf.generateSecret(spec).getEncoded();
+        return iterations + ":" + toHex(salt) + ":" + toHex(hash);
     }
 
+    private static byte[] getSalt() throws NoSuchAlgorithmException
+    {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+        return salt;
+    }
+
+    private static String toHex(byte[] array) throws NoSuchAlgorithmException
+    {
+        BigInteger bi = new BigInteger(1, array);
+        String hex = bi.toString(16);
+
+        int paddingLength = (array.length * 2) - hex.length();
+        if(paddingLength > 0)
+        {
+            return String.format("%0"  +paddingLength + "d", 0) + hex;
+        }else{
+            return hex;
+        }
+    }
 }

@@ -31,7 +31,7 @@ public class AbstractReceiver extends AsyncTask<Void, Message, Void>{
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 		
 		
-		PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
+		PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE);
 		
 		Notification mNotification = new Notification.Builder(context)
 			.setContentTitle(message.getChatName())

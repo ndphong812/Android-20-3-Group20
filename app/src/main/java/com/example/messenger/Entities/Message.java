@@ -1,9 +1,10 @@
 package com.example.messenger.Entities;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
-public class Message {
+public class Message implements Serializable {
     public String FromMail;
     public String ToMail;
     public String Message;
@@ -22,8 +23,6 @@ public class Message {
     private String filePath;
     private boolean isMine;
 
-    public Message() {}
-
     public Message(int type, String fromMail, String toMail, String message, String sentDate, Boolean IsMine, InetAddress sender) {
         FromMail = fromMail;
         ToMail = toMail;
@@ -32,6 +31,15 @@ public class Message {
         isMine = IsMine;
         mType = type;
         senderAddress = sender;
+    }
+
+    public Message(int type, String fromMail, String toMail, String message, String sentDate, Boolean IsMine) {
+        FromMail = fromMail;
+        ToMail = toMail;
+        Message = message;
+        SentDate = sentDate;
+        isMine = IsMine;
+        mType = type;
     }
 
     public int getmType() { return mType; }
@@ -84,6 +92,4 @@ public class Message {
     public void setSentDate(String sentDate) {
         SentDate = sentDate;
     }
-
-
 }

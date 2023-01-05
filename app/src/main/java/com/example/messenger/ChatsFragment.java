@@ -90,6 +90,10 @@ public class ChatsFragment extends Fragment {
                 //Call API for unfriend and delete conversation
                 customContactAdapter.unfriendAndDeleteMessage(item.getGroupId(), currentUser);
                 return true;
+            case 103:
+                //Call API for unfriend and delete conversation
+                customContactAdapter.blockFriend(item.getGroupId(), currentUser);
+                return true;
         }
         return true;
     }
@@ -102,8 +106,10 @@ public class ChatsFragment extends Fragment {
 
         //Binding view
         shapeableImageViewAvatar = view.findViewById(R.id.Mainavatar);
+
         editTextSearch =  view.findViewById(R.id.search_input);
         ViewGroup scrollViewOnlineUsers = view.findViewById(R.id.view_group);
+
 
         //Handle click avatar to get setting
         shapeableImageViewAvatar.setOnClickListener(new View.OnClickListener() {
@@ -165,7 +171,7 @@ public class ChatsFragment extends Fragment {
                 }
 
                 customContactAdapter = new ContactAdapter(getActivity());
-                customContactAdapter.setData(contacts);
+                customContactAdapter.setData(currentUser, contacts);
                 recyclerViewContacts.setAdapter(customContactAdapter);
             }
             @Override
@@ -187,6 +193,8 @@ public class ChatsFragment extends Fragment {
                             onlineUsers.add(user);
                         }else{
                             currentUser = user;
+                            LoadImageFromURL loadImageFromURL = new LoadImageFromURL(shapeableImageViewAvatar);
+                            loadImageFromURL.execute(currentUser.getImage());
                         }
                     }
                 }

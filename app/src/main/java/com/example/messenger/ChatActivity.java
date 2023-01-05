@@ -13,13 +13,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,15 +36,25 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.example.messenger.AsyncTasks.SendMessageClient;
+import com.example.messenger.AsyncTasks.SendMessageServer;
 import com.example.messenger.Database.DataContext;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.Receivers.WifiDirectBroadcastReceiver;
+import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.adapter.ChatAdapter;
 import com.example.messenger.databinding.ActivityChatBinding;
 import com.example.messenger.model.Contact;
-import com.example.messenger.model.User;
+import com.example.messenger.model.FireMessage;
+import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -50,32 +62,29 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
 public class ChatActivity extends Activity {
-
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://messenger-50d65-default-rtdb.firebaseio.com/");
     ActivityChatBinding binding;
     Intent intent;
     Bundle bundle;
     TextView chatName;
     ImageButton imageButtonBack;
     LinearLayout linearLayoutActions;
-    ImageButton imageButtonShowMore;
-    ImageButton imageButtonSendMessage;
-    ImageButton imageButtonSendImage;
-    ImageButton imageButtonSendCamera;
-    ImageView imageButtonEmoji;
-    ImageView imgPreview;
+    ShapeableImageView shapeableImageViewAvatar;
 
+    ImageButton imageButtonShowMore, imageButtonSendMessage, imageButtonSendImage, imageButtonSendCamera;
+    ImageView imageButtonEmoji, imgPreview;
+
+    Contact  selfContact;
     Contact currentContact;
-    private User receiverUser;
-    private List<Message> listChat;
-    private ChatAdapter customChatAdapter;
+    private static List<FireMessage> listChat = new ArrayList<>();
+    private static ChatAdapter customChatAdapter;
     private EmojiconEditText editTextInputChat;
     EmojIconActions emojIconActions;
     ConstraintLayout activityChatLayout;
@@ -84,6 +93,8 @@ public class ChatActivity extends Activity {
     public static final int MY_CAMERA_REQUEST_CODE = 7171;
     String senderEmail;
     DataContext DB;
+
+    private static RecyclerView recyclerViewMessages;
 
     private static final String TAG = "ChatActivity";
     private static final int PICK_IMAGE = 1;
@@ -99,11 +110,8 @@ public class ChatActivity extends Activity {
     private static final int SHARE_TEXT = 104;
     private static final int REQUEST_PERMISSIONS_REQUIRED = 7;
 
-    WifiP2pManager mManager;
-    WifiP2pManager.Channel mChannel;
     WifiDirectBroadcastReceiver mReceiver;
     IntentFilter mIntentFilter;
-    private EditText edit;
     @SuppressLint("StaticFieldLeak")
     private static ListView listView;
     private static List<Message> listMessage;
@@ -114,17 +122,21 @@ public class ChatActivity extends Activity {
     private ArrayList<Uri> tmpFilesUri;
     private Uri mPhotoUri;
 
+    private Register register;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Binding layout
         binding = ActivityChatBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         DB = new DataContext(this);
         shp = new PreferenceManager(getApplicationContext());
-        setContentView(binding.getRoot());
+
+        //get data from intent
         getChatContact();
 
-        mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        mChannel = mManager.initialize(this, getMainLooper(), null);
+        //Restart receiver
         mReceiver = WifiDirectBroadcastReceiver.createInstance();
         mReceiver.setmActivity(this);
 
@@ -144,7 +156,7 @@ public class ChatActivity extends Activity {
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-
+        startService(new Intent(this, MessageService.class));
 
         // Init attributes
         imageButtonBack = (ImageButton) findViewById(R.id.back_btn);
@@ -156,24 +168,82 @@ public class ChatActivity extends Activity {
         imageButtonSendMessage = (ImageButton) findViewById(R.id.send_btn);
         imgPreview = (ImageView) findViewById(R.id.imagePreview);
         chatName = (TextView) findViewById(R.id.chatName);
+        shapeableImageViewAvatar = (ShapeableImageView) findViewById(R.id.avatar);
         senderEmail = shp.getString("userEmail");
 
         activityChatLayout = (ConstraintLayout) findViewById(R.id.activity_main_layout);
         imageButtonEmoji = (ImageView) findViewById(R.id.emoji_btn);
-        RecyclerView recyclerViewMessages = (RecyclerView) findViewById(R.id.rcv_messages);
         emojIconActions = new EmojIconActions(this, binding.getRoot(), imageButtonEmoji, editTextInputChat);
 
-        chatName.setText(receiverUser.getName());
+        //Set up data
+        chatAdapter = new ChatAdapter(this, listChat);
+        chatName.setText(currentContact.getUsername());
+        LoadImageFromURL loadImageFromURL = new LoadImageFromURL(shapeableImageViewAvatar);
+        loadImageFromURL.execute(currentContact.getAvatarPath());
+
         //Handle events
-        setUpMessages(recyclerViewMessages);
         emojIconActions.ShowEmojicon();
 
+        recyclerViewMessages = (RecyclerView) findViewById(R.id.rcv_messages);
+
+        recyclerViewMessages.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if ( bottom < oldBottom) {
+                    recyclerViewMessages.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
+                        }
+                    }, 100);
+                }
+            }
+        });
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ChatActivity.this);
+        recyclerViewMessages.setLayoutManager(linearLayoutManager);
+
+
+        listChat.clear();
+        if(listChat.isEmpty()) {
+            databaseReference.child("Messages").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        FireMessage tempFireMessage = dataSnapshot.getValue(FireMessage.class);
+                        if(tempFireMessage != null) {
+                            if( (tempFireMessage.getFromMail().equals(selfContact.getId())
+                                    && tempFireMessage.getToMail().equals(currentContact.getId()) )
+                                     || (tempFireMessage.getFromMail().equals(currentContact.getId())
+                                    && tempFireMessage.getToMail().equals(selfContact.getId())) ) {
+
+                                listChat.add(tempFireMessage);
+                            }
+                        }
+                    }
+                    customChatAdapter = new ChatAdapter(ChatActivity.this, listChat);
+                    customChatAdapter.setSelfContact(selfContact);
+                    customChatAdapter.setCurrentContact(currentContact);
+                    customChatAdapter.setData(listChat);
+                    recyclerViewMessages.setAdapter(customChatAdapter);
+
+                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
+        }
+        listener();
+    }
+
+    //Handle Event in ChatActivity
+    private void listener () {
         imageButtonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent backMainScreenIntent = new Intent(getApplication(), MainActivity.class);
                 startActivity(backMainScreenIntent);
-
             }
         });
 
@@ -182,6 +252,7 @@ public class ChatActivity extends Activity {
             public void onClick(View view) {
                 linearLayoutActions.setVisibility(View.GONE);
                 imageButtonShowMore.setVisibility(View.VISIBLE);
+                recyclerViewMessages.smoothScrollToPosition(listChat.size());
             }
         });
 
@@ -191,29 +262,23 @@ public class ChatActivity extends Activity {
                 if(isFocus) {
                     linearLayoutActions.setVisibility(View.GONE);
                     imageButtonShowMore.setVisibility(View.VISIBLE);
-//                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
                 }
+                recyclerViewMessages.smoothScrollToPosition(listChat.size());
             }
         });
 
-
         editTextInputChat.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 linearLayoutActions.setVisibility(View.GONE);
                 imageButtonShowMore.setVisibility(View.VISIBLE);
-
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
+            public void afterTextChanged(Editable editable) {}
         });
 
         imageButtonShowMore.setOnClickListener(new View.OnClickListener() {
@@ -223,18 +288,22 @@ public class ChatActivity extends Activity {
                 imageButtonShowMore.setVisibility(View.GONE);
             }
         });
+
         imageButtonSendMessage.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
                 String msg = editTextInputChat.getText().toString();
                 if(!msg.equals("")) {
-                    String sentDate = CurrentDateTimeChat();
-                    sendMessage(Message.TEXT_MESSAGE);
+                    sendMessage(Message.TEXT_MESSAGE, msg);
+<<<<<<< HEAD
+                    Message message = new Message(Message.TEXT_MESSAGE, senderEmail,"aaa", msg, "34", true, null);
 //                    customChatAdapter.addChatItem(new Message(senderEmail,receiverUser.getEmail(), msg,sentDate, true));
-                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
-                    editTextInputChat.setText("");
-                    editTextInputChat.requestFocus();
+                    customChatAdapter.addChatItem(message);
+=======
+//                    customChatAdapter.addChatItem(new Message(senderEmail,receiverUser.getEmail(), msg,sentDate, true));
+>>>>>>> parent of 3993946 (Save text by using P2p and store in Firebase - https://ndphong.atlassian.net/browse/A2G-50?atlOrigin=eyJpIjoiMmM4YWNhMjQ3MDFkNDA2OTk1MDEzNDU0MDRkMGI0MTYiLCJwIjoiaiJ9)
+//                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
                 }else {
                     Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
                 }
@@ -249,6 +318,7 @@ public class ChatActivity extends Activity {
                 startActivityForResult(intent, MY_RESULT_LOAD_IMAGE);
             }
         });
+
         imageButtonSendCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -264,10 +334,71 @@ public class ChatActivity extends Activity {
         emojIconActions.setUseSystemEmoji(true);
     }
 
-    private void sendMessage(int type) {
-        Message message = new Message();
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onResume() {
+        super.onResume();
+        registerReceiver(mReceiver, mIntentFilter);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            unregisterReceiver(mReceiver);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void sendMessage(int type, String msg) {
+        String sentDate = null;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            sentDate = CurrentDateTimeChat();
+        }
+
+        Message message = new Message(Message.TEXT_MESSAGE, selfContact.getId(), currentContact.getId(), msg, sentDate, true);
+        FireMessage fireMessage = new FireMessage(Message.TEXT_MESSAGE, selfContact.getId(),  currentContact.getId(), msg, sentDate, true);
+
+        databaseReference.child("Messages").child("message-" + new Date().getTime()).setValue(fireMessage);
+
+        if(mReceiver.isGroupOwner() == WifiDirectBroadcastReceiver.IS_OWNER){
+            new SendMessageServer(ChatActivity.this, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);
+        }
+        else if(mReceiver.isGroupOwner() == WifiDirectBroadcastReceiver.IS_CLIENT){
+            new SendMessageClient(ChatActivity.this, mReceiver.getOwnerAddr()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);
+        }
+
+        editTextInputChat.setText("");
+        editTextInputChat.requestFocus();
+    }
+
+<<<<<<< HEAD
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        super.onContextItemSelected(item);
+
+        switch (item.getItemId()) {
+            case 201:
+                customChatAdapter.deleteMessage(item.getGroupId());
+                //CAll API delete message
+
+                return true;
+            case 202:
+                //Call API for copy message
+                customChatAdapter.copyMessage(item.getGroupId());
+                return true;
+            case 203:
+                //Call API for download message content
+                customChatAdapter.downloadMessage(item.getGroupId());
+                return true;
+        }
+        return true;
+    }
+=======
+>>>>>>> parent of 3993946 (Save text by using P2p and store in Firebase - https://ndphong.atlassian.net/browse/A2G-50?atlOrigin=eyJpIjoiMmM4YWNhMjQ3MDFkNDA2OTk1MDEzNDU0MDRkMGI0MTYiLCJwIjoiaiJ9)
 
     private void setUpMessages(RecyclerView recyclerView) {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -286,8 +417,8 @@ public class ChatActivity extends Activity {
     private void getChatContact() {
         intent = getIntent();
         bundle = intent.getExtras();
-        currentContact = (Contact)bundle.getSerializable("contact");
-        receiverUser = (User)bundle.getSerializable("DBReceiver");
+        currentContact = (Contact) bundle.getSerializable("contact");
+        selfContact = (Contact) bundle.getSerializable("selfContact");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -298,21 +429,6 @@ public class ChatActivity extends Activity {
         return formattedDate;
     }
 
-    private List<Message> getListMessage() {
-        List<Message> list = new ArrayList<>();
-        Collections.sort(list, new Comparator<Message>() {
-            @Override
-            public int compare(Message message, Message t1) {
-                return message.getSentDate().compareTo(t1.getSentDate());
-            }
-        });
-//        for(int i=0;i<list.size();i++) {
-//            if(!list.get(i).getFromMail().equals(senderEmail)) {
-//                list.get(i).setFromSelf(false);
-//            }
-//        }
-        return list;
-    }
 
     public static boolean hasPermissions(Context context, String... permissions) {
         if (context != null && permissions != null) {
@@ -325,19 +441,17 @@ public class ChatActivity extends Activity {
         return true;
     }
 
-    public static void refreshList(Message message, boolean isMine){
-//		Log.v(TAG, "Refresh message list starts");
-
+    public static void refreshList(FireMessage message, boolean isMine){
+		Log.v(TAG, "Refresh message list starts");
         message.setMine(isMine);
-//		Log.e(TAG, "refreshList: message is from :"+message.getSenderAddress().getHostAddress() );
-//		Log.e(TAG, "refreshList: message is from :"+isMine );
-        listMessage.add(message);
-        chatAdapter.notifyDataSetChanged();
 
-//    	Log.v(TAG, "Chat Adapter notified of the changes");
+        customChatAdapter.addChatItem(message);
+    	Log.v(TAG, "Chat Adapter notified of the changes");
 
+        int sizeList = listChat.size();
+        customChatAdapter.notifyItemInserted(sizeList - 1);
         //Scroll to the last element of the list
-        listView.setSelection(listMessage.size() - 1);
+        recyclerViewMessages.smoothScrollToPosition(sizeList);
     }
 
     @Override
@@ -374,4 +488,5 @@ public class ChatActivity extends Activity {
             }
         }
     }
+
 }

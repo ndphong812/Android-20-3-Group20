@@ -2,8 +2,12 @@ package com.example.messenger.AsyncTasks;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.util.Log;
 
+import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
+import com.example.messenger.Register;
+import com.example.messenger.model.FireMessage;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -60,24 +64,10 @@ public class ReceiveMessageClient extends AbstractReceiver {
 	@Override
 	protected void onProgressUpdate(Message... values) {
 		super.onProgressUpdate(values);
-		playNotification(mContext, values[0]);		
-
-//		if(isActivityRunning(MainActivity.class)) {
-//			ChatActivity.refreshList(values[0], false);
-//		}
-
+//		playNotification(mContext, values[0]);
+		Log.e("Message1", values[0].getMessage());
+		Message msg = values[0];
+		ChatActivity.refreshList(new FireMessage(msg.getmType(),msg.getFromMail(), msg.getToMail(), msg.getMessage(), msg.getSentDate(), false), false);
 	}
-	
-	@SuppressWarnings("rawtypes")
-	public Boolean isActivityRunning(Class activityClass) {
-        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
 
-        for (ActivityManager.RunningTaskInfo task : tasks) {
-            if (activityClass.getCanonicalName().equalsIgnoreCase(task.baseActivity.getClassName()))
-                return true;
-        }
-
-        return false;
-	}
 }

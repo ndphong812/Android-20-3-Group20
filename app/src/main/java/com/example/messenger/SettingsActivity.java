@@ -12,11 +12,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
@@ -27,9 +36,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.messenger.Database.DataContext;
+import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.Services.PreferenceManager;
+import com.example.messenger.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,26 +57,37 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.UUID;
 import com.squareup.picasso.Picasso;
 import android.util.Base64;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 public class SettingsActivity extends AppCompatActivity{
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://messenger-50d65-default-rtdb.firebaseio.com/");
     private String encodedImage;
     private PreferenceManager preferenceManager;
-    ImageView avatarUser;
+    ShapeableImageView avatarUser;
     DataContext DB;
     private final int PICK_IMAGE_REQUEST = 22;
     private Uri filePath;
     Button logoutButton;
+    ImageButton backButton;
     FirebaseStorage storage;
     StorageReference storageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getSupportActionBar().hide();
         setContentView(R.layout.layout_settings);
 
         ListView optionsListView = findViewById(R.id.firstListView);
@@ -75,11 +98,25 @@ public class SettingsActivity extends AppCompatActivity{
         StorageReference imageStorage = storageReference.child("images/"+preferenceManager.getString("username"));
         DB = new DataContext(this);
 
+        backButton = (ImageButton) findViewById(R.id.btnBack);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
+
         TextView UserName = findViewById(R.id.usernameTxt);
         databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserName.setText(snapshot.child(preferenceManager.getString("userID")).child("name").getValue(String.class));
+                LoadImageFromURL loadImageFromURL = new LoadImageFromURL(avatarUser);
+                loadImageFromURL.execute(snapshot.child(preferenceManager.getString("userID")).child("image").getValue(String.class));
             }
 
             @Override
@@ -88,36 +125,29 @@ public class SettingsActivity extends AppCompatActivity{
             }
         });
         avatarUser = findViewById(R.id.avatarImg);
-        try{
-            final File localFile = File.createTempFile(preferenceManager.getString("username"),"png");
-            imageStorage.getFile(localFile)
-                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                            Toast.makeText(SettingsActivity.this, "Oke", Toast.LENGTH_SHORT).show();
-                            Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                            avatarUser.setImageBitmap(bitmap);
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(SettingsActivity.this, "Error loading images", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        System.out.println(preferenceManager.getString("userEmail"));
-
-//        if(DB.getImage(shp.getString("userEmail")) == null) {
-//            avatarUser.setImageResource(R.drawable.ic_launcher_background);
-//        } else {
-//            byte[] bytes = Base64.decode(DB.getImage(shp.getString("userEmail")), Base64.DEFAULT);
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//            avatarUser.setImageBitmap(bitmap);
+//        try{
+//            final File localFile = File.createTempFile(preferenceManager.getString("username"),"png");
+//            imageStorage.getFile(localFile)
+//                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+//                        @Override
+//                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+//                            Toast.makeText(SettingsActivity.this, "Oke", Toast.LENGTH_SHORT).show();
+//                            Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+//                            avatarUser.setImageBitmap(bitmap);
+//                        }
+//                    })
+//                    .addOnFailureListener(new OnFailureListener() {
+//                        @Override
+//                        public void onFailure(@NonNull Exception e) {
+//                            Toast.makeText(SettingsActivity.this, "Error loading images", Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
 //        }
+//        catch (IOException e){
+//            e.printStackTrace();
+//        }
+
+        System.out.println(preferenceManager.getString("userEmail"));
 
         String[] sectionLabels = {"Chế độ tối", "Đăng xuất", "Đổi mật khẩu"};
 
@@ -130,14 +160,7 @@ public class SettingsActivity extends AppCompatActivity{
         avatarUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Toast.makeText(SettingsActivity.this, "Click avatar", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//                pickImage.launch(intent);
-//                DB.updateImageUser(shp.getString("userEmail"), shp.getString("imageUser"));
-
                 SelectImage();
-//                uploadImage();
             }
         });
 
@@ -179,7 +202,82 @@ public class SettingsActivity extends AppCompatActivity{
                         });
                         break;
                     case 2:
+                        LayoutInflater inflater = (LayoutInflater)
+                                getSystemService(LAYOUT_INFLATER_SERVICE);
+                        View popupView = inflater.inflate(R.layout.update_password_popup, null);
 
+                        int width = LinearLayout.LayoutParams.MATCH_PARENT;
+                        int height = LinearLayout.LayoutParams.MATCH_PARENT;
+                        boolean focusable = true;
+                        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+                        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+                        popupView.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                popupWindow.dismiss();
+                                return true;
+                            }
+                        });
+
+                        EditText oldPassword = (EditText) popupWindow.getContentView().findViewById(R.id.old_password);
+                        EditText newPassword = (EditText) popupWindow.getContentView().findViewById(R.id.new_password);
+                        EditText retypeNewPassword = (EditText) popupWindow.getContentView().findViewById(R.id.retype_new_password);
+                        Button changePassword = (Button) popupWindow.getContentView().findViewById(R.id.update_btn);
+
+                        changePassword.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String oldPass = oldPassword.getText().toString();
+                                String newPass = newPassword.getText().toString();
+                                String retypePass = retypeNewPassword.getText().toString();
+
+                                if (oldPass.equals("") || newPass.equals("") || retypePass.equals("")) {
+                                    Toast.makeText(getApplicationContext(), "Please do not leave any fields bank", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            boolean matched = false;
+                                            String hashedPassword = snapshot.child(preferenceManager.getString("userID")).child("password").getValue(String.class);
+                                            try {
+                                                matched = validatePassword(oldPass, hashedPassword);
+                                            } catch (NoSuchAlgorithmException e) {
+                                                e.printStackTrace();
+                                            } catch (InvalidKeySpecException e) {
+                                                e.printStackTrace();
+                                            }
+                                            if (matched) {
+                                                if (newPass.equals(retypePass) && newPass.length() >= 6) {
+                                                    String generatedPassword = null;
+                                                    try {
+                                                        generatedPassword = generateStorngPasswordHash(newPass);
+                                                    } catch (NoSuchAlgorithmException e) {
+                                                        e.printStackTrace();
+                                                    } catch (InvalidKeySpecException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                    databaseReference.child("User").child(preferenceManager.getString("userID")).child("password").setValue(generatedPassword);
+                                                    Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+                                                } else if (newPass.length() < 6) {
+                                                    Toast.makeText(getApplicationContext(), "Password length must be longer than 6 characters", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    Toast.makeText(getApplicationContext(), "New password doesn't match", Toast.LENGTH_SHORT).show();
+                                                }
+                                            } else {
+                                                Toast.makeText(getApplicationContext(), "Wrong old password", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                }
+                            }
+                        });
                         break;
                     default:
                         Toast.makeText(SettingsActivity.this, "This part is not available for now!", Toast.LENGTH_LONG).show();
@@ -279,6 +377,9 @@ public class SettingsActivity extends AppCompatActivity{
                                     // Image uploaded successfully
                                     // Dismiss dialog
                                     progressDialog.dismiss();
+                                    String user = preferenceManager.getString("username");
+                                    String temp = user.split("@", 2)[0];
+                                    databaseReference.child("User").child(temp.toString()).child("image").setValue("https://firebasestorage.googleapis.com/v0/b/messenger-50d65.appspot.com/o/images%2F"+user.toString()+"?alt=media");
                                     Toast
                                             .makeText(SettingsActivity.this,
                                                     "Image Uploaded!!",
@@ -351,5 +452,73 @@ public class SettingsActivity extends AppCompatActivity{
                 }
             }
     );
+
+    private static boolean validatePassword(String originalPassword, String storedPassword)
+            throws NoSuchAlgorithmException, InvalidKeySpecException
+    {
+        String[] parts = storedPassword.split(":");
+        int iterations = Integer.parseInt(parts[0]);
+
+        byte[] salt = fromHex(parts[1]);
+        byte[] hash = fromHex(parts[2]);
+
+        PBEKeySpec spec = new PBEKeySpec(originalPassword.toCharArray(),
+                salt, iterations, hash.length * 8);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        byte[] testHash = skf.generateSecret(spec).getEncoded();
+
+        int diff = hash.length ^ testHash.length;
+        for(int i = 0; i < hash.length && i < testHash.length; i++)
+        {
+            diff |= hash[i] ^ testHash[i];
+        }
+        return diff == 0;
+    }
+    private static byte[] fromHex(String hex) throws NoSuchAlgorithmException
+    {
+        byte[] bytes = new byte[hex.length() / 2];
+        for(int i = 0; i < bytes.length ;i++)
+        {
+            bytes[i] = (byte)Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+        }
+        return bytes;
+    }
+
+    private static String generateStorngPasswordHash(String password)
+            throws NoSuchAlgorithmException, InvalidKeySpecException
+    {
+        int iterations = 1000;
+        char[] chars = password.toCharArray();
+        byte[] salt = getSalt();
+
+        PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+
+        byte[] hash = skf.generateSecret(spec).getEncoded();
+        return iterations + ":" + toHex(salt) + ":" + toHex(hash);
+    }
+
+    private static byte[] getSalt() throws NoSuchAlgorithmException
+    {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+        return salt;
+    }
+
+    private static String toHex(byte[] array) throws NoSuchAlgorithmException
+    {
+        BigInteger bi = new BigInteger(1, array);
+        String hex = bi.toString(16);
+
+        int paddingLength = (array.length * 2) - hex.length();
+        if(paddingLength > 0)
+        {
+            return String.format("%0"  +paddingLength + "d", 0) + hex;
+        }else{
+            return hex;
+        }
+    }
+
 }
 
