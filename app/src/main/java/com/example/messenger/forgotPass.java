@@ -3,7 +3,6 @@ package com.example.messenger;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -76,7 +75,7 @@ public class forgotPass extends Activity {
 
                 String emailReceiver = email.getText().toString();
 
-                databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+                databaseReference.child("user").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         String userID = emailReceiver.split("@", 2)[0];

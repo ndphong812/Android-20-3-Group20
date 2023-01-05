@@ -26,12 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
-
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 
 public class login extends Activity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://messenger-50d65-default-rtdb.firebaseio.com/");
@@ -54,7 +49,7 @@ public class login extends Activity {
 //            finish();
 //        }
 
-        
+
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,15 +66,7 @@ public class login extends Activity {
                             String temp = user.split("@", 2)[0];
                             if(snapshot.hasChild(temp)){
                                 final String password = snapshot.child(temp).child("password").getValue(String.class);
-                                boolean matched = false;
-                                try {
-                                    matched = validatePassword(pass, password);
-                                } catch (NoSuchAlgorithmException e) {
-                                    e.printStackTrace();
-                                } catch (InvalidKeySpecException e) {
-                                    e.printStackTrace();
-                                }
-                                if(matched) {
+                                if(password.equals(pass)) {
                                     preferenceManager.putString("username",user);
                                     Toast.makeText(login.this, "OK", Toast.LENGTH_SHORT).show();
                                     databaseReference.child("User").child(temp.toString()).child("isLogined").setValue(true);
@@ -109,36 +96,4 @@ public class login extends Activity {
         Intent intent = new Intent(getApplicationContext(), forgotPass.class);
         startActivity(intent);
     }
-
-
-    private static boolean validatePassword(String originalPassword, String storedPassword) 
-    throws NoSuchAlgorithmException, InvalidKeySpecException
-{
-    String[] parts = storedPassword.split(":");
-    int iterations = Integer.parseInt(parts[0]);
-
-    byte[] salt = fromHex(parts[1]);
-    byte[] hash = fromHex(parts[2]);
-
-    PBEKeySpec spec = new PBEKeySpec(originalPassword.toCharArray(),
-        salt, iterations, hash.length * 8);
-    SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-    byte[] testHash = skf.generateSecret(spec).getEncoded();
-
-    int diff = hash.length ^ testHash.length;
-    for(int i = 0; i < hash.length && i < testHash.length; i++)
-    {
-        diff |= hash[i] ^ testHash[i];
-    }
-    return diff == 0;
-}
-private static byte[] fromHex(String hex) throws NoSuchAlgorithmException
-{
-    byte[] bytes = new byte[hex.length() / 2];
-    for(int i = 0; i < bytes.length ;i++)
-    {
-        bytes[i] = (byte)Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
-    }
-    return bytes;
-}
 }

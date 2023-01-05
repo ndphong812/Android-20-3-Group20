@@ -57,16 +57,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 import java.util.UUID;
 import com.squareup.picasso.Picasso;
 import android.util.Base64;
-
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 
 public class SettingsActivity extends AppCompatActivity{
 
@@ -239,26 +232,9 @@ public class SettingsActivity extends AppCompatActivity{
                                     databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            boolean matched = false;
-                                            String hashedPassword = snapshot.child(preferenceManager.getString("userID")).child("password").getValue(String.class);
-                                            try {
-                                                matched = validatePassword(oldPass, hashedPassword);
-                                            } catch (NoSuchAlgorithmException e) {
-                                                e.printStackTrace();
-                                            } catch (InvalidKeySpecException e) {
-                                                e.printStackTrace();
-                                            }
-                                            if (matched) {
+                                            if (oldPass.equals(snapshot.child(preferenceManager.getString("userID")).child("password").getValue(String.class))) {
                                                 if (newPass.equals(retypePass) && newPass.length() >= 6) {
-                                                    String generatedPassword = null;
-                                                    try {
-                                                        generatedPassword = generateStorngPasswordHash(newPass);
-                                                    } catch (NoSuchAlgorithmException e) {
-                                                        e.printStackTrace();
-                                                    } catch (InvalidKeySpecException e) {
-                                                        e.printStackTrace();
-                                                    }
-                                                    databaseReference.child("User").child(preferenceManager.getString("userID")).child("password").setValue(generatedPassword);
+                                                    databaseReference.child("User").child(preferenceManager.getString("userID")).child("password").setValue(newPass);
                                                     Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
                                                 } else if (newPass.length() < 6) {
                                                     Toast.makeText(getApplicationContext(), "Password length must be longer than 6 characters", Toast.LENGTH_SHORT).show();
@@ -452,73 +428,5 @@ public class SettingsActivity extends AppCompatActivity{
                 }
             }
     );
-
-    private static boolean validatePassword(String originalPassword, String storedPassword)
-            throws NoSuchAlgorithmException, InvalidKeySpecException
-    {
-        String[] parts = storedPassword.split(":");
-        int iterations = Integer.parseInt(parts[0]);
-
-        byte[] salt = fromHex(parts[1]);
-        byte[] hash = fromHex(parts[2]);
-
-        PBEKeySpec spec = new PBEKeySpec(originalPassword.toCharArray(),
-                salt, iterations, hash.length * 8);
-        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        byte[] testHash = skf.generateSecret(spec).getEncoded();
-
-        int diff = hash.length ^ testHash.length;
-        for(int i = 0; i < hash.length && i < testHash.length; i++)
-        {
-            diff |= hash[i] ^ testHash[i];
-        }
-        return diff == 0;
-    }
-    private static byte[] fromHex(String hex) throws NoSuchAlgorithmException
-    {
-        byte[] bytes = new byte[hex.length() / 2];
-        for(int i = 0; i < bytes.length ;i++)
-        {
-            bytes[i] = (byte)Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
-        }
-        return bytes;
-    }
-
-    private static String generateStorngPasswordHash(String password)
-            throws NoSuchAlgorithmException, InvalidKeySpecException
-    {
-        int iterations = 1000;
-        char[] chars = password.toCharArray();
-        byte[] salt = getSalt();
-
-        PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
-        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-
-        byte[] hash = skf.generateSecret(spec).getEncoded();
-        return iterations + ":" + toHex(salt) + ":" + toHex(hash);
-    }
-
-    private static byte[] getSalt() throws NoSuchAlgorithmException
-    {
-        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-        byte[] salt = new byte[16];
-        sr.nextBytes(salt);
-        return salt;
-    }
-
-    private static String toHex(byte[] array) throws NoSuchAlgorithmException
-    {
-        BigInteger bi = new BigInteger(1, array);
-        String hex = bi.toString(16);
-
-        int paddingLength = (array.length * 2) - hex.length();
-        if(paddingLength > 0)
-        {
-            return String.format("%0"  +paddingLength + "d", 0) + hex;
-        }else{
-            return hex;
-        }
-    }
-
 }
 
