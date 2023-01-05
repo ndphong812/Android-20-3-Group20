@@ -76,7 +76,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             LoadImageFromURL loadImageFromURL = new LoadImageFromURL(chatViewHolder.avatar);
             loadImageFromURL.execute(selfContact.getAvatarPath());
         }
-
         chatViewHolder.message.setText(currentChatItem.getMessage());
     }
 
@@ -95,12 +94,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void deleteMessage (int pos) {
-        Message message = listChat.get(pos);
+        FireMessage message = listChat.get(pos);
         Log.e("Message Menu", "delete message" + message.getMessage());
     }
 
     public void copyMessage (int pos) {
-        Message message = listChat.get(pos);
+        FireMessage message = listChat.get(pos);
 //        Log.e(message.getMessage());
 
         if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
@@ -115,7 +114,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void downloadMessage (int pos) {
-        Message message = listChat.get(pos);
+        FireMessage message = listChat.get(pos);
         Log.e("Message Menu", "download message" + message.getMessage());
     }
 

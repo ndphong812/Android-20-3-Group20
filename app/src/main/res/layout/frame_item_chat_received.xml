@@ -30,6 +30,5 @@
         android:paddingEnd="@dimen/_12dp"
         android:paddingTop="@dimen/_6dp"
         android:paddingBottom="@dimen/_6dp"
-        android:visibility="gone"
         />
 </LinearLayout>

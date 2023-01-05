@@ -204,10 +204,9 @@ public class ChatActivity extends Activity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ChatActivity.this);
         recyclerViewMessages.setLayoutManager(linearLayoutManager);
 
-
         listChat.clear();
         if(listChat.isEmpty()) {
-            databaseReference.child("Messages").addValueEventListener(new ValueEventListener() {
+            databaseReference.child("Messages").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
