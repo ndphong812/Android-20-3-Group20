@@ -1,6 +1,7 @@
 package com.example.messenger.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -13,8 +14,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.Entities.Message;
 import com.example.messenger.R;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.mail.MessageAware;
@@ -26,6 +34,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Message> listChat;
     private final int MSG_TYPE_RIGHT = 1;
     private final int MSG_TYPE_LEFT = 0;
+
+    StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
     public ChatAdapter(Context context, List<Message> listChat) {
         this.context = context;
