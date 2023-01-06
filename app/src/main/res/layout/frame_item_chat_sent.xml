@@ -22,7 +22,7 @@
         android:textColor="@color/white"
         android:textSize="16sp"
         emojicon:emojiiconSize="30sp"
-        android:autoLink="web"
+        android:autoLink="all"
         android:textColorLink="@color/white"
         />
     <TextView
