@@ -30,5 +30,7 @@
         android:paddingEnd="@dimen/_12dp"
         android:paddingTop="@dimen/_6dp"
         android:paddingBottom="@dimen/_6dp"
+        android:autoLink="web"
+        android:textColorLink="@color/black"
         />
 </LinearLayout>

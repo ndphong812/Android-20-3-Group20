@@ -7,7 +7,8 @@
     android:layout_marginStart="100dp"
     android:layout_marginTop="@dimen/_6dp"
     android:gravity="end"
-    android:id="@+id/frame_item_chat">
+    android:id="@+id/frame_item_chat"
+    >
     <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
         android:id="@+id/message"
         android:layout_gravity="center_vertical"
@@ -21,5 +22,7 @@
         android:paddingEnd="@dimen/_12dp"
         android:paddingTop="@dimen/_6dp"
         android:paddingBottom="@dimen/_6dp"
+        android:autoLink="web"
+        android:textColorLink="@color/white"
         />
 </LinearLayout>
