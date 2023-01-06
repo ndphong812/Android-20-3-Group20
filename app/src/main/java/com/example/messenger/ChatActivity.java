@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -360,6 +361,7 @@ public class ChatActivity extends Activity {
         Message message = new Message(Message.TEXT_MESSAGE, selfContact.getId(), currentContact.getId(), msg, sentDate, true);
         FireMessage fireMessage = new FireMessage(Message.TEXT_MESSAGE, selfContact.getId(),  currentContact.getId(), msg, sentDate, true);
 
+        Log.e("Current contact",currentContact.getId());
         databaseReference.child("Messages").child("message-" + new Date().getTime()).setValue(fireMessage);
 
         if(mReceiver.isGroupOwner() == WifiDirectBroadcastReceiver.IS_OWNER){

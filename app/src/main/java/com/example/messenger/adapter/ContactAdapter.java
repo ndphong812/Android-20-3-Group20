@@ -26,6 +26,7 @@ import com.bumptech.glide.Glide;
 import com.example.messenger.ChatActivity;
 import com.example.messenger.R;
 import com.example.messenger.Services.LoadImageFromURL;
+import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.model.Contact;
 import com.example.messenger.model.FireMessage;
 import com.example.messenger.model.User;
@@ -37,6 +38,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -46,8 +48,6 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private final Context context;
     ContactAdapter adapter;
     Contact selfContact;
-
-
     public ContactAdapter(Context context) {
         this.context = context;
     }
@@ -96,17 +96,94 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public void chatWithOther(Contact selfContact, Contact contact) {
-        Intent intent = new Intent(context.getApplicationContext(), ChatActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        //Pass data here
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("selfContact", selfContact);
-        bundle.putSerializable("contact", contact);
-        intent.putExtras(bundle);
+//        Intent intent = new Intent(context.getApplicationContext(), ChatActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        //Pass data here
+//        Bundle bundle = new Bundle();
+//        bundle.putSerializable("selfContact", selfContact);
+//        Log.e("selfContact", selfContact.getUsername());
+//        Log.e("selfContact", contact.getUsername());
+        checkIsLogined(selfContact, contact);
+//        bundle.putSerializable("contact", contact);
+//        intent.putExtras(bundle);
+
+
         //Change screen
-        context.getApplicationContext().startActivity(intent);
+//        context.getApplicationContext().startActivity(intent);
     }
-    
+
+    private void checkIsLogined(Contact selfContact, Contact currentContact){
+        databaseReference.child("User").child(currentContact.getUsername()).child("isLogined").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Boolean isLogined = (Boolean) snapshot.getValue();
+                if(!isLogined){
+                    Toast.makeText(context.getApplicationContext(), "Người dùng đang offline", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    checkIsBlocked(selfContact, currentContact);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private void checkIsBlocked(Contact selfContact, Contact currentContact){
+        databaseReference.child("User").child(selfContact.getUsername().toString()).child("blocks").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot contactDataShot) {
+
+                databaseReference.child("User").child(currentContact.getUsername().toString()).child("blocks").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot currentContactDataShot) {
+                        List<String> currentContactBlocks = new ArrayList<>();
+                        for (DataSnapshot snapshot : currentContactDataShot.getChildren()){
+                            String data = snapshot.getValue(String.class);
+                            currentContactBlocks.add(data);
+                        }
+
+                        if(currentContactBlocks.contains(selfContact.getUsername())){
+                            Toast.makeText(context.getApplicationContext(), "Bạn đã bị chặn.", Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            List<String> blocks = new ArrayList<>();
+
+                            for (DataSnapshot snapshot : contactDataShot.getChildren()){
+                                String data = snapshot.getValue(String.class);
+                                blocks.add(data);
+                            }
+                            Log.e("blocks", String.valueOf(blocks));
+                            if(blocks.contains(currentContact.getUsername())){
+                                Toast.makeText(context.getApplicationContext(), "Người dùng đã bị chặn.", Toast.LENGTH_SHORT).show();
+                            }
+                            else{
+                                Intent intent = new Intent(context.getApplicationContext(), ChatActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                //Pass data here
+                                Bundle bundle = new Bundle();
+                                bundle.putSerializable("selfContact", selfContact);
+                                bundle.putSerializable("contact", currentContact);
+                                intent.putExtras(bundle);
+                                //Change screen
+                                context.getApplicationContext().startActivity(intent);
+                            }
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+
+        });
+    }
     public void deleteMessage(int pos) {
         Contact contact = contacts.get(pos);
         if(contact != null) {
@@ -182,13 +259,38 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void blockFriend(int pos, User currentUser) {
         //handle UI
         String friendId = contacts.get(pos).getId();
-        currentUser.getBlocks().add(friendId);
+
         //Call API to firebase
-        databaseReference
-                .child("User")
-                .child(currentUser.getID())
-                .child("blocks")
-                .setValue(currentUser.getBlocks());
+        List<String> blocks = new ArrayList<>();
+
+        databaseReference.child("User").child(currentUser.getID()).child("blocks").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                String data = snapshot.getValue(String.class);
+                blocks.add(data);
+            }
+            Log.e("blocks", String.valueOf(blocks));
+                if(blocks.contains(friendId)){
+                    currentUser.getBlocks().remove(friendId);
+                    Toast.makeText(context.getApplicationContext(),"Bỏ chặn thành công.",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    currentUser.getBlocks().add(friendId);
+                    Toast.makeText(context.getApplicationContext(),"Đã chặn người dùng.",Toast.LENGTH_SHORT).show();
+                }
+                databaseReference
+                        .child("User")
+                        .child(currentUser.getID())
+                        .child("blocks")
+                        .setValue(currentUser.getBlocks());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
     }
 
     public class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
@@ -223,7 +325,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             contextMenu.setHeaderTitle("Lựa chọn bất kỳ");
             contextMenu.add(getAdapterPosition(), 101, 0, "Xóa cuộc trò chuyện");
             contextMenu.add(getAdapterPosition(), 102, 0, "Hủy kết bạn");
-            contextMenu.add(getAdapterPosition(), 103, 0, "Chặn người dùng này");
+            contextMenu.add(getAdapterPosition(), 103, 0, "Chặn/Bỏ chặn người dùng này");
         }
     }
 }
