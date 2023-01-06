@@ -29,6 +29,22 @@ public class FireMessage  {
         this.type = mType;
     }
 
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public FireMessage(int type, String fromMail, String toMail, String message, String sentDate, boolean isMine, boolean isSeen) {
+        this.type = type;
+        this.fromMail = fromMail;
+        this.toMail = toMail;
+        this.message = message;
+        this.sentDate = sentDate;
+        this.isMine = isMine;
+    }
     public String getFromMail() {
         return fromMail;
     }

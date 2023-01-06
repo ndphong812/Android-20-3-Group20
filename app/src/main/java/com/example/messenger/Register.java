@@ -414,6 +414,7 @@ public class Register extends AppCompatActivity implements WifiP2pManager.Channe
             Client client = new Client(receiver.getOwnerAddr());
             client.start();
         }
+        preferenceManager.putString("type", "2");
         Intent intent = new Intent(getApplicationContext(), login.class);
         startActivity(intent);
         finish();

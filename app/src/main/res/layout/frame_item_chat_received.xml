@@ -8,27 +8,43 @@
     android:layout_marginBottom="@dimen/_6dp"
     android:layout_marginStart="@dimen/_12dp"
     android:layout_marginEnd="100dp"
-    android:gravity="center_vertical"
-    android:id="@+id/frame_item_chat">
+    android:id="@+id/frame_item_chat"
+    android:orientation="horizontal"
+
+    >
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/avatar"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="43dp"
+        android:layout_height="43dp"
         android:src="@drawable/ic_launcher_background"
         android:layout_marginEnd="@dimen/_12dp"
         app:shapeAppearanceOverlay="@style/cornerImageView"
+        android:gravity="start"
         />
-    <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
-        android:id="@+id/message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        emojicon:emojiconSize="30sp"
-        android:background="@drawable/circle_corner_grey_100_round_20"
-        android:textColor="@color/black"
-        android:paddingStart="@dimen/_12dp"
-        android:paddingEnd="@dimen/_12dp"
-        android:paddingTop="@dimen/_6dp"
-        android:paddingBottom="@dimen/_6dp"
-        />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+            android:id="@+id/message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            emojicon:emojiconSize="30sp"
+            android:background="@drawable/circle_corner_grey_100_round_20"
+            android:textColor="@color/black"
+            android:paddingStart="@dimen/_12dp"
+            android:paddingEnd="@dimen/_12dp"
+            android:paddingTop="@dimen/_6dp"
+            android:paddingBottom="@dimen/_6dp"
+            />
+        <TextView
+            android:id="@+id/text_time"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="8sp"
+            />
+    </LinearLayout>
+
 </LinearLayout>

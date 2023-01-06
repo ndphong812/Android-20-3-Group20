@@ -1,7 +1,6 @@
 package com.example.messenger.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.util.Log;
@@ -15,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.messenger.ChatActivity;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.R;
@@ -73,10 +73,33 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         FireMessage currentChatItem = listChat.get(position);
         ChatViewHolder chatViewHolder = (ChatViewHolder) holder;
         if(chatViewHolder.avatar != null) {
-            LoadImageFromURL loadImageFromURL = new LoadImageFromURL(chatViewHolder.avatar);
-            loadImageFromURL.execute(selfContact.getAvatarPath());
+            Glide.with(context).load(currentContact.getAvatarPath()).into(chatViewHolder.avatar);
         }
+
         chatViewHolder.message.setText(currentChatItem.getMessage());
+        String currentTime = splitTime(listChat.get(position).getSentDate());
+        if(position >= 1) {
+            if(listChat.get(position - 1).getFromMail().equals(listChat.get(position).getFromMail())) {
+                String preTime = splitTime(listChat.get(position - 1).getSentDate());
+                if(!preTime.equals(currentTime)) {
+                    chatViewHolder.timeText.setText(currentTime);
+                }else{
+                    chatViewHolder.timeText.setVisibility(View.GONE);
+                }
+            }else{
+                chatViewHolder.timeText.setText(currentTime);
+            }
+        }else{
+            chatViewHolder.timeText.setText(currentTime);
+        }
+    }
+
+    private String splitTime(String rawDate) {
+        String result;
+        String[] sub = rawDate.split("T");
+//        String[] date = sub[0].split("-");
+        result = sub[1].substring(0, 5);
+        return result;
     }
 
     @Override
@@ -100,7 +123,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void copyMessage (int pos) {
         FireMessage message = listChat.get(pos);
-//        Log.e(message.getMessage());
 
         if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
             android.text.ClipboardManager clipboard = (android.text.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -120,13 +142,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public class ChatViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
-        private TextView message ;
+        private TextView message, timeText ;
         private ShapeableImageView avatar;
-
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
             message = itemView.findViewById(R.id.message);
             avatar = itemView.findViewById(R.id.avatar);
+            timeText = itemView.findViewById(R.id.text_time);
+
             message.setOnCreateContextMenuListener(this);
         }
 
