@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.adapter.ContactAdapter;
@@ -109,7 +110,6 @@ public class ChatsFragment extends Fragment {
 
         editTextSearch =  view.findViewById(R.id.search_input);
         ViewGroup scrollViewOnlineUsers = view.findViewById(R.id.view_group);
-
 
         //Handle click avatar to get setting
         shapeableImageViewAvatar.setOnClickListener(new View.OnClickListener() {

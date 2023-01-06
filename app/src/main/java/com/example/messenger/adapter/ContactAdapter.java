@@ -22,6 +22,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.messenger.ChatActivity;
 import com.example.messenger.R;
 import com.example.messenger.Services.LoadImageFromURL;
@@ -76,8 +77,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if(contact.getAvatarPath().length() == 0) {
             viewHolder.avatar.setImageResource(R.drawable.user);
         } else {
-            LoadImageFromURL loadImageFromURL = new LoadImageFromURL(viewHolder.avatar);
-            loadImageFromURL.execute(contact.getAvatarPath());
+            Glide.with(context).load(contact.getAvatarPath()).into(viewHolder.avatar);
         }
 
         viewHolder.chatName.setText(contact.getUsername());

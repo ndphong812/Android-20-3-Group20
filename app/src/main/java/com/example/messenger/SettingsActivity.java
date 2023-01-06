@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.bumptech.glide.Glide;
 import com.example.messenger.Database.DataContext;
 import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.Services.PreferenceManager;
@@ -115,8 +116,8 @@ public class SettingsActivity extends AppCompatActivity{
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserName.setText(snapshot.child(preferenceManager.getString("userID")).child("name").getValue(String.class));
-                LoadImageFromURL loadImageFromURL = new LoadImageFromURL(avatarUser);
-                loadImageFromURL.execute(snapshot.child(preferenceManager.getString("userID")).child("image").getValue(String.class));
+
+                Glide.with(SettingsActivity.this).load(snapshot.child(preferenceManager.getString("userID")).child("image").getValue(String.class)).into(avatarUser);
             }
 
             @Override

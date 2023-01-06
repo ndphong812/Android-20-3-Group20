@@ -80,7 +80,6 @@ public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 
 	@Override
 	protected void onPostExecute(Message result) {
-//		Log.v(TAG, "onPostExecute");
 		super.onPostExecute(result);
 	}
 
