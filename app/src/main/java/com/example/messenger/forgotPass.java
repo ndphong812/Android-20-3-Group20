@@ -20,6 +20,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.example.messenger.Services.PreferenceManager;
 import com.google.firebase.database.ValueEventListener;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -29,6 +31,11 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
+import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Properties;
 
 
@@ -54,8 +61,18 @@ public class forgotPass extends Activity {
                 String username="pt071102@gmail.com";
                 String password="arzweuxbcfebpdgc";
                 String newPassword = String.valueOf(Random_Code());
-                String messageToSend = newPassword;
 
+                String generatedPassword = null;
+                try {
+                    generatedPassword = generateStrongPasswordHash(newPassword);
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeySpecException e) {
+                    e.printStackTrace();
+                }
+
+                String messageToSend = newPassword;
+                
                 String stringHost = "smtp.gmail.com";
 
                 Properties properties = System.getProperties();
@@ -76,12 +93,13 @@ public class forgotPass extends Activity {
 
                 String emailReceiver = email.getText().toString();
 
+                String finalGeneratedPassword = generatedPassword;
                 databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         String userID = emailReceiver.split("@", 2)[0];
                         if (snapshot.hasChild(userID)) {
-                            databaseReference.child("User").child(userID.toString()).child("password").setValue(newPassword.toString());
+                            databaseReference.child("User").child(userID.toString()).child("password").setValue(finalGeneratedPassword);
                             try {
                                 mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(emailReceiver));
 
@@ -130,5 +148,41 @@ public class forgotPass extends Activity {
         int max = 999999;
         int random_int = (int)Math.floor(Math.random()*(max-min+1)+min);
         return random_int;
+    }
+
+    private static String generateStrongPasswordHash(String password)
+            throws NoSuchAlgorithmException, InvalidKeySpecException
+    {
+        int iterations = 1000;
+        char[] chars = password.toCharArray();
+        byte[] salt = getSalt();
+
+        PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+
+        byte[] hash = skf.generateSecret(spec).getEncoded();
+        return iterations + ":" + toHex(salt) + ":" + toHex(hash);
+    }
+
+    private static byte[] getSalt() throws NoSuchAlgorithmException
+    {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+        return salt;
+    }
+
+    private static String toHex(byte[] array) throws NoSuchAlgorithmException
+    {
+        BigInteger bi = new BigInteger(1, array);
+        String hex = bi.toString(16);
+
+        int paddingLength = (array.length * 2) - hex.length();
+        if(paddingLength > 0)
+        {
+            return String.format("%0"  +paddingLength + "d", 0) + hex;
+        }else{
+            return hex;
+        }
     }
 }
