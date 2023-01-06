@@ -8,18 +8,75 @@
     android:layout_marginTop="@dimen/_6dp"
     android:gravity="end"
     android:id="@+id/frame_item_chat">
-    <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
-        android:id="@+id/message"
-        android:layout_gravity="center_vertical"
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        emojicon:emojiiconSize="30sp"
-        android:background="@drawable/circle_corner_primary"
-        android:textColor="@color/white"
-        android:paddingStart="@dimen/_12dp"
-        android:paddingEnd="@dimen/_12dp"
-        android:paddingTop="@dimen/_6dp"
-        android:paddingBottom="@dimen/_6dp"
-        />
+        android:background="@drawable/radius_button"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="2dp">
+
+        <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+            android:id="@+id/message"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:gravity="end"
+            emojicon:emojiiconSize="30sp"
+            android:background="@drawable/circle_corner_primary"
+            android:textColor="@color/white"
+            android:paddingStart="@dimen/_12dp"
+            android:paddingEnd="@dimen/_12dp"
+            android:paddingTop="@dimen/_6dp"
+            android:paddingBottom="@dimen/_6dp"
+            />
+
+        <com.example.messenger.CustomView.DynamicImageView
+            android:id="@+id/image"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/message"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            android:longClickable="true"
+            android:scaleType="fitCenter" />
+
+        <ImageView
+            android:id="@+id/playAudio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/playback_button"
+            android:layout_below="@id/image"
+            android:src="@drawable/play_audio"
+            android:visibility="gone"
+            android:longClickable="true" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/file_attached_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="80dp"
+                android:longClickable="true"
+                android:src="@drawable/file_attached"
+                android:contentDescription="@string/file_icon"/>
+
+            <TextView
+                android:id="@+id/fileSaved"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:longClickable="true"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/file_attached_icon" />
+
+        </RelativeLayout>
+    </RelativeLayout>
 </LinearLayout>

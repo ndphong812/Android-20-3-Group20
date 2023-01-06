@@ -65,7 +65,10 @@ public class ReceiveMessageServer extends AbstractReceiver {
 		super.onProgressUpdate(values);
 //		playNotification(mContext, values[0]);
 		Log.e("isReceiver", values[0].getMessage());
-
+		int type = values[0].getmType();
+		if(type==Message.AUDIO_MESSAGE || type==Message.VIDEO_MESSAGE || type==Message.FILE_MESSAGE){
+			values[0].saveByteArrayToFile(mContext);
+		}
 		new SendMessageServer(mContext, false).executeOnExecutor(THREAD_POOL_EXECUTOR, values);
 	}
 

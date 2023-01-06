@@ -22,6 +22,12 @@ public class Image {
         this.uri = uri;
     }
 
+    //Retrieve the bitmap from its Uri (in sample size calculated)
+    public Bitmap getBitmapFromUri() {
+        Bitmap myBitmap = decodeBitmapFromUrl(450, 450);
+        return myBitmap;
+    }
+
 
     // Calculate the size of image can be approval to send
     public int calculateImageFile(BitmapFactory.Options options, int fileWidth, int fileHeight) {

@@ -41,6 +41,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.messenger.AsyncTasks.SendMessageClient;
 import com.example.messenger.AsyncTasks.SendMessageServer;
 import com.example.messenger.Database.DataContext;
+import com.example.messenger.Entities.Image;
+import com.example.messenger.Entities.MediaFile;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.Receivers.WifiDirectBroadcastReceiver;
 import com.example.messenger.Services.LoadImageFromURL;
@@ -300,7 +302,14 @@ public class ChatActivity extends Activity {
             public void onClick(View view) {
                 String msg = editTextInputChat.getText().toString();
                 if(!msg.equals("")) {
-                    sendMessage(Message.TEXT_MESSAGE, msg);                    
+                    sendMessage(Message.TEXT_MESSAGE);
+                    FireMessage fireMessage = new FireMessage(Message.TEXT_MESSAGE, selfContact.getId(),  currentContact.getId(), editTextInputChat.getText().toString(), "aaa", true);
+                    customChatAdapter.addChatItem(fireMessage);
+                    int sizeList = listChat.size();
+                    customChatAdapter.notifyItemInserted(sizeList - 1);
+
+                    //Scroll to the last element of the list
+                    recyclerViewMessages.smoothScrollToPosition(sizeList);
                 }else {
                     Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
                 }
@@ -319,12 +328,7 @@ public class ChatActivity extends Activity {
         imageButtonSendCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.TITLE,"New Picture");
-                values.put(MediaStore.Images.Media.DESCRIPTION,"From your Camera");
-                fileUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                 startActivityForResult(intent,MY_CAMERA_REQUEST_CODE);
             }
         });
@@ -349,18 +353,47 @@ public class ChatActivity extends Activity {
     }
 
 
-    private void sendMessage(int type, String msg) {
+    private void sendMessage(int type) {
         String sentDate = null;
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             sentDate = CurrentDateTimeChat();
         }
 
-        Message message = new Message(Message.TEXT_MESSAGE, selfContact.getId(), currentContact.getId(), msg, sentDate, true);
-        FireMessage fireMessage = new FireMessage(Message.TEXT_MESSAGE, selfContact.getId(),  currentContact.getId(), msg, sentDate, true);
+        Message message = new Message(type, selfContact.getId(), currentContact.getId(), editTextInputChat.getText().toString(), sentDate, true);
+        FireMessage fireMessage = new FireMessage(type, selfContact.getId(),  currentContact.getId(), editTextInputChat.getText().toString(), sentDate, true);
 
         Log.e("Current contact",currentContact.getId());
         databaseReference.child("Messages").child("message-" + new Date().getTime()).setValue(fireMessage);
+
+        switch(type) {
+            case Message.IMAGE_MESSAGE:
+                Image image = new Image(this, fileUri);
+                Log.e(TAG, "Bitmap from url ok" + fileUri);
+                message.setByteArray(image.bitmapToByteArray(image.getBitmapFromUri()));
+                message.setFileName(image.getFileName());
+                message.setFileSize(image.getFileSize());
+                Log.e(TAG, "Set byte array to image ok" + image.getFileSize() + "-" + image.getFileName());
+                break;
+            case Message.AUDIO_MESSAGE:
+                MediaFile audioFile = new MediaFile(this, fileURL, Message.AUDIO_MESSAGE);
+                message.setByteArray(audioFile.fileToByteArray());
+                message.setFileName(audioFile.getFileName());
+                message.setFilePath(audioFile.getFilePath());
+                break;
+            case Message.VIDEO_MESSAGE:
+                MediaFile videoFile = new MediaFile(this, fileURL, Message.AUDIO_MESSAGE);
+                message.setByteArray(videoFile.fileToByteArray());
+                message.setFileName(videoFile.getFileName());
+                message.setFilePath(videoFile.getFilePath());
+                tmpFilesUri.add(fileUri);
+                break;
+            case Message.FILE_MESSAGE:
+                MediaFile file = new MediaFile(this, fileURL, Message.FILE_MESSAGE);
+                message.setByteArray(file.fileToByteArray());
+                message.setFileName(file.getFileName());
+                break;
+        }
 
         if(mReceiver.isGroupOwner() == WifiDirectBroadcastReceiver.IS_OWNER){
             new SendMessageServer(ChatActivity.this, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);
@@ -436,19 +469,27 @@ public class ChatActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == MY_CAMERA_REQUEST_CODE) {
-            if(requestCode == RESULT_OK) {
+            if (resultCode == RESULT_OK && data != null) {
                 try {
+                    fileUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
                     Bitmap thumbnail = MediaStore.Images.Media.getBitmap(getContentResolver(), fileUri);
                     imgPreview.setImageBitmap(thumbnail);
                     imgPreview.setVisibility(View.VISIBLE);
+                    FireMessage fireMessage = new FireMessage(Message.IMAGE_MESSAGE, selfContact.getId(),  currentContact.getId(), editTextInputChat.getText().toString(), "abc", true);
+                    Image image = new Image(this, fileUri);
+                    Log.e(TAG, "Bitmap from url ok" + fileUri);
+                    fireMessage.setByteArray(image.bitmapToByteArray(image.getBitmapFromUri()));
+                    fireMessage.setFileName(image.getFileName());
+                    fireMessage.setFileSize(image.getFileSize());
+                    customChatAdapter.addChatItem(fireMessage);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            else if(requestCode == MY_RESULT_LOAD_IMAGE) {
-                if(requestCode == RESULT_OK) {
+        } else if(requestCode == MY_RESULT_LOAD_IMAGE) {
+                if(resultCode == RESULT_OK && data != null) {
                     try {
                         final Uri imageUri = data.getData();
                         InputStream inputStream = getContentResolver().openInputStream(imageUri);
@@ -456,6 +497,18 @@ public class ChatActivity extends Activity {
                         imgPreview.setImageBitmap(selectImage);
                         imgPreview.setVisibility(View.VISIBLE);
                         fileUri = imageUri;
+                        FireMessage fireMessage = new FireMessage(Message.IMAGE_MESSAGE, selfContact.getId(),  currentContact.getId(), editTextInputChat.getText().toString(), "abc", true);
+                        Image image = new Image(this, fileUri);
+                        Log.e(TAG, "Bitmap from url ok" + fileUri);
+                        fireMessage.setByteArray(image.bitmapToByteArray(image.getBitmapFromUri()));
+                        fireMessage.setFileName(image.getFileName());
+                        fireMessage.setFileSize(image.getFileSize());
+                        customChatAdapter.addChatItem(fireMessage);
+                        int sizeList = listChat.size();
+                        customChatAdapter.notifyItemInserted(sizeList - 1);
+                        //Scroll to the last element of the list
+                        recyclerViewMessages.smoothScrollToPosition(sizeList);
+//                        sendMessage(Message.IMAGE_MESSAGE);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -466,5 +519,3 @@ public class ChatActivity extends Activity {
             }
         }
     }
-
-}

@@ -67,7 +67,16 @@ public class ReceiveMessageClient extends AbstractReceiver {
 //		playNotification(mContext, values[0]);
 		Log.e("Message1", values[0].getMessage());
 		Message msg = values[0];
-		ChatActivity.refreshList(new FireMessage(msg.getmType(),msg.getFromMail(), msg.getToMail(), msg.getMessage(), msg.getSentDate(), false), false);
+		int type = values[0].getmType();
+		if(type==Message.AUDIO_MESSAGE || type==Message.VIDEO_MESSAGE || type==Message.FILE_MESSAGE){
+			values[0].saveByteArrayToFile(mContext);
+		}
+		FireMessage fireMessage = new FireMessage(msg.getmType(),msg.getFromMail(), msg.getToMail(), msg.getMessage(), msg.getSentDate(), false);
+		fireMessage.setFilePath(values[0].getFilePath());
+		fireMessage.setByteArray(values[0].getByteArray());
+		fireMessage.setFileName(values[0].getFileName());
+		fireMessage.setFileSize(values[0].getFileSize());
+		ChatActivity.refreshList(fireMessage, false);
 	}
 
 }
