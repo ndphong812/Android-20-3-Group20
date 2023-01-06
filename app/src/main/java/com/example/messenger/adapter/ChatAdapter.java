@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.ChatActivity;
@@ -22,14 +23,23 @@ import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.model.Contact;
 import com.example.messenger.model.FireMessage;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.mail.MessageAware;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Contact selfContact;
     Contact currentContact;
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://messenger-50d65-default-rtdb.firebaseio.com/");
 
     private Context context;
     private List<FireMessage> listChat;
@@ -94,8 +104,43 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void deleteMessage (int pos) {
-        FireMessage message = listChat.get(pos);
-        Log.e("Message Menu", "delete message" + message.getMessage());
+        if(listChat.get(pos).getFromMail().equals(currentContact.getId())) {
+            // Tin nhắn từ bên kia
+            Toast.makeText(context.getApplicationContext(), "Không thể xóa tin nhắn của người khác", Toast.LENGTH_SHORT).show();
+        } else {
+            //Tin nhắn tự gửi
+            databaseReference.child("Messages").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    int count = 0;
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        FireMessage fireMessage = dataSnapshot.getValue(FireMessage.class);
+                        if (fireMessage != null) {
+                            if (
+                                (fireMessage.getFromMail().equals(selfContact.getId())
+                                && fireMessage.getToMail().equals(currentContact.getId()) )
+                                || (fireMessage.getFromMail().equals(currentContact.getId())
+                                && fireMessage.getToMail().equals(selfContact.getId()))
+                            ) {
+//                                Log.e("abc", "pos" + pos + "Tin nhắn thứ " + count + ", Người gửi " + fireMessage.getFromMail() +", Người nhận " + fireMessage.getToMail() + ", Nội dung" + fireMessage.getMessage());
+                                if (count == pos) {
+                                    listChat.remove(pos);
+                                    notifyItemRemoved(pos);
+                                    dataSnapshot.getRef().removeValue();
+                                    Toast.makeText(context.getApplicationContext(), "Đã xóa tin nhắn", Toast.LENGTH_SHORT).show();
+                                }
+                                count += 1;
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
 
     public void copyMessage (int pos) {
