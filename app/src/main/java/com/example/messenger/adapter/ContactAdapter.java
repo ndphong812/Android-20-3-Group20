@@ -103,7 +103,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //        bundle.putSerializable("selfContact", selfContact);
 //        Log.e("selfContact", selfContact.getUsername());
 //        Log.e("selfContact", contact.getUsername());
-        getdata(selfContact, contact);
+        checkIsLogined(selfContact, contact);
 //        bundle.putSerializable("contact", contact);
 //        intent.putExtras(bundle);
 
@@ -112,10 +112,25 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //        context.getApplicationContext().startActivity(intent);
     }
 
-    private int getdata(Contact selfContact, Contact currentContact) {
+    private void checkIsLogined(Contact selfContact, Contact currentContact){
+        databaseReference.child("User").child(currentContact.getUsername()).child("isLogined").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Boolean isLogined = (Boolean) snapshot.getValue();
+                if(!isLogined){
+                    Toast.makeText(context.getApplicationContext(), "Người dùng đang offline", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    checkIsBlocked(selfContact, currentContact);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
 
-        // calling add value event listener method
-        // for getting the values from database.
+    private void checkIsBlocked(Contact selfContact, Contact currentContact){
         databaseReference.child("User").child(selfContact.getUsername().toString()).child("blocks").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot contactDataShot) {
@@ -128,7 +143,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             String data = snapshot.getValue(String.class);
                             currentContactBlocks.add(data);
                         }
-                        Log.e("currents", String.valueOf(currentContactBlocks));
+
                         if(currentContactBlocks.contains(selfContact.getUsername())){
                             Toast.makeText(context.getApplicationContext(), "Bạn đã bị chặn.", Toast.LENGTH_SHORT).show();
                         }
@@ -159,7 +174,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                     }
-                    });
+                });
 
             }
 
@@ -168,9 +183,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
 
         });
-        return 1;
     }
-
     public void deleteMessage(int pos) {
         Contact contact = contacts.get(pos);
         if(contact != null) {
