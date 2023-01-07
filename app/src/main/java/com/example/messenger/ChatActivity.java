@@ -4,6 +4,8 @@ package com.example.messenger;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -69,6 +71,7 @@ import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
 public class ChatActivity extends Activity {
+
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://messenger-50d65-default-rtdb.firebaseio.com/");
     ActivityChatBinding binding;
     Intent intent;
@@ -285,7 +288,7 @@ public class ChatActivity extends Activity {
             public void onClick(View view) {
                 String msg = editTextInputChat.getText().toString();
                 if(!msg.equals("")) {
-                    sendMessage(Message.TEXT_MESSAGE, msg);                    
+                    sendMessage(Message.TEXT_MESSAGE, msg);
                 }else {
                     Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
                 }
@@ -432,6 +435,8 @@ public class ChatActivity extends Activity {
         //Scroll to the last element of the list
         recyclerViewMessages.smoothScrollToPosition(sizeList);
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

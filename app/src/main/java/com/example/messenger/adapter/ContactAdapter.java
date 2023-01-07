@@ -99,12 +99,13 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         //Pass data here
         Bundle bundle = new Bundle();
         bundle.putSerializable("selfContact", selfContact);
-        checkIsLogined(selfContact, contact);
         bundle.putSerializable("contact", contact);
         intent.putExtras(bundle);
 
+        checkIsLogined(selfContact, contact);
+
         //Change screen
-        context.getApplicationContext().startActivity(intent);
+//        context.getApplicationContext().startActivity(intent);
     }
 
     private void checkIsLogined(Contact selfContact, Contact currentContact){

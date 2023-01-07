@@ -1,8 +1,13 @@
 package com.example.messenger.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.ClipboardManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -12,14 +17,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.messenger.ChatActivity;
-import com.example.messenger.Entities.Message;
 import com.example.messenger.R;
-import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.model.Contact;
 import com.example.messenger.model.FireMessage;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -29,22 +31,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-
-import javax.mail.MessageAware;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Contact selfContact;
     Contact currentContact;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://messenger-50d65-default-rtdb.firebaseio.com/");
 
-    private Context context;
+    Context context;
     private List<FireMessage> listChat;
-    private final int MSG_TYPE_RIGHT = 1;
-    private final int MSG_TYPE_LEFT = 0;
+    final int MSG_TYPE_RIGHT = 1;
+    final int MSG_TYPE_LEFT = 0;
     @SuppressLint("NotifyDataSetChanged")
     public ChatAdapter(Context context, List<FireMessage> listChat) {
         this.context = context;
@@ -64,6 +61,41 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void addChatItem(FireMessage item) {
         this.listChat.add(item);
+        if(selfContact.getId().equals(item.getToMail())) {
+            sendNotification(item);
+
+        }
+    }
+
+    private void sendNotification(FireMessage item) {
+        NotificationManager mNotificationManager;
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context.getApplicationContext(), "notify_001");
+        Intent ii = new Intent(context.getApplicationContext(), context.getClass());
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, ii, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_IMMUTABLE);
+
+        mBuilder.setContentIntent(pendingIntent);
+        mBuilder.setSmallIcon(R.drawable.ic_baseline_message_24);
+        mBuilder.setContentTitle("From: " + item.getFromMail());
+        mBuilder.setContentText("Message: " + item.getMessage());
+        mBuilder.setPriority(Notification.PRIORITY_MAX);
+
+        mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            String channelId = "Your_channel_id";
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_HIGH);
+            mNotificationManager.createNotificationChannel(channel);
+            mBuilder.setChannelId(channelId);
+        }
+
+        mNotificationManager.notify(0, mBuilder.build());
     }
 
     @NonNull

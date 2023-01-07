@@ -62,6 +62,7 @@ public class ChatsFragment extends Fragment {
         preferenceManager = new PreferenceManager(getContext());
     }
 
+
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         super.onContextItemSelected(item);
@@ -155,6 +156,8 @@ public class ChatsFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });
+
+
         return view;
     }
 
