@@ -6,22 +6,16 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.wifi.WifiManager;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.example.messenger.Database.DataContext;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.databinding.ActivityMainBinding;
 import com.example.messenger.model.User;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -47,7 +41,7 @@ public class MainActivity extends FragmentActivity {
         DB = new DataContext(this);
         shp =  new PreferenceManager(getApplicationContext());
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        chatFragment = ChatsFragment.newInstance("a", "b", "c");
+        chatFragment = ChatsFragment.newInstance();
         userLogin = shp.getString("userEmail");
         listUsers = DB.getListUsers();
         for(int i=0;i<listUsers.size();i++) {
@@ -63,7 +57,7 @@ public class MainActivity extends FragmentActivity {
             switch (item.getItemId()){
                 case R.id.chats:
                     FragmentTransaction ft2 = getSupportFragmentManager().beginTransaction();
-                    chatFragment = ChatsFragment.newInstance("a", "b", "c");
+                    chatFragment = ChatsFragment.newInstance();
                     userLogin = shp.getString("userEmail");
                     listUsers = DB.getListUsers();
                     for(int i=0;i<listUsers.size();i++) {

@@ -6,25 +6,17 @@ public class Contact implements Serializable {
     private String id;
     private String username;
     private String avatarPath;
-    private String latestUserChat;
-    private String latestMessage;
-
     public Contact() {
 
     }
-
-    public Contact(String username, String avatarPath, String latestUserChat, String latestMessage) {
+    public Contact(String username, String avatarPath) {
         this.username = username;
         this.avatarPath = avatarPath;
-        this.latestUserChat = latestUserChat;
-        this.latestMessage = latestMessage;
     }
-    public Contact(String id, String username, String avatarPath, String latestUserChat, String latestMessage) {
+    public Contact(String id, String username, String avatarPath) {
         this.id = id;
         this.username = username;
         this.avatarPath = avatarPath;
-        this.latestUserChat = latestUserChat;
-        this.latestMessage = latestMessage;
     }
 
     public String getId() {
@@ -43,14 +35,4 @@ public class Contact implements Serializable {
     public String getAvatarPath() {
         return avatarPath;
     }
-
-    public String getLatestMessage() {
-        return latestMessage;
-    }
-
-    public String getLatestUserChat() {
-        return latestUserChat;
-    }
-
-
 }

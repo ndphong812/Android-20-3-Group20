@@ -55,9 +55,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void setData(User selfUser, List<Contact> list) {
         selfContact = new Contact(selfUser.getID(),
                 selfUser.getName(),
-                selfUser.getImage(),
-                "",
-                "");
+                selfUser.getImage());
         this.contacts = list;
         notifyDataSetChanged();
     }
@@ -81,7 +79,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         viewHolder.chatName.setText(contact.getUsername());
-        viewHolder.latestChat.setText(contact.getLatestMessage());
+        readLatestMessage( contact.getId(),viewHolder.latestChat);
 
         //Handle click on each item
         viewHolder.layoutItem.setOnClickListener(view -> {
@@ -96,20 +94,17 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public void chatWithOther(Contact selfContact, Contact contact) {
-//        Intent intent = new Intent(context.getApplicationContext(), ChatActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        //Pass data here
-//        Bundle bundle = new Bundle();
-//        bundle.putSerializable("selfContact", selfContact);
-//        Log.e("selfContact", selfContact.getUsername());
-//        Log.e("selfContact", contact.getUsername());
+        Intent intent = new Intent(context.getApplicationContext(), ChatActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //Pass data here
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("selfContact", selfContact);
         checkIsLogined(selfContact, contact);
-//        bundle.putSerializable("contact", contact);
-//        intent.putExtras(bundle);
-
+        bundle.putSerializable("contact", contact);
+        intent.putExtras(bundle);
 
         //Change screen
-//        context.getApplicationContext().startActivity(intent);
+        context.getApplicationContext().startActivity(intent);
     }
 
     private void checkIsLogined(Contact selfContact, Contact currentContact){
@@ -327,5 +322,41 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             contextMenu.add(getAdapterPosition(), 102, 0, "Hủy kết bạn");
             contextMenu.add(getAdapterPosition(), 103, 0, "Chặn/Bỏ chặn người dùng này");
         }
+    }
+
+    private void readLatestMessage(String currentContactID, TextView latestView) {
+        final FireMessage[] latestMsg = {null};
+        final String[] msg = {""};
+        databaseReference.child("Messages").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    FireMessage fireMessage = dataSnapshot.getValue(FireMessage.class);
+                    if(fireMessage != null) {
+                        if((  fireMessage.getFromMail().equals(selfContact.getId())
+                                &&  fireMessage.getToMail().equals(currentContactID))
+                                || (fireMessage.getFromMail().equals(currentContactID)
+                                && fireMessage.getToMail().equals(selfContact.getId()))) {
+                            {
+                                latestMsg[0] = fireMessage;
+                            }
+                        }
+                    }
+                }
+
+                if(latestMsg[0] == null) {
+                    msg[0] = "Chưa có tin nhắn";
+                    latestView.setVisibility(View.GONE);
+                }else{
+                    msg[0] = latestMsg[0].getFromMail() + ": " + latestMsg[0].getMessage();
+                    latestView.setText(msg[0]);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }
