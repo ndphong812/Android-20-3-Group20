@@ -330,7 +330,7 @@ public class ChatActivity extends Activity {
             }
         });
 
-        emojIconActions.setUseSystemEmoji(true);
+//        emojIconActions.setUseSystemEmoji(true);
     }
 
     @SuppressLint("MissingPermission")

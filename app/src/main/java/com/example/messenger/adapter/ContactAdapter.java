@@ -85,7 +85,6 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         viewHolder.layoutItem.setOnClickListener(view -> {
             chatWithOther(selfContact, contact);
         });
-
     }
 
     @Override
@@ -99,12 +98,12 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         //Pass data here
         Bundle bundle = new Bundle();
         bundle.putSerializable("selfContact", selfContact);
-        checkIsLogined(selfContact, contact);
         bundle.putSerializable("contact", contact);
         intent.putExtras(bundle);
-
+        checkIsLogined(selfContact, contact);
         //Change screen
-        context.getApplicationContext().startActivity(intent);
+//        context.getApplicationContext().startActivity(intent);
+
     }
 
     private void checkIsLogined(Contact selfContact, Contact currentContact){
@@ -347,9 +346,14 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if(latestMsg[0] == null) {
                     msg[0] = "Chưa có tin nhắn";
                     latestView.setVisibility(View.GONE);
-                }else{
-                    msg[0] = latestMsg[0].getFromMail() + ": " + latestMsg[0].getMessage();
-                    latestView.setText(msg[0]);
+                } else {
+                    if (latestMsg[0].getFromMail().equals(selfContact.getId())) {
+                        msg[0] = latestMsg[0].getMessage();
+                        latestView.setText(msg[0]);
+                    } else {
+                        msg[0] = latestMsg[0].getFromMail() + ": " + latestMsg[0].getMessage();
+                        latestView.setText(msg[0]);
+                    }
                 }
             }
 
