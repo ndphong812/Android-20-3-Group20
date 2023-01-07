@@ -159,6 +159,7 @@
                     android:src="@drawable/ic_baseline_image_24" />
 
                 <ImageButton
+                    android:id="@+id/fileSend"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginEnd="@dimen/_8dp"

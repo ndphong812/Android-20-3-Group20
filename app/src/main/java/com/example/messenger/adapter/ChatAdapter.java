@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.ChatActivity;
+import com.example.messenger.Entities.Image;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.R;
 import com.example.messenger.Services.LoadImageFromURL;
@@ -115,6 +116,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             chatViewHolder.message.setText(currentChatItem.getMessage());
         }
         if(currentChatItem.getType() == Message.IMAGE_MESSAGE) {
+            chatViewHolder.message.setText(currentChatItem.getMessage());
             chatViewHolder.imageView.setVisibility(View.VISIBLE);
 
             if(!mapThumb.containsKey(message.getFileName())){
@@ -138,9 +140,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
         }
-//        if(currentChatItem.getType() == Message.FILE_MESSAGE) {
-//            chatViewHolder.imageView.setVisibility(View);
-//        }
+        if(currentChatItem.getType() == Message.FILE_MESSAGE) {
+            chatViewHolder.message.setText(currentChatItem.getMessage());
+            chatViewHolder.imageViewFile.setVisibility(View.VISIBLE);
+        }
     }
 
     public void deleteMessage (int pos) {
@@ -208,12 +211,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private TextView message ;
         private ShapeableImageView avatar;
         private ImageView imageView;
+        private ImageView imageViewFile;
 
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
             message = itemView.findViewById(R.id.message);
             avatar = itemView.findViewById(R.id.avatar);
             imageView = itemView.findViewById(R.id.image);
+            imageViewFile = itemView.findViewById(R.id.file_attached_icon);
             message.setOnCreateContextMenuListener(this);
         }
 

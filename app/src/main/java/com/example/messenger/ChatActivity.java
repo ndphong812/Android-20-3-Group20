@@ -80,7 +80,7 @@ public class ChatActivity extends Activity {
     LinearLayout linearLayoutActions;
     ShapeableImageView shapeableImageViewAvatar;
 
-    ImageButton imageButtonShowMore, imageButtonSendMessage, imageButtonSendImage, imageButtonSendCamera;
+    ImageButton imageButtonShowMore, imageButtonSendMessage, imageButtonSendImage, imageButtonSendCamera, imageButtonSendFile;
     ImageView imageButtonEmoji, imgPreview;
 
     Contact  selfContact;
@@ -99,27 +99,21 @@ public class ChatActivity extends Activity {
     private static RecyclerView recyclerViewMessages;
 
     private static final String TAG = "ChatActivity";
-    private static final int PICK_IMAGE = 1;
-    private static final int TAKE_PHOTO = 2;
-    private static final int RECORD_AUDIO = 3;
-    private static final int RECORD_VIDEO = 4;
-    private static final int CHOOSE_FILE = 5;
-    private static final int DRAWING = 6;
     private static final int DOWNLOAD_IMAGE = 100;
     private static final int DELETE_MESSAGE = 101;
     private static final int DOWNLOAD_FILE = 102;
     private static final int COPY_TEXT = 103;
     private static final int SHARE_TEXT = 104;
+    private static final int CHOOSE_FILE = 105;
+
     private static final int REQUEST_PERMISSIONS_REQUIRED = 7;
 
     WifiDirectBroadcastReceiver mReceiver;
     IntentFilter mIntentFilter;
-    @SuppressLint("StaticFieldLeak")
-    private static ListView listView;
-    private static List<Message> listMessage;
-    @SuppressLint("StaticFieldLeak")
     private static ChatAdapter chatAdapter;
     private Uri fileUri;
+    private FireMessage fireMessage1;
+    private Image image1;
     private String fileURL;
     private ArrayList<Uri> tmpFilesUri;
     private Uri mPhotoUri;
@@ -172,6 +166,8 @@ public class ChatActivity extends Activity {
         chatName = (TextView) findViewById(R.id.chatName);
         shapeableImageViewAvatar = (ShapeableImageView) findViewById(R.id.avatar);
         senderEmail = shp.getString("userEmail");
+
+        imageButtonSendFile = (ImageButton) findViewById(R.id.fileSend);
 
         activityChatLayout = (ConstraintLayout) findViewById(R.id.activity_main_layout);
         imageButtonEmoji = (ImageView) findViewById(R.id.emoji_btn);
@@ -303,13 +299,23 @@ public class ChatActivity extends Activity {
                 String msg = editTextInputChat.getText().toString();
                 if(!msg.equals("")) {
                     sendMessage(Message.TEXT_MESSAGE);
-                    FireMessage fireMessage = new FireMessage(Message.TEXT_MESSAGE, selfContact.getId(),  currentContact.getId(), editTextInputChat.getText().toString(), "aaa", true);
-                    customChatAdapter.addChatItem(fireMessage);
-                    int sizeList = listChat.size();
-                    customChatAdapter.notifyItemInserted(sizeList - 1);
+//                    FireMessage fireMessage = new FireMessage(Message.TEXT_MESSAGE, selfContact.getId(),  currentContact.getId(), editTextInputChat.getText().toString(), "aaa", true);
+//                    customChatAdapter.addChatItem(fireMessage);
+//                    int sizeList = listChat.size();
+//                    customChatAdapter.notifyItemInserted(sizeList - 1);
 
-                    //Scroll to the last element of the list
-                    recyclerViewMessages.smoothScrollToPosition(sizeList);
+//                    Log.e(TAG, "Bitmap from url ok" + fileUri);
+//                    fireMessage1.setByteArray(image1.bitmapToByteArray(image1.getBitmapFromUri()));
+//                    fireMessage1.setFileName(image1.getFileName());
+//                    fireMessage1.setFileSize(image1.getFileSize());
+//                    customChatAdapter.addChatItem(fireMessage1);
+//                    int sizeList = listChat.size();
+//                    customChatAdapter.notifyItemInserted(sizeList - 1);
+//                    //Scroll to the last element of the list
+//
+//                    //Scroll to the last element of the list
+//                    recyclerViewMessages.smoothScrollToPosition(sizeList);
+//                    imgPreview.setVisibility(View.GONE);
                 }else {
                     Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
                 }
@@ -330,6 +336,14 @@ public class ChatActivity extends Activity {
             public void onClick(View view) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(intent,MY_CAMERA_REQUEST_CODE);
+            }
+        });
+
+        imageButtonSendFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent chooseFileIntent = new Intent(ChatActivity.this, FilePickerActivity.class);
+                startActivityForResult(chooseFileIntent, CHOOSE_FILE);
             }
         });
         emojIconActions.setUseSystemEmoji(true);
@@ -374,19 +388,6 @@ public class ChatActivity extends Activity {
                 message.setFileName(image.getFileName());
                 message.setFileSize(image.getFileSize());
                 Log.e(TAG, "Set byte array to image ok" + image.getFileSize() + "-" + image.getFileName());
-                break;
-            case Message.AUDIO_MESSAGE:
-                MediaFile audioFile = new MediaFile(this, fileURL, Message.AUDIO_MESSAGE);
-                message.setByteArray(audioFile.fileToByteArray());
-                message.setFileName(audioFile.getFileName());
-                message.setFilePath(audioFile.getFilePath());
-                break;
-            case Message.VIDEO_MESSAGE:
-                MediaFile videoFile = new MediaFile(this, fileURL, Message.AUDIO_MESSAGE);
-                message.setByteArray(videoFile.fileToByteArray());
-                message.setFileName(videoFile.getFileName());
-                message.setFilePath(videoFile.getFilePath());
-                tmpFilesUri.add(fileUri);
                 break;
             case Message.FILE_MESSAGE:
                 MediaFile file = new MediaFile(this, fileURL, Message.FILE_MESSAGE);
@@ -497,21 +498,37 @@ public class ChatActivity extends Activity {
                         imgPreview.setImageBitmap(selectImage);
                         imgPreview.setVisibility(View.VISIBLE);
                         fileUri = imageUri;
-                        FireMessage fireMessage = new FireMessage(Message.IMAGE_MESSAGE, selfContact.getId(),  currentContact.getId(), editTextInputChat.getText().toString(), "abc", true);
-                        Image image = new Image(this, fileUri);
-                        Log.e(TAG, "Bitmap from url ok" + fileUri);
-                        fireMessage.setByteArray(image.bitmapToByteArray(image.getBitmapFromUri()));
-                        fireMessage.setFileName(image.getFileName());
-                        fireMessage.setFileSize(image.getFileSize());
-                        customChatAdapter.addChatItem(fireMessage);
-                        int sizeList = listChat.size();
-                        customChatAdapter.notifyItemInserted(sizeList - 1);
-                        //Scroll to the last element of the list
-                        recyclerViewMessages.smoothScrollToPosition(sizeList);
+                        fireMessage1 = new FireMessage(Message.IMAGE_MESSAGE, selfContact.getId(),  currentContact.getId(), editTextInputChat.getText().toString(), "abc", true);
+                        image1 = new Image(this, fileUri);
+//                        FireMessage fireMessage = new FireMessage(Message.IMAGE_MESSAGE, selfContact.getId(),  currentContact.getId(), editTextInputChat.getText().toString(), "abc", true);
+//                        Image image = new Image(this, fileUri);
+//                        Log.e(TAG, "Bitmap from url ok" + fileUri);
+//                        fireMessage.setByteArray(image.bitmapToByteArray(image.getBitmapFromUri()));
+//                        fireMessage.setFileName(image.getFileName());
+//                        fireMessage.setFileSize(image.getFileSize());
+//                        customChatAdapter.addChatItem(fireMessage);
+//                        int sizeList = listChat.size();
+//                        customChatAdapter.notifyItemInserted(sizeList - 1);
+//                        //Scroll to the last element of the list
+//                        recyclerViewMessages.smoothScrollToPosition(sizeList);
 //                        sendMessage(Message.IMAGE_MESSAGE);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
+                }
+            } else if(requestCode == CHOOSE_FILE) {
+                if(resultCode == RESULT_OK) {
+                    fileURL = (String) data.getStringExtra("filePath");
+                    MediaFile file = new MediaFile(this, fileURL, Message.FILE_MESSAGE);
+                    FireMessage fireMessage = new FireMessage(Message.IMAGE_MESSAGE, selfContact.getId(),  currentContact.getId(), editTextInputChat.getText().toString(), "abc", true);
+                    fireMessage.setByteArray(file.fileToByteArray());
+                    fireMessage.setFileName(file.getFileName());
+                    customChatAdapter.addChatItem(fireMessage);
+                    int sizeList = listChat.size();
+                    customChatAdapter.notifyItemInserted(sizeList - 1);
+                    //Scroll to the last element of the list
+                    recyclerViewMessages.smoothScrollToPosition(sizeList);
+//                    sendMessage(Message.FILE_MESSAGE);
                 }
             }
             else {

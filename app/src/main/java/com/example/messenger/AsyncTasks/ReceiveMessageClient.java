@@ -68,7 +68,7 @@ public class ReceiveMessageClient extends AbstractReceiver {
 		Log.e("Message1", values[0].getMessage());
 		Message msg = values[0];
 		int type = values[0].getmType();
-		if(type==Message.AUDIO_MESSAGE || type==Message.VIDEO_MESSAGE || type==Message.FILE_MESSAGE){
+		if(type==Message.FILE_MESSAGE){
 			values[0].saveByteArrayToFile(mContext);
 		}
 		FireMessage fireMessage = new FireMessage(msg.getmType(),msg.getFromMail(), msg.getToMail(), msg.getMessage(), msg.getSentDate(), false);

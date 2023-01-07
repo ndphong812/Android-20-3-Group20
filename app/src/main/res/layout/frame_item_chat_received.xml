@@ -55,27 +55,17 @@
             android:longClickable="true"
             android:scaleType="fitCenter" />
 
-        <ImageView
-            android:id="@+id/playAudio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/playback_button"
-            android:layout_below="@id/image"
-            android:src="@drawable/play_audio"
-            android:visibility="gone"
-            android:longClickable="true" />
-
 
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/file_attached_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="80dp"
                 android:longClickable="true"
+                android:visibility="gone"
                 android:src="@drawable/file_attached"
                 android:contentDescription="@string/file_icon"/>
 

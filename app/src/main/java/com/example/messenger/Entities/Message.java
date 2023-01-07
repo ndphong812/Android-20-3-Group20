@@ -21,8 +21,6 @@ public class Message implements Serializable {
     private static final String TAG = "Message";
     public static final int TEXT_MESSAGE = 1;
     public static final int IMAGE_MESSAGE = 2;
-    public static final int VIDEO_MESSAGE = 3;
-    public static final int AUDIO_MESSAGE = 4;
     public static final int FILE_MESSAGE = 5;
 
     private int mType;
@@ -97,16 +95,8 @@ public class Message implements Serializable {
 
     public void saveByteArrayToFile(Context context){
         Log.v(TAG, "Save byte array to file");
-        switch(mType){
-            case com.example.messenger.Entities.Message.AUDIO_MESSAGE:
-                filePath = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath()+"/"+fileName;
-                break;
-            case com.example.messenger.Entities.Message.VIDEO_MESSAGE:
-                filePath = context.getExternalFilesDir(Environment.DIRECTORY_MOVIES).getAbsolutePath()+"/"+fileName;
-                break;
-            case com.example.messenger.Entities.Message.FILE_MESSAGE:
-                filePath = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()+"/"+fileName;
-                break;
+        if (mType == com.example.messenger.Entities.Message.FILE_MESSAGE) {
+            filePath = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/" + fileName;
         }
 
         File file = new File(filePath);
