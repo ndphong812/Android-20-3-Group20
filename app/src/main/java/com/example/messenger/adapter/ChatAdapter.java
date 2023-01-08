@@ -1,11 +1,14 @@
 package com.example.messenger.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.ClipData;
-import android.content.ClipboardManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -16,7 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messenger.ChatActivity;
@@ -25,6 +28,8 @@ import com.example.messenger.Entities.Message;
 import com.example.messenger.R;
 import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.ViewImageActivity;
+import com.bumptech.glide.Glide;
+import com.example.messenger.R;
 import com.example.messenger.model.Contact;
 import com.example.messenger.model.FireMessage;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -40,9 +45,6 @@ import java.util.Iterator;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
-
-import javax.mail.MessageAware;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Contact selfContact;
@@ -53,8 +55,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
     FireMessage message;
     private List<FireMessage> listChat;
-    private final int MSG_TYPE_RIGHT = 1;
-    private final int MSG_TYPE_LEFT = 0;
+    final int MSG_TYPE_RIGHT = 1;
+    final int MSG_TYPE_LEFT = 0;
     @SuppressLint("NotifyDataSetChanged")
     public ChatAdapter(Context context, List<FireMessage> listChat) {
         this.context = context;
@@ -75,6 +77,41 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void addChatItem(FireMessage item) {
         this.listChat.add(item);
+        if(selfContact.getId().equals(item.getToMail())) {
+            sendNotification(item);
+
+        }
+    }
+
+    private void sendNotification(FireMessage item) {
+        NotificationManager mNotificationManager;
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context.getApplicationContext(), "notify_001");
+        Intent ii = new Intent(context.getApplicationContext(), context.getClass());
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, ii, PendingIntent.FLAG_MUTABLE);
+
+        mBuilder.setContentIntent(pendingIntent);
+        mBuilder.setSmallIcon(R.drawable.ic_baseline_message_24);
+        mBuilder.setContentTitle("From: " + item.getFromMail());
+        mBuilder.setContentText("Message: " + item.getMessage());
+        mBuilder.setPriority(Notification.PRIORITY_MAX);
+
+        mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            String channelId = "Your_channel_id";
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_HIGH);
+            mNotificationManager.createNotificationChannel(channel);
+            mBuilder.setChannelId(channelId);
+        }
+
+        mNotificationManager.notify(0, mBuilder.build());
     }
 
     @NonNull
@@ -87,6 +124,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             view = LayoutInflater.from(context).inflate(R.layout.frame_item_chat_received, parent, false);
         }
         return new ChatViewHolder(view);
+    }
+
+    private String splitTime(String rawDate) {
+        String result;
+        String[] sub = rawDate.split("T");
+//        String[] date = sub[0].split("-");
+        result = sub[1].substring(0, 5);
+        return result;
     }
 
     @Override
@@ -109,15 +154,31 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         FireMessage currentChatItem = listChat.get(position);
         ChatViewHolder chatViewHolder = (ChatViewHolder) holder;
         if(chatViewHolder.avatar != null) {
-            LoadImageFromURL loadImageFromURL = new LoadImageFromURL(chatViewHolder.avatar);
-            loadImageFromURL.execute(selfContact.getAvatarPath());
+            Glide.with(context).load(currentContact.getAvatarPath()).into(chatViewHolder.avatar);
+        }
+
+        chatViewHolder.message.setText(currentChatItem.getMessage());
+        String currentTime = splitTime(listChat.get(position).getSentDate());
+        if(position >= 1) {
+            if(listChat.get(position - 1).getFromMail().equals(listChat.get(position).getFromMail())) {
+                String preTime = splitTime(listChat.get(position - 1).getSentDate());
+                if(!preTime.equals(currentTime)) {
+                    chatViewHolder.timeText.setText(currentTime);
+                }else{
+                    chatViewHolder.timeText.setVisibility(View.GONE);
+                }
+            }else{
+                chatViewHolder.timeText.setText(currentTime);
+            }
+        }else{
+            chatViewHolder.timeText.setText(currentTime);
         }
         if(currentChatItem.getType() == Message.TEXT_MESSAGE) {
             chatViewHolder.message.setText(currentChatItem.getMessage());
         }
         if(currentChatItem.getType() == Message.IMAGE_MESSAGE) {
             chatViewHolder.imageView.setVisibility(View.VISIBLE);
-
+            Glide.with(context).load(currentChatItem.getMessage()).into(chatViewHolder.imageView);
             if(!mapThumb.containsKey(message.getFileName())){
                 Bitmap thumb = message.byteArrayToBitmap(message.getByteArray());
                 mapThumb.put(message.getFileName(), thumb);
@@ -187,7 +248,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void copyMessage (int pos) {
         FireMessage message = listChat.get(pos);
-//        Log.e(message.getMessage());
 
         if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
             android.text.ClipboardManager clipboard = (android.text.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -207,7 +267,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public class ChatViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
-        private TextView message ;
+        private TextView message, timeText ;
         private ShapeableImageView avatar;
         private ImageView imageView;
         private ImageView imageViewFile;
@@ -218,6 +278,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             avatar = itemView.findViewById(R.id.avatar);
             imageView = itemView.findViewById(R.id.image);
             imageViewFile = itemView.findViewById(R.id.file_attached_icon);
+            timeText = itemView.findViewById(R.id.text_time);
             message.setOnCreateContextMenuListener(this);
         }
 

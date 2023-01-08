@@ -24,18 +24,18 @@
 
         <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
             android:id="@+id/message"
-            android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:gravity="end"
-            emojicon:emojiiconSize="30sp"
             android:background="@drawable/circle_corner_primary"
-            android:textColor="@color/white"
             android:paddingStart="@dimen/_12dp"
-            android:paddingEnd="@dimen/_12dp"
             android:paddingTop="@dimen/_6dp"
+            android:paddingEnd="@dimen/_12dp"
             android:paddingBottom="@dimen/_6dp"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            emojicon:emojiiconSize="30sp"
+            android:autoLink="all"
+            android:textColorLink="@color/white"
             />
 
         <com.example.messenger.CustomView.DynamicImageView

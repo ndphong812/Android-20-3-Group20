@@ -5,23 +5,18 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
-import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.adapter.ContactAdapter;
@@ -34,25 +29,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-
 
 public class ChatsFragment extends Fragment {
     //Database
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://messenger-50d65-default-rtdb.firebaseio.com/");
     private PreferenceManager preferenceManager;
-
     //Attributes
     EditText editTextSearch;
     ShapeableImageView shapeableImageViewAvatar;
     ContactAdapter customContactAdapter;
-    PreferenceManager shp;
-
     //List users
     List<User> onlineUsers = new ArrayList<>();
     List<Contact> contacts = new ArrayList<>();
@@ -62,7 +49,7 @@ public class ChatsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static ChatsFragment newInstance(String param1, String param2, String k) {
+    public static ChatsFragment newInstance() {
         ChatsFragment fragment = new ChatsFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -72,9 +59,9 @@ public class ChatsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        shp = new PreferenceManager(getContext());
         preferenceManager = new PreferenceManager(getContext());
     }
+
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
@@ -110,24 +97,17 @@ public class ChatsFragment extends Fragment {
         editTextSearch =  view.findViewById(R.id.search_input);
         ViewGroup scrollViewOnlineUsers = view.findViewById(R.id.view_group);
 
-
         //Handle click avatar to get setting
-        shapeableImageViewAvatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent settingIntent = new Intent(getActivity(), SettingsActivity.class);
-                startActivity(settingIntent);
-            }
+        shapeableImageViewAvatar.setOnClickListener(view1 -> {
+            Intent settingIntent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(settingIntent);
         });
 
         //Handle search box
         editTextSearch.setFocusableInTouchMode(false);
-        editTextSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
-                startActivity(searchIntent);
-            }
+        editTextSearch.setOnClickListener(view12 -> {
+            Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
+            startActivity(searchIntent);
         });
 
         //Render online users
@@ -143,8 +123,7 @@ public class ChatsFragment extends Fragment {
                         ShapeableImageView avatarOnlineUser = singleFrame.findViewById(R.id.avatar);
                         TextView captionOnlineUser = singleFrame.findViewById(R.id.caption);
 
-                        LoadImageFromURL loadImageFromURL = new LoadImageFromURL(avatarOnlineUser);
-                        loadImageFromURL.execute(currentUser.image);
+                        Glide.with(getActivity()).load(currentUser.image).into(avatarOnlineUser);
 
                         captionOnlineUser.setText(currentUser.getName());
                         scrollViewOnlineUsers.addView(singleFrame);
@@ -165,7 +144,7 @@ public class ChatsFragment extends Fragment {
                     User user = dataSnapshot.getValue(User.class);
                     if(user != null ) {
                         if(currentUser.getFriends().contains(user.id)) {
-                            contacts.add(new Contact(user.id, user.getName(), user.getImage(), "", ""));
+                            contacts.add(new Contact(user.id, user.getName(), user.getImage()));
                         }
                     }
                 }
@@ -177,6 +156,8 @@ public class ChatsFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });
+
+
         return view;
     }
 
@@ -188,7 +169,7 @@ public class ChatsFragment extends Fragment {
                 String currentUserID = preferenceManager.getString("userID");
                 for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     User user = dataSnapshot.getValue(User.class);
-                    if(user.isLogined) {
+                    if(user != null && user.isLogined) {
                         if(!currentUserID.equals(user.id)) {
                             onlineUsers.add(user);
                         }else{
@@ -198,7 +179,6 @@ public class ChatsFragment extends Fragment {
                         }
                     }
                 }
-
                 firebaseCallback.onCallback(onlineUsers);
             }
             @Override

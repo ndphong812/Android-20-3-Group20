@@ -38,13 +38,17 @@
                 android:id="@+id/message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/_12dp"
-                android:paddingTop="@dimen/_6dp"
-                android:paddingEnd="@dimen/_12dp"
-                android:paddingBottom="@dimen/_6dp"
-                android:textColor="@color/black"
                 android:textSize="16sp"
-                emojicon:emojiconSize="30sp" />
+                emojicon:emojiconSize="30sp"
+                android:background="@drawable/circle_corner_grey_100_round_20"
+                android:textColor="@color/black"
+                android:paddingStart="@dimen/_12dp"
+                android:paddingEnd="@dimen/_12dp"
+                android:paddingTop="@dimen/_6dp"
+                android:paddingBottom="@dimen/_6dp"
+                android:autoLink="all"
+                android:textColorLink="@color/black"
+                />
 
             <com.example.messenger.CustomView.DynamicImageView
                 android:id="@+id/image"

@@ -91,7 +91,7 @@ public class PeopleFragment extends Fragment {
     private List<Contact> getListContact() {
         List<Contact> list = new ArrayList<>();
         for(int i = 1; i<= 10; i++) {
-            list.add(new Contact("Friend " + i, shp.getString("imageUser"), "Friend",""));
+            list.add(new Contact("Friend " + i, shp.getString("imageUser")));
         }
         return list;
     }

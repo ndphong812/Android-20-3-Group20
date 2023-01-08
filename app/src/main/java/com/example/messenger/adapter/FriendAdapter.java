@@ -84,7 +84,6 @@ public class FriendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             loadImageFromURL.execute();
 
             contactViewHolder.chatName.setText(contact.getUsername());
-            contactViewHolder.latestChat.setText(contact.getLatestMessage());
             contactViewHolder.layoutItem.setOnClickListener(view -> {
                 chatWithOther(contact);
             });

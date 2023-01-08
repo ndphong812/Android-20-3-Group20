@@ -25,29 +25,29 @@ public class ReceiveMessageClient extends AbstractReceiver {
 	public ReceiveMessageClient(Context context){
 		mContext = context;
 	}
-	
+
 	@Override
 	protected Void doInBackground(Void... params) {
 		try {
 			socket = new ServerSocket(SERVER_PORT);
 			while (true){
 				Socket destinationSocket = socket.accept();
-				
+
 				InputStream inputStream = destinationSocket.getInputStream();
 				BufferedInputStream buffer = new BufferedInputStream(inputStream);
 				ObjectInputStream objectIS = new ObjectInputStream(buffer);
 				Message message = (Message) objectIS.readObject();
-				
+
 				destinationSocket.close();
 				publishProgress(message);
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-        
+
 		return null;
 	}
 
@@ -67,16 +67,7 @@ public class ReceiveMessageClient extends AbstractReceiver {
 //		playNotification(mContext, values[0]);
 		Log.e("Message1", values[0].getMessage());
 		Message msg = values[0];
-		int type = values[0].getmType();
-		if(type==Message.FILE_MESSAGE){
-			values[0].saveByteArrayToFile(mContext);
-		}
-		FireMessage fireMessage = new FireMessage(msg.getmType(),msg.getFromMail(), msg.getToMail(), msg.getMessage(), msg.getSentDate(), false);
-		fireMessage.setFilePath(values[0].getFilePath());
-		fireMessage.setByteArray(values[0].getByteArray());
-		fireMessage.setFileName(values[0].getFileName());
-		fireMessage.setFileSize(values[0].getFileSize());
-		ChatActivity.refreshList(fireMessage, false);
+		ChatActivity.refreshList(new FireMessage(msg.getmType(),msg.getFromMail(), msg.getToMail(), msg.getMessage(), msg.getSentDate(), false), false);
 	}
 
 }

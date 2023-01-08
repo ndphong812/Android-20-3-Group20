@@ -5,6 +5,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +41,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.messenger.AsyncTasks.SendMessageClient;
 import com.example.messenger.AsyncTasks.SendMessageServer;
 import com.example.messenger.Database.DataContext;
@@ -46,7 +49,6 @@ import com.example.messenger.Entities.Image;
 import com.example.messenger.Entities.MediaFile;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.Receivers.WifiDirectBroadcastReceiver;
-import com.example.messenger.Services.LoadImageFromURL;
 import com.example.messenger.Services.PreferenceManager;
 import com.example.messenger.adapter.ChatAdapter;
 import com.example.messenger.databinding.ActivityChatBinding;
@@ -81,6 +83,7 @@ import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
 public class ChatActivity extends Activity {
+
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://messenger-50d65-default-rtdb.firebaseio.com/");
     ActivityChatBinding binding;
     Intent intent;
@@ -200,63 +203,48 @@ public class ChatActivity extends Activity {
         //Set up data
         chatAdapter = new ChatAdapter(this, listChat);
         chatName.setText(currentContact.getUsername());
-        LoadImageFromURL loadImageFromURL = new LoadImageFromURL(shapeableImageViewAvatar);
-        loadImageFromURL.execute(currentContact.getAvatarPath());
+        Glide.with(ChatActivity.this).load(currentContact.getAvatarPath()).into(shapeableImageViewAvatar);
 
         //Handle events
         emojIconActions.ShowEmojicon();
         recyclerViewMessages = (RecyclerView) findViewById(R.id.rcv_messages);
-        recyclerViewMessages.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if ( bottom < oldBottom) {
-                    recyclerViewMessages.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(listChat.size() > 0) {
-                                recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
-                            }
-                        }
-                    }, 100);
-                }
-            }
-        });
+
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ChatActivity.this);
         recyclerViewMessages.setLayoutManager(linearLayoutManager);
 
-        listChat.clear();
-        if(listChat.isEmpty()) {
-            databaseReference.child("Messages").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        FireMessage tempFireMessage = dataSnapshot.getValue(FireMessage.class);
-                        if(tempFireMessage != null) {
-                            if((tempFireMessage.getFromMail().equals(selfContact.getId())
-                                    && tempFireMessage.getToMail().equals(currentContact.getId()) )
-                                     || (tempFireMessage.getFromMail().equals(currentContact.getId())
-                                    && tempFireMessage.getToMail().equals(selfContact.getId())) ) {
+        databaseReference.child("Messages").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                listChat.clear();
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    FireMessage tempFireMessage = dataSnapshot.getValue(FireMessage.class);
+                    if(tempFireMessage != null) {
+                        if( (tempFireMessage.getFromMail().equals(selfContact.getId())
+                                && tempFireMessage.getToMail().equals(currentContact.getId()) )
+                                 || (tempFireMessage.getFromMail().equals(currentContact.getId())
+                                && tempFireMessage.getToMail().equals(selfContact.getId())) ) {
 
-                                listChat.add(tempFireMessage);
-                            }
+                            listChat.add(tempFireMessage);
                         }
                     }
-                    customChatAdapter = new ChatAdapter(ChatActivity.this, listChat);
-                    customChatAdapter.setSelfContact(selfContact);
-                    customChatAdapter.setCurrentContact(currentContact);
-                    customChatAdapter.setData(listChat);
-                    recyclerViewMessages.setAdapter(customChatAdapter);
+                }
+                customChatAdapter = new ChatAdapter(ChatActivity.this, listChat);
+                customChatAdapter.setSelfContact(selfContact);
+                customChatAdapter.setCurrentContact(currentContact);
+                customChatAdapter.setData(listChat);
+                recyclerViewMessages.setAdapter(customChatAdapter);
 
-                    if(listChat.size() > 0) {
-                        recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
-                    }
+                if(listChat.size() > 0) {
+                    recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
                 }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                }
-            });
-        }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
+
         listener();
     }
 
@@ -368,7 +356,24 @@ public class ChatActivity extends Activity {
                 startActivityForResult(chooseFileIntent, CHOOSE_FILE);
             }
         });
-        emojIconActions.setUseSystemEmoji(true);
+
+        recyclerViewMessages.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if ( bottom < oldBottom) {
+                    recyclerViewMessages.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(listChat.size() > 0) {
+                                recyclerViewMessages.smoothScrollToPosition(listChat.size() - 1);
+                            }
+                        }
+                    }, 100);
+                }
+            }
+        });
+
+//        emojIconActions.setUseSystemEmoji(true);
     }
 
     @SuppressLint("MissingPermission")
@@ -406,12 +411,10 @@ public class ChatActivity extends Activity {
             case Message.IMAGE_MESSAGE:
                 Image image = new Image(this, fileUri);
                 Log.e(TAG, "Bitmap from url ok" + fileUri);
-                message.setMessage(idMessage);
+                message.setMessage("https://firebasestorage.googleapis.com/v0/b/messenger-50d65.appspot.com/o/images%2F"+idMessage+"?alt=media");
                 message.setByteArray(image.bitmapToByteArray(image.getBitmapFromUri()));
                 message.setFileName(image.getFileName());
                 message.setFileSize(image.getFileSize());
-
-
                 Log.e(TAG, "Set byte array to image ok" + image.getFileSize() + "-" + image.getFileName());
                 break;
             case Message.FILE_MESSAGE:
@@ -488,10 +491,11 @@ public class ChatActivity extends Activity {
         customChatAdapter.addChatItem(message);
         int sizeList = listChat.size();
         customChatAdapter.notifyItemInserted(sizeList - 1);
-
         //Scroll to the last element of the list
         recyclerViewMessages.smoothScrollToPosition(sizeList);
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
