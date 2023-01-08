@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:emojicon="http://schemas.android.com/tools"
+    android:id="@+id/frame_item_chat"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:emojicon="http://schemas.android.com/tools"
-    android:layout_marginEnd="@dimen/_16dp"
     android:layout_marginStart="100dp"
     android:layout_marginTop="@dimen/_6dp"
+    android:layout_marginEnd="@dimen/_16dp"
+    android:orientation="vertical"
     android:gravity="end"
-    android:id="@+id/frame_item_chat">
+    >
     <RelativeLayout
         android:id="@+id/relativeLayout"
         android:layout_width="wrap_content"
@@ -79,4 +81,10 @@
 
         </RelativeLayout>
     </RelativeLayout>
+    <TextView
+        android:id="@+id/text_time"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textSize="8sp"
+        />
 </LinearLayout>

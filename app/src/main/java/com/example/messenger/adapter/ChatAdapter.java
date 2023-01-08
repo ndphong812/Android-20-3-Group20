@@ -116,7 +116,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             chatViewHolder.message.setText(currentChatItem.getMessage());
         }
         if(currentChatItem.getType() == Message.IMAGE_MESSAGE) {
-            chatViewHolder.message.setText(currentChatItem.getMessage());
             chatViewHolder.imageView.setVisibility(View.VISIBLE);
 
             if(!mapThumb.containsKey(message.getFileName())){
