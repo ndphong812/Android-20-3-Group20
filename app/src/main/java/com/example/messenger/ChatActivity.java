@@ -339,8 +339,8 @@ public class ChatActivity extends Activity {
                     sendMessage(Message.TEXT_MESSAGE);
                 }
                 else if(isImage) {
-                    uploadImage();
                     sendMessage(Message.IMAGE_MESSAGE);
+                    uploadImage();
                     imgPreview.setVisibility(View.GONE);
                 }
                 else {
@@ -404,18 +404,16 @@ public class ChatActivity extends Activity {
         Message message = new Message(type, selfContact.getId(), currentContact.getId(), editTextInputChat.getText().toString(), sentDate, true);
         FireMessage fireMessage = new FireMessage(type, selfContact.getId(),  currentContact.getId(), editTextInputChat.getText().toString(), sentDate, true);
 
-        Log.e("Current contact",currentContact.getId());
-        databaseReference.child("Messages").child("message-" + new Date().getTime()).setValue(fireMessage);
-
         switch(type) {
             case Message.IMAGE_MESSAGE:
                 Image image = new Image(this, fileUri);
                 Log.e(TAG, "Bitmap from url ok" + fileUri);
-                message.setMessage("https://firebasestorage.googleapis.com/v0/b/messenger-50d65.appspot.com/o/images%2F"+idMessage+"?alt=media");
+                message.setMessage("https://firebasestorage.googleapis.com/v0/b/messenger-50d65.appspot.com/o/chatImage%2F"+ idMessage+"?alt=media");
                 message.setByteArray(image.bitmapToByteArray(image.getBitmapFromUri()));
                 message.setFileName(image.getFileName());
                 message.setFileSize(image.getFileSize());
-                Log.e(TAG, "Set byte array to image ok" + image.getFileSize() + "-" + image.getFileName());
+                fireMessage.setMessage("https://firebasestorage.googleapis.com/v0/b/messenger-50d65.appspot.com/o/chatImage%2F"+idMessage+"?alt=media");
+                Log.e(TAG, idMessage);
                 break;
             case Message.FILE_MESSAGE:
                 MediaFile file = new MediaFile(this, fileURL, Message.FILE_MESSAGE);
@@ -423,6 +421,8 @@ public class ChatActivity extends Activity {
                 message.setFileName(file.getFileName());
                 break;
         }
+        Log.e("Current contact",currentContact.getId());
+        databaseReference.child("Messages").child("message-" + new Date().getTime()).setValue(fireMessage);
 
         if(mReceiver.isGroupOwner() == WifiDirectBroadcastReceiver.IS_OWNER){
             new SendMessageServer(ChatActivity.this, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);

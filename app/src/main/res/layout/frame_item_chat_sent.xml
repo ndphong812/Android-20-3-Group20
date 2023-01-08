@@ -34,7 +34,6 @@
             android:textColor="@color/white"
             android:textSize="16sp"
             emojicon:emojiiconSize="30sp"
-            android:autoLink="all"
             android:textColorLink="@color/white"
             />
 
@@ -44,19 +43,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/message"
             android:layout_marginTop="10dp"
-            android:visibility="gone"
             android:longClickable="true"
-            android:scaleType="fitCenter" />
-
-        <ImageView
-            android:id="@+id/playAudio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/playback_button"
-            android:layout_below="@id/image"
-            android:src="@drawable/play_audio"
-            android:visibility="gone"
-            android:longClickable="true" />
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
 
         <RelativeLayout
             android:layout_width="wrap_content"

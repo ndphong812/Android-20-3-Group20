@@ -177,28 +177,29 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             chatViewHolder.message.setText(currentChatItem.getMessage());
         }
         if(currentChatItem.getType() == Message.IMAGE_MESSAGE) {
+            chatViewHolder.message.setVisibility(View.GONE);
             chatViewHolder.imageView.setVisibility(View.VISIBLE);
             Glide.with(context).load(currentChatItem.getMessage()).into(chatViewHolder.imageView);
-            if(!mapThumb.containsKey(message.getFileName())){
-                Bitmap thumb = message.byteArrayToBitmap(message.getByteArray());
-                mapThumb.put(message.getFileName(), thumb);
-            }
-            chatViewHolder.imageView.setImageBitmap(mapThumb.get(message.getFileName()));
-            chatViewHolder.imageView.setTag(position);
-
-            chatViewHolder.imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    FireMessage mes =listChat.get((Integer) view.getTag());
-                    bitmap = mes.byteArrayToBitmap(mes.getByteArray());
-
-                    Intent intent = new Intent(context, ViewImageActivity.class);
-                    String fileName = mes.getFileName();
-                    intent.putExtra("fileName", fileName);
-
-                    context.startActivity(intent);
-                }
-            });
+//            if(!mapThumb.containsKey(message.getFileName())){
+//                Bitmap thumb = message.byteArrayToBitmap(message.getByteArray());
+//                mapThumb.put(message.getFileName(), thumb);
+//            }
+//            chatViewHolder.imageView.setImageBitmap(mapThumb.get(message.getFileName()));
+//            chatViewHolder.imageView.setTag(position);
+//
+//            chatViewHolder.imageView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    FireMessage mes =listChat.get((Integer) view.getTag());
+//                    bitmap = mes.byteArrayToBitmap(mes.getByteArray());
+//
+//                    Intent intent = new Intent(context, ViewImageActivity.class);
+//                    String fileName = mes.getFileName();
+//                    intent.putExtra("fileName", fileName);
+//
+//                    context.startActivity(intent);
+//                }
+//            });
         }
         if(currentChatItem.getType() == Message.FILE_MESSAGE) {
             chatViewHolder.message.setText(currentChatItem.getMessage());
