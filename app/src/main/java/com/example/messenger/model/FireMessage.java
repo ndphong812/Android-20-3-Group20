@@ -1,6 +1,10 @@
 package com.example.messenger.model;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
 public class FireMessage  {
     public int type;
     public String fromMail;
@@ -8,6 +12,44 @@ public class FireMessage  {
     public String message;
     public String sentDate;
     public boolean isMine;
+
+
+    private String filePath;
+    private byte[] byteArray;
+    private String fileName;
+    private long fileSize;
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public byte[] getByteArray() {
+        return byteArray;
+    }
+
+    public void setByteArray(byte[] byteArray) {
+        this.byteArray = byteArray;
+    }
 
     public FireMessage() {
     }
@@ -21,13 +63,11 @@ public class FireMessage  {
         this.type = type;
     }
 
-    public int getmType() {
-        return type;
+    public Bitmap byteArrayToBitmap(byte[] b){
+//        Log.v(TAG, "Convert byte array to image (bitmap)");
+        return BitmapFactory.decodeByteArray(b, 0, b.length);
     }
 
-    public void setmType(int mType) {
-        this.type = mType;
-    }
 
     public int getType() {
         return type;

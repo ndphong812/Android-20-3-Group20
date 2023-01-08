@@ -9,44 +9,86 @@
     android:layout_marginStart="@dimen/_12dp"
     android:layout_marginEnd="100dp"
     android:id="@+id/frame_item_chat"
-    android:orientation="horizontal"
-
+    android:orientation="vertical"
     >
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/avatar"
-        android:layout_width="43dp"
-        android:layout_height="43dp"
-        android:src="@drawable/ic_launcher_background"
-        android:layout_marginEnd="@dimen/_12dp"
-        app:shapeAppearanceOverlay="@style/cornerImageView"
-        android:gravity="start"
-        />
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
-            android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/avatar"
+            android:layout_width="43dp"
+            android:layout_height="43dp"
+            android:src="@drawable/ic_launcher_background"
+            android:layout_marginEnd="@dimen/_12dp"
+            app:shapeAppearanceOverlay="@style/cornerImageView"
+            android:gravity="start"
+            />
+        <RelativeLayout
+            android:id="@+id/relativeLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            emojicon:emojiconSize="30sp"
-            android:background="@drawable/circle_corner_grey_100_round_20"
-            android:textColor="@color/black"
-            android:paddingStart="@dimen/_12dp"
-            android:paddingEnd="@dimen/_12dp"
-            android:paddingTop="@dimen/_6dp"
-            android:paddingBottom="@dimen/_6dp"
-            android:autoLink="all"
-            android:textColorLink="@color/black"
-            />
-        <TextView
-            android:id="@+id/text_time"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:textSize="8sp"
-            />
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="2dp"
+            android:background="@drawable/circle_corner_grey_100_round_20">
+
+            <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+                android:id="@+id/message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                emojicon:emojiconSize="30sp"
+                android:background="@drawable/circle_corner_grey_100_round_20"
+                android:textColor="@color/black"
+                android:paddingStart="@dimen/_12dp"
+                android:paddingEnd="@dimen/_12dp"
+                android:paddingTop="@dimen/_6dp"
+                android:paddingBottom="@dimen/_6dp"
+                android:textColorLink="@color/black"
+                />
+
+            <com.example.messenger.CustomView.DynamicImageView
+                android:id="@+id/image"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/message"
+                android:layout_marginTop="10dp"
+                android:longClickable="true"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
+
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/file_attached_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:contentDescription="@string/file_icon"
+                    android:longClickable="true"
+                    android:src="@drawable/file_attached"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/fileSaved"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/file_attached_icon"
+                    android:longClickable="true" />
+            </RelativeLayout>
+        </RelativeLayout>
+
     </LinearLayout>
+    <TextView
+        android:id="@+id/text_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="8sp"
+        android:layout_below="@id/image"
+        />
 
 </LinearLayout>

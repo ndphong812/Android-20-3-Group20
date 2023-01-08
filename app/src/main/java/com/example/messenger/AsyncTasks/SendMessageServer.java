@@ -30,7 +30,7 @@ public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 		mContext = context;
 		isMine = mine;
 	}
-	
+
 	@Override
 	protected Message doInBackground(Message... msg) {
 		Log.v(TAG, "doInBackground");
@@ -44,8 +44,8 @@ public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 			for(InetAddress addr : listClients){
 				if(msg[0].getSenderAddress() != null && addr.getHostAddress().equals(msg[0].getSenderAddress().getHostAddress())){
 					return msg[0];
-				}			
-				
+				}
+
 				Socket socket = new Socket();
 				socket.setReuseAddress(true);
 				socket.bind(null);
@@ -55,17 +55,17 @@ public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 				Log.e(TAG, "doInBackground: connect to "+ addr.getHostAddress() +" succeeded");
 
 				OutputStream outputStream = socket.getOutputStream();
-				
+
 				new ObjectOutputStream(outputStream).writeObject(msg[0]);
-				
-			    Log.e(TAG, "doInBackground: write to "+ addr.getHostAddress() +" succeeded");
-			    socket.close();
+
+				Log.e(TAG, "doInBackground: write to "+ addr.getHostAddress() +" succeeded");
+				socket.close();
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return msg[0];
 	}
 

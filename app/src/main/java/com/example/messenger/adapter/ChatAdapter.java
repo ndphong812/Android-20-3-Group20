@@ -7,12 +7,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +22,12 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.messenger.ChatActivity;
+import com.example.messenger.Entities.Image;
+import com.example.messenger.Entities.Message;
+import com.example.messenger.R;
+import com.example.messenger.Services.LoadImageFromURL;
+import com.example.messenger.ViewImageActivity;
 import com.bumptech.glide.Glide;
 import com.example.messenger.R;
 import com.example.messenger.model.Contact;
@@ -31,14 +39,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Collection;
+import java.util.Iterator;
+
+
+import java.util.HashMap;
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Contact selfContact;
     Contact currentContact;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://messenger-50d65-default-rtdb.firebaseio.com/");
-
-    Context context;
+    public static Bitmap bitmap;
+    private HashMap<String,Bitmap> mapThumb;
+    private Context context;
+    FireMessage message;
     private List<FireMessage> listChat;
     final int MSG_TYPE_RIGHT = 1;
     final int MSG_TYPE_LEFT = 0;
@@ -46,6 +61,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public ChatAdapter(Context context, List<FireMessage> listChat) {
         this.context = context;
         this.listChat = listChat;
+        mapThumb = new HashMap<String, Bitmap>();
         notifyDataSetChanged();
     }
 
@@ -73,7 +89,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context.getApplicationContext(), "notify_001");
         Intent ii = new Intent(context.getApplicationContext(), context.getClass());
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, ii, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, ii, PendingIntent.FLAG_MUTABLE);
 
         mBuilder.setContentIntent(pendingIntent);
         mBuilder.setSmallIcon(R.drawable.ic_baseline_message_24);
@@ -110,6 +126,29 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return new ChatViewHolder(view);
     }
 
+    private String splitTime(String rawDate) {
+        String result;
+        String[] sub = rawDate.split("T");
+//        String[] date = sub[0].split("-");
+        result = sub[1].substring(0, 5);
+        return result;
+    }
+
+    @Override
+    public int getItemCount() {
+        return listChat.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        message = listChat.get(position);
+        if(listChat.get(position).getFromMail().equals(selfContact.getId())) {
+            return MSG_TYPE_RIGHT;
+        }else{
+            return MSG_TYPE_LEFT;
+        }
+    }
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         FireMessage currentChatItem = listChat.get(position);
@@ -134,27 +173,37 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }else{
             chatViewHolder.timeText.setText(currentTime);
         }
-    }
-
-    private String splitTime(String rawDate) {
-        String result;
-        String[] sub = rawDate.split("T");
-//        String[] date = sub[0].split("-");
-        result = sub[1].substring(0, 5);
-        return result;
-    }
-
-    @Override
-    public int getItemCount() {
-        return listChat.size();
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if(listChat.get(position).getFromMail().equals(selfContact.getId())) {
-            return MSG_TYPE_RIGHT;
-        }else{
-            return MSG_TYPE_LEFT;
+        if(currentChatItem.getType() == Message.TEXT_MESSAGE) {
+            chatViewHolder.message.setText(currentChatItem.getMessage());
+        }
+        if(currentChatItem.getType() == Message.IMAGE_MESSAGE) {
+            chatViewHolder.message.setVisibility(View.GONE);
+            chatViewHolder.imageView.setVisibility(View.VISIBLE);
+            Glide.with(context).load(currentChatItem.getMessage()).into(chatViewHolder.imageView);
+//            if(!mapThumb.containsKey(message.getFileName())){
+//                Bitmap thumb = message.byteArrayToBitmap(message.getByteArray());
+//                mapThumb.put(message.getFileName(), thumb);
+//            }
+//            chatViewHolder.imageView.setImageBitmap(mapThumb.get(message.getFileName()));
+//            chatViewHolder.imageView.setTag(position);
+//
+//            chatViewHolder.imageView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    FireMessage mes =listChat.get((Integer) view.getTag());
+//                    bitmap = mes.byteArrayToBitmap(mes.getByteArray());
+//
+//                    Intent intent = new Intent(context, ViewImageActivity.class);
+//                    String fileName = mes.getFileName();
+//                    intent.putExtra("fileName", fileName);
+//
+//                    context.startActivity(intent);
+//                }
+//            });
+        }
+        if(currentChatItem.getType() == Message.FILE_MESSAGE) {
+            chatViewHolder.message.setText(currentChatItem.getMessage());
+            chatViewHolder.imageViewFile.setVisibility(View.VISIBLE);
         }
     }
 
@@ -221,12 +270,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private TextView message, timeText ;
         private ShapeableImageView avatar;
+        private ImageView imageView;
+        private ImageView imageViewFile;
+
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
             message = itemView.findViewById(R.id.message);
             avatar = itemView.findViewById(R.id.avatar);
+            imageView = itemView.findViewById(R.id.image);
+            imageViewFile = itemView.findViewById(R.id.file_attached_icon);
             timeText = itemView.findViewById(R.id.text_time);
-
             message.setOnCreateContextMenuListener(this);
         }
 

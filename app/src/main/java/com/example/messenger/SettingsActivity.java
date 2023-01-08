@@ -381,11 +381,7 @@ public class SettingsActivity extends AppCompatActivity{
                                     String user = preferenceManager.getString("username");
                                     String temp = user.split("@", 2)[0];
                                     databaseReference.child("User").child(temp.toString()).child("image").setValue("https://firebasestorage.googleapis.com/v0/b/messenger-50d65.appspot.com/o/images%2F"+user.toString()+"?alt=media");
-                                    Toast
-                                            .makeText(SettingsActivity.this,
-                                                    "Image Uploaded!!",
-                                                    Toast.LENGTH_SHORT)
-                                            .show();
+                                    Toast.makeText(SettingsActivity.this, "Image Uploaded!!", Toast.LENGTH_SHORT).show();
                                 }
                             })
 

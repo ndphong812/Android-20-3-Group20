@@ -25,29 +25,29 @@ public class ReceiveMessageClient extends AbstractReceiver {
 	public ReceiveMessageClient(Context context){
 		mContext = context;
 	}
-	
+
 	@Override
 	protected Void doInBackground(Void... params) {
 		try {
 			socket = new ServerSocket(SERVER_PORT);
 			while (true){
 				Socket destinationSocket = socket.accept();
-				
+
 				InputStream inputStream = destinationSocket.getInputStream();
 				BufferedInputStream buffer = new BufferedInputStream(inputStream);
 				ObjectInputStream objectIS = new ObjectInputStream(buffer);
 				Message message = (Message) objectIS.readObject();
-				
+
 				destinationSocket.close();
 				publishProgress(message);
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-        
+
 		return null;
 	}
 

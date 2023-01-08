@@ -24,4 +24,23 @@
     <string name="group_owner_text">"Am I the Group Owner? "</string>
     <string name="label_me">ME</string>
     <string name="label_peers">PEERS</string>
+
+    <!-- Buttons -->
+    <string name="go_to_settings_button">Go to Settings</string>
+    <string name="send_button">Send</string>
+    <string name="back_button">Back</string>
+    <string name="record_button">Start recording</string>
+    <string name="playback_button">Play</string>
+    <string name="stop_recording_button">Stop recording</string>
+    <string name="ok">OK</string>
+
+    <!-- Descriptions -->
+    <string name="full_screen_image">Full screen image</string>
+    <string name="file_icon">File icon</string>
+    <string name="paint">Choose a color</string>
+    <string name="small">Small</string>
+    <string name="medium">Medium</string>
+    <string name="large">Large</string>
+
+    <string name="title_activity_view_image">View image</string>
 </resources>

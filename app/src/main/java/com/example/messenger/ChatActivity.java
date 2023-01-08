@@ -4,6 +4,7 @@ package com.example.messenger;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.ContentValues;
@@ -44,6 +45,8 @@ import com.bumptech.glide.Glide;
 import com.example.messenger.AsyncTasks.SendMessageClient;
 import com.example.messenger.AsyncTasks.SendMessageServer;
 import com.example.messenger.Database.DataContext;
+import com.example.messenger.Entities.Image;
+import com.example.messenger.Entities.MediaFile;
 import com.example.messenger.Entities.Message;
 import com.example.messenger.Receivers.WifiDirectBroadcastReceiver;
 import com.example.messenger.Services.PreferenceManager;
@@ -51,13 +54,22 @@ import com.example.messenger.adapter.ChatAdapter;
 import com.example.messenger.databinding.ActivityChatBinding;
 import com.example.messenger.model.Contact;
 import com.example.messenger.model.FireMessage;
+import com.google.android.gms.gcm.Task;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,7 +93,14 @@ public class ChatActivity extends Activity {
     LinearLayout linearLayoutActions;
     ShapeableImageView shapeableImageViewAvatar;
 
-    ImageButton imageButtonShowMore, imageButtonSendMessage, imageButtonSendImage, imageButtonSendCamera;
+    private static Boolean isImage = false;
+
+    private Uri filePath;
+    FirebaseStorage storage;
+    StorageReference storageReference;
+    PreferenceManager preferenceManager;
+
+    ImageButton imageButtonShowMore, imageButtonSendMessage, imageButtonSendImage, imageButtonSendCamera, imageButtonSendFile;
     ImageView imageButtonEmoji, imgPreview;
 
     Contact  selfContact;
@@ -100,30 +119,25 @@ public class ChatActivity extends Activity {
     private static RecyclerView recyclerViewMessages;
 
     private static final String TAG = "ChatActivity";
-    private static final int PICK_IMAGE = 1;
-    private static final int TAKE_PHOTO = 2;
-    private static final int RECORD_AUDIO = 3;
-    private static final int RECORD_VIDEO = 4;
-    private static final int CHOOSE_FILE = 5;
-    private static final int DRAWING = 6;
     private static final int DOWNLOAD_IMAGE = 100;
     private static final int DELETE_MESSAGE = 101;
     private static final int DOWNLOAD_FILE = 102;
     private static final int COPY_TEXT = 103;
     private static final int SHARE_TEXT = 104;
+    private static final int CHOOSE_FILE = 105;
+
     private static final int REQUEST_PERMISSIONS_REQUIRED = 7;
 
     WifiDirectBroadcastReceiver mReceiver;
     IntentFilter mIntentFilter;
-    @SuppressLint("StaticFieldLeak")
-    private static ListView listView;
-    private static List<Message> listMessage;
-    @SuppressLint("StaticFieldLeak")
     private static ChatAdapter chatAdapter;
     private Uri fileUri;
+    private FireMessage fireMessage1;
+    private Image image1;
     private String fileURL;
     private ArrayList<Uri> tmpFilesUri;
     private Uri mPhotoUri;
+    private String idMessage;
 
     private Register register;
 
@@ -161,6 +175,12 @@ public class ChatActivity extends Activity {
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
         startService(new Intent(this, MessageService.class));
 
+
+        preferenceManager = new PreferenceManager(getApplicationContext());
+
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
+
         // Init attributes
         imageButtonBack = (ImageButton) findViewById(R.id.back_btn);
         imageButtonSendImage = (ImageButton) findViewById(R.id.imageButton2);
@@ -173,6 +193,8 @@ public class ChatActivity extends Activity {
         chatName = (TextView) findViewById(R.id.chatName);
         shapeableImageViewAvatar = (ShapeableImageView) findViewById(R.id.avatar);
         senderEmail = shp.getString("userEmail");
+
+        imageButtonSendFile = (ImageButton) findViewById(R.id.fileSend);
 
         activityChatLayout = (ConstraintLayout) findViewById(R.id.activity_main_layout);
         imageButtonEmoji = (ImageView) findViewById(R.id.emoji_btn);
@@ -282,38 +304,56 @@ public class ChatActivity extends Activity {
             }
         });
 
-        imageButtonSendMessage.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onClick(View view) {
-                String msg = editTextInputChat.getText().toString();
-                if(!msg.equals("")) {
-                    sendMessage(Message.TEXT_MESSAGE, msg);
-                }else {
-                    Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
         imageButtonSendImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/+");
-                startActivityForResult(intent, MY_RESULT_LOAD_IMAGE);
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(
+                        Intent.createChooser(
+                                intent,
+                                "Select Image from here..."),
+                        MY_RESULT_LOAD_IMAGE);
+                isImage = true;
             }
         });
 
         imageButtonSendCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.TITLE,"New Picture");
-                values.put(MediaStore.Images.Media.DESCRIPTION,"From your Camera");
-                fileUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-                startActivityForResult(intent,MY_CAMERA_REQUEST_CODE);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, MY_CAMERA_REQUEST_CODE);
+                }
+                isImage = true;
+            }
+        });
+
+        imageButtonSendMessage.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View view) {
+                String msg = editTextInputChat.getText().toString();
+                if(!msg.equals("")) {
+                    sendMessage(Message.TEXT_MESSAGE);
+                }
+                else if(isImage) {
+                    sendMessage(Message.IMAGE_MESSAGE);
+                    uploadImage();
+                    imgPreview.setVisibility(View.GONE);
+                }
+                else {
+                    Toast.makeText(ChatActivity.this, "Bạn không thể gửi tin nhắn trống", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        imageButtonSendFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent chooseFileIntent = new Intent(ChatActivity.this, FilePickerActivity.class);
+                startActivityForResult(chooseFileIntent, CHOOSE_FILE);
             }
         });
 
@@ -354,16 +394,33 @@ public class ChatActivity extends Activity {
     }
 
 
-    private void sendMessage(int type, String msg) {
+    private void sendMessage(int type) {
         String sentDate = null;
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             sentDate = CurrentDateTimeChat();
         }
+        idMessage = "message-" + new Date().getTime();
+        Message message = new Message(type, selfContact.getId(), currentContact.getId(), editTextInputChat.getText().toString(), sentDate, true);
+        FireMessage fireMessage = new FireMessage(type, selfContact.getId(),  currentContact.getId(), editTextInputChat.getText().toString(), sentDate, true);
 
-        Message message = new Message(Message.TEXT_MESSAGE, selfContact.getId(), currentContact.getId(), msg, sentDate, true);
-        FireMessage fireMessage = new FireMessage(Message.TEXT_MESSAGE, selfContact.getId(),  currentContact.getId(), msg, sentDate, true);
-
+        switch(type) {
+            case Message.IMAGE_MESSAGE:
+                Image image = new Image(this, fileUri);
+                Log.e(TAG, "Bitmap from url ok" + fileUri);
+                message.setMessage("https://firebasestorage.googleapis.com/v0/b/messenger-50d65.appspot.com/o/chatImage%2F"+ idMessage+"?alt=media");
+                message.setByteArray(image.bitmapToByteArray(image.getBitmapFromUri()));
+                message.setFileName(image.getFileName());
+                message.setFileSize(image.getFileSize());
+                fireMessage.setMessage("https://firebasestorage.googleapis.com/v0/b/messenger-50d65.appspot.com/o/chatImage%2F"+idMessage+"?alt=media");
+                Log.e(TAG, idMessage);
+                break;
+            case Message.FILE_MESSAGE:
+                MediaFile file = new MediaFile(this, fileURL, Message.FILE_MESSAGE);
+                message.setByteArray(file.fileToByteArray());
+                message.setFileName(file.getFileName());
+                break;
+        }
         Log.e("Current contact",currentContact.getId());
         databaseReference.child("Messages").child("message-" + new Date().getTime()).setValue(fireMessage);
 
@@ -377,6 +434,8 @@ public class ChatActivity extends Activity {
         editTextInputChat.setText("");
         editTextInputChat.requestFocus();
     }
+
+
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
@@ -442,8 +501,10 @@ public class ChatActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == MY_CAMERA_REQUEST_CODE) {
-            if(requestCode == RESULT_OK) {
+            if (resultCode == RESULT_OK && data != null) {
                 try {
+                    Bitmap photo = (Bitmap) data.getExtras().get("data");
+                    fileUri = getImageUri(getApplicationContext(), photo);
                     Bitmap thumbnail = MediaStore.Images.Media.getBitmap(getContentResolver(), fileUri);
                     imgPreview.setImageBitmap(thumbnail);
                     imgPreview.setVisibility(View.VISIBLE);
@@ -453,24 +514,111 @@ public class ChatActivity extends Activity {
                     e.printStackTrace();
                 }
             }
-            else if(requestCode == MY_RESULT_LOAD_IMAGE) {
-                if(requestCode == RESULT_OK) {
+        } else if(requestCode == MY_RESULT_LOAD_IMAGE) {
+                if(resultCode == RESULT_OK && data != null) {
                     try {
-                        final Uri imageUri = data.getData();
+                        filePath = data.getData();
+                        Uri imageUri = data.getData();
                         InputStream inputStream = getContentResolver().openInputStream(imageUri);
                         Bitmap selectImage = BitmapFactory.decodeStream(inputStream);
                         imgPreview.setImageBitmap(selectImage);
                         imgPreview.setVisibility(View.VISIBLE);
                         fileUri = imageUri;
+                        image1 = new Image(this, fileUri);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
+                }
+            } else if(requestCode == CHOOSE_FILE) {
+                if(resultCode == RESULT_OK && data != null) {
+                    fileURL = (String) data.getStringExtra("filePath");
+                    MediaFile file = new MediaFile(this, fileURL, Message.FILE_MESSAGE);
+//                    sendMessage(Message.FILE_MESSAGE);
                 }
             }
             else {
                 Toast.makeText(this, "Please choose image", Toast.LENGTH_SHORT);
             }
         }
+
+    private Uri getImageUri(Context applicationContext, Bitmap photo) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        photo.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(ChatActivity.this.getContentResolver(), photo, "Title", null);
+        return Uri.parse(path);
     }
 
-}
+    private void uploadImage() {
+        if (filePath != null) {
+            Toast
+                    .makeText(ChatActivity.this,
+                            "Image Uploaded!!",
+                            Toast.LENGTH_SHORT)
+                    .show();
+
+            // Code for showing progressDialog while uploading
+            ProgressDialog progressDialog
+                    = new ProgressDialog(ChatActivity.this);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+            // Defining the child of storageReference
+            StorageReference ref
+                    = storageReference
+                    .child(
+                            "chatImage/"
+                                    + idMessage);
+
+
+
+            // adding listeners on upload
+            // or failure of image
+            ref.putFile(filePath)
+                    .addOnSuccessListener(
+                            new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+                                @Override
+                                public void onSuccess(
+                                        UploadTask.TaskSnapshot taskSnapshot) {
+
+                                    // Image uploaded successfully
+                                    // Dismiss dialog
+                                    progressDialog.dismiss();
+                                    Toast.makeText(ChatActivity.this, "Image Uploaded!!", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                            // Error, Image not uploaded
+                            progressDialog.dismiss();
+
+                            Toast
+                                    .makeText(ChatActivity.this,
+                                            "Failed " + e.getMessage(),
+                                            Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    })
+                    .addOnProgressListener(
+                            new OnProgressListener<UploadTask.TaskSnapshot>() {
+
+                                // Progress Listener for loading
+                                // percentage on the dialog box
+                                @Override
+                                public void onProgress(
+                                        UploadTask.TaskSnapshot taskSnapshot) {
+                                    double progress
+                                            = (100.0
+                                            * taskSnapshot.getBytesTransferred()
+                                            / taskSnapshot.getTotalByteCount());
+                                    progressDialog.setMessage(
+                                            "Uploaded "
+                                                    + (int) progress + "%");
+                                }
+                            });
+        }
+    }
+    }
